@@ -1,11 +1,12 @@
 gunicorn==20.1.0
+--upgrade pip
 Flask==2.3.3
 flask-cors==4.0.0
 flask-session==0.5.0
 schedule==1.2.0
 stripe==7.5.0
 google-generativeai==0.3.2
-langdetect==1.0.9
+langdetect
 deep-translator==1.11.4
 fpdf==1.7.2
 matplotlib==3.8.0
