@@ -1,4 +1,3 @@
---upgrade pip
 Flask==2.3.3
 flask-cors==4.0.0
 flask-session==0.5.0
@@ -19,6 +18,7 @@ scikit-learn==1.3.0
 textdistance==4.5.0
 python-Levenshtein==0.21.1
 gunicorn==20.1.0
+
 
 
 
