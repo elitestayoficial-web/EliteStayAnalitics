@@ -7,13 +7,14 @@ import sys
 # Asegurar que Python encuentra backend
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-# Importar la aplicación Flask
+# Importar la aplicación Flask DESDE backend.api.server
 from backend.api.server import app
 
-# ¡ESTA ES LA LÍNEA MÁGICA! Gunicorn buscará 'app'
-# Si no funciona, también buscará 'application'
+# Gunicorn buscará 'app' (ya está definida arriba)
+# Pero por si acaso, también definimos 'application'
 application = app
 
+# Esto es solo para desarrollo local
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port, debug=True)
