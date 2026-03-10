@@ -27,6 +27,9 @@ logger = logging.getLogger(__name__)
 
 # --- Importar la aplicación Flask (esto es lo que Gunicorn necesita) ---
 # La aplicación se define en backend/api/server.py y se importa aquí
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from backend.api.server import app
 
 # --- Función de inicialización (se ejecuta una sola vez al arrancar) ---
@@ -63,3 +66,4 @@ if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     # En desarrollo local, ejecutamos el servidor Flask directamente
     app.run(host='0.0.0.0', port=port, debug=True)
+
