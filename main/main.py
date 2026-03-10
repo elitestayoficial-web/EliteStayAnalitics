@@ -19,12 +19,14 @@ if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
 
-# ... (todo tu código anterior)
+# ... (todo tu código anterior de inicialización)
 
-# Esto es lo que Gunicorn está buscando
-application = app 
+# --- ESTO ES LO QUE BUSCA GUNICORN ---
+# Definimos ambos para que use el que prefiera
 app = application
+application = app
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
+    # Aquí usamos 'app' para ejecución local
     app.run(host='0.0.0.0', port=port)
