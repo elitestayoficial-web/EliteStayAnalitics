@@ -42,46 +42,78 @@ class GoogleReviewsCollector:
     
     def buscar_place_id(self, nombre_hotel, ciudad, pais=""):
         """
-        Busca el Place ID de un hotel en Google Maps
+        Busca el Place ID de un hotel en Google Maps (VERSIÓN MEJORADA)
         """
-        query = f"{nombre_hotel} {ciudad} {pais}".strip()
-        url = "https://places.googleapis.com/v1/places:searchText"
+        # Limpiar nombres
+        nombre_limpio = nombre_hotel.replace("Hotel", "").replace("hotel", "").strip()
         
-        headers = {
-            'Content-Type': 'application/json',
-            'X-Goog-Api-Key': self.api_key,
-            'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress'
-        }
+        # Lista de variaciones a probar
+        variaciones = [
+            f"{nombre_hotel} {ciudad} {pais}".strip(),
+            f"{nombre_limpio} {ciudad}".strip(),
+            nombre_hotel,
+            f"{nombre_hotel} hotel",
+            f"{nombre_hotel} {ciudad}",
+            ciudad,
+        ]
         
-        payload = {
-            "textQuery": query,
-            "maxResultCount": 3,
-            "locationBias": {
-                "rectangle": {
-                    "low": {"latitude": -90, "longitude": -180},
-                    "high": {"latitude": 90, "longitude": 180}
-                }
-            }
-        }
+        # Variaciones específicas para hoteles conocidos
+        nombre_lower = nombre_hotel.lower()
+        if "four seasons" in nombre_lower:
+            variaciones.append(f"Four Seasons Hotel {ciudad}")
+            variaciones.append(f"Four Seasons {ciudad}")
+        if "ritz" in nombre_lower:
+            variaciones.append(f"Hotel Ritz {ciudad}")
+            variaciones.append(f"Ritz {ciudad}")
+            if ciudad.lower() == "madrid":
+                variaciones.append("Ritz Madrid")
+                variaciones.append("Hotel Ritz Madrid")
+        if "marriott" in nombre_lower:
+            variaciones.append(f"Marriott {ciudad}")
+        if "hilton" in nombre_lower:
+            variaciones.append(f"Hilton {ciudad}")
+        if "hyatt" in nombre_lower:
+            variaciones.append(f"Hyatt {ciudad}")
         
-        try:
-            response = requests.post(url, headers=headers, json=payload)
-            data = response.json()
+        # Quitar duplicados manteniendo el orden
+        variaciones = list(dict.fromkeys([v for v in variaciones if v]))
+        
+        print(f"  🔍 Probando {len(variaciones)} variaciones...")
+        
+        for query in variaciones[:5]:  # Probar las primeras 5
+            print(f"    Intentando: '{query}'")
             
-            if 'places' in data and data['places']:
-                place = data['places'][0]  # Tomar el primer resultado
-                return {
-                    'place_id': place['id'],
-                    'name': place['displayName']['text'],
-                    'address': place.get('formattedAddress', '')
-                }
-            else:
-                print(f"  ⚠️ No se encontró Place ID para: {query}")
-                return None
+            url = "https://places.googleapis.com/v1/places:searchText"
+            headers = {
+                'Content-Type': 'application/json',
+                'X-Goog-Api-Key': self.api_key,
+                'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress'
+            }
+            
+            payload = {
+                "textQuery": query,
+                "maxResultCount": 3
+            }
+            
+            try:
+                response = requests.post(url, headers=headers, json=payload)
+                data = response.json()
                 
-        except Exception as e:
-            print(f"  ❌ Error buscando Place ID: {e}")
-            return None
+                if 'places' in data and data['places']:
+                    place = data['places'][0]
+                    print(f"    ✅ ¡Encontrado! ID: {place['id']}")
+                    return {
+                        'place_id': place['id'],
+                        'name': place['displayName']['text'],
+                        'address': place.get('formattedAddress', '')
+                    }
+            except Exception as e:
+                print(f"    ❌ Error: {e}")
+            
+            time.sleep(0.5)
+        
+        print(f"  ⚠️ No se encontró Place ID después de {len(variaciones)} intentos")
+        return None
     
     def obtener_resenas(self, place_id, hotel_id, max_reviews=20):
         """
@@ -145,9 +177,6 @@ class GoogleReviewsCollector:
             if not review_text:
                 return
             
-            # Crear un hash simple para detectar duplicados
-            review_hash = str(hash(review_text[:200]))
-            
             self.cursor.execute('''
                 SELECT id FROM complaints 
                 WHERE hotel_id = ? AND source = ? AND complaint_text = ?
@@ -163,7 +192,7 @@ class GoogleReviewsCollector:
                 else:
                     severidad = 'minor'
                 
-                # Extraer fecha aproximada (Google no siempre da fecha exacta)
+                # Extraer fecha aproximada
                 publish_time = review.get('publishTime', '')
                 review_date = publish_time[:10] if publish_time else datetime.now().strftime('%Y-%m-%d')
                 
@@ -228,8 +257,6 @@ class GoogleReviewsCollector:
         for hotel_id, nombre, ciudad in hoteles:
             total = self.procesar_hotel(hotel_id, nombre, ciudad)
             total_general += total
-            
-            # Pausa para no saturar la API (límite: 600 requests/minuto)
             time.sleep(1)
         
         print(f"\n{'='*60}")
