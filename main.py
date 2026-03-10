@@ -180,9 +180,106 @@ def serve_static(path):
 
 # --- PUNTO DE ENTRADA PARA GUNICORN ---
 application = app
+# --- DATOS DE EJEMPLO PARA ACTIVAR LAS APIS ---
+def init_sample_data():
+    """Inicializa la base de datos con datos de ejemplo si está vacía"""
+    conn = sqlite3.connect('data/elitestayanalitycs.db')
+    cursor = conn.cursor()
+    
+    # Crear tablas si no existen
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS hotels (
+            id INTEGER PRIMARY KEY,
+            name TEXT,
+            city TEXT,
+            overall_score REAL
+        )
+    ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS rankings (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            hotel_id INTEGER,
+            rank INTEGER,
+            score REAL,
+            week_date TEXT
+        )
+    ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS alerts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            hotel_id INTEGER,
+            alert_level TEXT,
+            alert_color TEXT,
+            trigger_reason TEXT,
+            complaint_count INTEGER,
+            week_date DATE
+        )
+    ''')
+    
+    # Verificar si ya hay hoteles
+    cursor.execute('SELECT COUNT(*) FROM hotels')
+    if cursor.fetchone()[0] == 0:
+        print("Insertando hoteles de ejemplo...")
+        hoteles = [
+            (1, 'Marriott Marquis', 'New York', 98),
+            (2, 'Hilton Downtown', 'Chicago', 95),
+            (3, 'Hyatt Regency', 'San Francisco', 92),
+            (4, 'Four Seasons', 'Los Angeles', 96),
+            (5, 'Ritz Carlton', 'Miami', 97),
+            (6, 'Hotel Problemas', 'Las Vegas', 45),
+            (7, 'Hotel Incidentes', 'Boston', 38),
+            (8, 'Hotel Quejas', 'Seattle', 42),
+            (9, 'Hotel Ritz Madrid', 'Madrid', 99),
+            (10, 'Marriott Paris', 'Paris', 94),
+            (11, 'Hilton London', 'London', 93),
+            (12, 'Grand Hyatt Tokyo', 'Tokyo', 91),
+        ]
+        cursor.executemany('''
+            INSERT INTO hotels (id, name, city, overall_score)
+            VALUES (?, ?, ?, ?)
+        ''', hoteles)
+        
+        # Insertar rankings
+        week = datetime.now().strftime('%Y-%m-%d')
+        rankings = [
+            (9, 1, 99, week), (1, 2, 98, week), (5, 3, 97, week),
+            (4, 4, 96, week), (2, 5, 95, week), (10, 6, 94, week),
+            (11, 7, 93, week), (3, 8, 92, week), (12, 9, 91, week),
+            (6, 10, 45, week), (8, 11, 42, week), (7, 12, 38, week),
+        ]
+        cursor.executemany('''
+            INSERT INTO rankings (hotel_id, rank, score, week_date)
+            VALUES (?, ?, ?, ?)
+        ''', rankings)
+        
+        # Insertar alertas
+        alerts = [
+            (6, 'crisis', 'red', 'Múltiples quejas', 5, week),
+            (7, 'crisis', 'red', 'Seguridad', 4, week),
+            (8, 'crisis', 'red', 'Mantenimiento', 4, week),
+            (14, 'incidencia', 'orange', 'Servicio', 3, week),
+            (18, 'incidencia', 'orange', 'Aglomeraciones', 3, week),
+            (13, 'alerta', 'yellow', 'Precios', 2, week),
+            (15, 'alerta', 'yellow', 'WiFi', 2, week),
+            (17, 'alerta', 'yellow', 'AC', 2, week),
+            (19, 'alerta', 'yellow', 'Ruido', 1, week),
+        ]
+        for hotel_id, level, color, reason, count, week_date in alerts:
+            cursor.execute('''
+                INSERT INTO alerts (hotel_id, alert_level, alert_color, trigger_reason, complaint_count, week_date)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (hotel_id, level, color, reason, count, week_date))
+        
+        conn.commit()
+        print("✅ Datos de ejemplo insertados correctamente")
+    
+    conn.close()
 
+# Ejecutar la inicialización al arrancar
+init_sample_data()
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
+
 
 
