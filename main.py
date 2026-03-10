@@ -2,7 +2,6 @@
 # main.py - Aplicación Flask completa (Sin importaciones externas de server.py)
 
 import os
-import sys
 import sqlite3
 from datetime import datetime
 from flask import Flask, jsonify, send_from_directory, request
@@ -13,7 +12,6 @@ app = Flask(__name__)
 CORS(app)
 
 # --- Configuración de la base de datos ---
-# Asegurar que el directorio para la base de datos existe
 DB_DIR = 'data'
 os.makedirs(DB_DIR, exist_ok=True)
 DB_PATH = os.path.join(DB_DIR, 'elitestayanalitycs.db')
@@ -23,7 +21,7 @@ def get_db():
     conn.row_factory = sqlite3.Row
     return conn
 
-# --- RUTAS DE LA API (Copia de tu server.py) ---
+# --- RUTAS DE LA API ---
 
 @app.route('/')
 def home():
@@ -42,7 +40,6 @@ def health():
 
 @app.route('/api/semaphore/stats')
 def get_semaphore_stats():
-    """Get semaphore statistics"""
     try:
         conn = get_db()
         cursor = conn.cursor()
@@ -66,7 +63,6 @@ def get_semaphore_stats():
 
 @app.route('/api/alerts/<color>')
 def get_alerts_by_color(color):
-    """Get hotels with specific alert color"""
     try:
         conn = get_db()
         conn.row_factory = sqlite3.Row
@@ -87,7 +83,6 @@ def get_alerts_by_color(color):
 
 @app.route('/api/rankings/best')
 def get_best():
-    """Obtiene los mejores hoteles"""
     try:
         conn = get_db()
         cursor = conn.cursor()
@@ -105,7 +100,6 @@ def get_best():
 
 @app.route('/api/rankings/worst')
 def get_worst():
-    """Obtiene los peores hoteles"""
     try:
         conn = get_db()
         cursor = conn.cursor()
@@ -124,7 +118,6 @@ def get_worst():
 
 @app.route('/api/hotel/<int:hotel_id>/complaints')
 def get_hotel_complaints(hotel_id):
-    """Obtiene todas las quejas de un hotel"""
     try:
         conn = get_db()
         cursor = conn.cursor()
@@ -141,7 +134,6 @@ def get_hotel_complaints(hotel_id):
 
 @app.route('/api/hotel/search')
 def search_hotels():
-    """Search hotels by name, city, or ID"""
     try:
         query = request.args.get('q', '').strip().lower()
         if not query:
@@ -173,17 +165,11 @@ def serve_elite():
 def serve_static(path):
     return send_from_directory('frontend/templates', path)
 
-# --- PUNTO DE ENTRADA PARA GUNICORN Y DESARROLLO LOCAL ---
+# --- PUNTO DE ENTRADA PARA GUNICORN ---
 # Gunicorn buscará la variable 'app' (definida arriba).
-# Creamos un alias por compatibilidad, aunque no es estrictamente necesario.
-application = app
+application = app  # Alias por compatibilidad
 
 if __name__ == '__main__':
-    # Usar el puerto de la variable de entorno PORT (Render lo inyecta automáticamente)
     port = int(os.getenv('PORT', 10000))
-    print(f"Iniciando servidor de desarrollo en puerto {port}...")
-    # ¡CRUCIAL! Vincular a 0.0.0.0 para que Render pueda enrutar el tráfico.
     app.run(host='0.0.0.0', port=port)
-
-
 
