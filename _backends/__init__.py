@@ -1,9 +1,9 @@
-def f2py_build_generator(name):
-    if name == "meson":
-        from ._meson import MesonBackend
-        return MesonBackend
-    elif name == "distutils":
-        from ._distutils import DistutilsBackend
-        return DistutilsBackend
-    else:
-        raise ValueError(f"Unknown backend: {name}")
+# This file is dual licensed under the terms of the Apache License, Version
+# 2.0, and the BSD License. See the LICENSE file in the root of this repository
+# for complete details.
+
+from __future__ import annotations
+
+from cryptography.hazmat.backends.openssl.backend import backend
+
+__all__ = ["backend"]
