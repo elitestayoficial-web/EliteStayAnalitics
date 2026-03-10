@@ -874,7 +874,7 @@
 
         <div class="stats-grid">
             <div class="stat-card">
-                <span class="stat-number" id="statHotels">250.4k</span>
+                <span class="stat-number" id="statHotels">1,695</span>
                 <span class="stat-label">HOTELS ANALYZED</span>
             </div>
             <div class="stat-card">
@@ -882,11 +882,11 @@
                 <span class="stat-label">AI ACCURACY</span>
             </div>
             <div class="stat-card">
-                <span class="stat-number" id="statReviews">4.2m</span>
+                <span class="stat-number" id="statReviews">42,891</span>
                 <span class="stat-label">REVIEWS PROCESSED</span>
             </div>
             <div class="stat-card">
-                <span class="stat-number" id="statAlerts">1.2k</span>
+                <span class="stat-number" id="statAlerts">1,284</span>
                 <span class="stat-label">ACTIVE ALERTS</span>
             </div>
         </div>
@@ -906,10 +906,17 @@
                     <span class="semaphore-icon">🟡</span>
                     <span class="semaphore-title">ALERT</span>
                 </div>
-                <div class="semaphore-count" id="yellowCount">0</div>
-                <div class="semaphore-list" id="yellowList">
-                    <div class="loading">Loading...</div>
-                </div>
+                <div class="semaphore-count" id="yellowCount">4</div>
+                <ul class="semaphore-list" id="yellowList">
+                    <li class="semaphore-item">
+                        <span>Hotel Ritz Madrid</span>
+                        <span class="semaphore-badge yellow">3 issues</span>
+                    </li>
+                    <li class="semaphore-item">
+                        <span>Marriott Paris</span>
+                        <span class="semaphore-badge yellow">2 issues</span>
+                    </li>
+                </ul>
             </div>
 
             <!-- Orange Incident Card -->
@@ -918,10 +925,13 @@
                     <span class="semaphore-icon">🟠</span>
                     <span class="semaphore-title">INCIDENT</span>
                 </div>
-                <div class="semaphore-count" id="orangeCount">0</div>
-                <div class="semaphore-list" id="orangeList">
-                    <div class="loading">Loading...</div>
-                </div>
+                <div class="semaphore-count" id="orangeCount">2</div>
+                <ul class="semaphore-list" id="orangeList">
+                    <li class="semaphore-item">
+                        <span>Hilton Downtown</span>
+                        <span class="semaphore-badge orange">4 issues</span>
+                    </li>
+                </ul>
             </div>
 
             <!-- Red Crisis Card -->
@@ -930,10 +940,17 @@
                     <span class="semaphore-icon">🔴</span>
                     <span class="semaphore-title">CRISIS</span>
                 </div>
-                <div class="semaphore-count" id="redCount">0</div>
-                <div class="semaphore-list" id="redList">
-                    <div class="loading">Loading...</div>
-                </div>
+                <div class="semaphore-count" id="redCount">3</div>
+                <ul class="semaphore-list" id="redList">
+                    <li class="semaphore-item">
+                        <span>Hotel Problemas</span>
+                        <span class="semaphore-badge red">5 issues</span>
+                    </li>
+                    <li class="semaphore-item">
+                        <span>Hotel Incidentes</span>
+                        <span class="semaphore-badge red">4 issues</span>
+                    </li>
+                </ul>
             </div>
         </div>
     </section>
@@ -943,10 +960,11 @@
         <div class="gauge-container">
             <h3 class="gauge-title">Brand Consistency Index</h3>
             <canvas id="gaugeChart" width="200" height="100" class="gauge-chart"></canvas>
-            <p style="color: #666; margin-top: 1rem;">85% alignment with brand standards</p>
+            <p style="color: #666; margin-top: 1rem;">87% alignment with brand standards</p>
         </div>
     </section>
 
+    <!-- RANKINGS SECTION -->
     <section class="rankings-section" id="rankings">
         <div class="section-header">
             <h2>Global <span class="italic-sophistication">Performance</span> Index</h2>
@@ -961,7 +979,36 @@
                     <h3>TOP PERFORMERS</h3>
                 </div>
                 <div class="ranking-list" id="bestList">
-                    <div class="loading">Loading data...</div>
+                    <div class="ranking-item" data-hotel-id="742" data-hotel-name="gran hotel la florida" data-hotel-city="barcelona">
+                        <div class="hotel-info">
+                            <span class="hotel-rank-badge">01</span>
+                            <div>
+                                <div class="hotel-name">Gran Hotel La Florida</div>
+                                <div class="hotel-city">Barcelona</div>
+                            </div>
+                        </div>
+                        <span class="hotel-score">9.90 APS</span>
+                    </div>
+                    <div class="ranking-item" data-hotel-id="891" data-hotel-name="hotel arts barcelona" data-hotel-city="barcelona">
+                        <div class="hotel-info">
+                            <span class="hotel-rank-badge">02</span>
+                            <div>
+                                <div class="hotel-name">Hotel Arts Barcelona</div>
+                                <div class="hotel-city">Barcelona</div>
+                            </div>
+                        </div>
+                        <span class="hotel-score">9.80 APS</span>
+                    </div>
+                    <div class="ranking-item" data-hotel-id="523" data-hotel-name="hotel ritz madrid" data-hotel-city="madrid">
+                        <div class="hotel-info">
+                            <span class="hotel-rank-badge">03</span>
+                            <div>
+                                <div class="hotel-name">Hotel Ritz Madrid</div>
+                                <div class="hotel-city">Madrid</div>
+                            </div>
+                        </div>
+                        <span class="hotel-score">9.70 APS</span>
+                    </div>
                 </div>
             </div>
 
@@ -972,430 +1019,48 @@
                     <h3>UNDERPERFORMING</h3>
                 </div>
                 <div class="ranking-list" id="worstList">
-                    <div class="loading">Loading data...</div>
+                    <div class="ranking-item" data-hotel-id="1560" data-hotel-name="hotel regente" data-hotel-city="madrid">
+                        <div class="hotel-info">
+                            <span class="hotel-rank-badge">01</span>
+                            <div>
+                                <div class="hotel-name">Hotel Regente</div>
+                                <div class="hotel-city">Madrid</div>
+                            </div>
+                        </div>
+                        <span class="hotel-score" style="color: #ff6b6b;">4.50 APS</span>
+                    </div>
+                    <div class="ranking-item" data-hotel-id="423" data-hotel-name="grand palladium" data-hotel-city="barcelona">
+                        <div class="hotel-info">
+                            <span class="hotel-rank-badge">02</span>
+                            <div>
+                                <div class="hotel-name">Grand Palladium</div>
+                                <div class="hotel-city">Barcelona</div>
+                            </div>
+                        </div>
+                        <span class="hotel-score" style="color: #ff6b6b;">4.20 APS</span>
+                    </div>
+                    <div class="ranking-item" data-hotel-id="789" data-hotel-name="hotel seattle downtown" data-hotel-city="seattle">
+                        <div class="hotel-info">
+                            <span class="hotel-rank-badge">03</span>
+                            <div>
+                                <div class="hotel-name">Hotel Seattle Downtown</div>
+                                <div class="hotel-city">Seattle</div>
+                            </div>
+                        </div>
+                        <span class="hotel-score" style="color: #ff6b6b;">4.50 APS</span>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- PRICING SECTION WITH STRIPE -->
-    <section class="pricing-section" id="pricing">
+    <!-- SECCIÓN DE NUEVOS HOTELES (60 nuevos) -->
+    <section class="rankings-section" style="padding-top: 0;">
         <div class="section-header">
-            <h2>Enterprise <span class="italic-sophistication">Plans</span></h2>
-            <p>Scalable solutions for hotel chains and investment groups</p>
+            <h2>Recently <span class="italic-sophistication">Added</span></h2>
+            <p>60 new luxury hotels just integrated into our system</p>
         </div>
-
-        <div class="pricing-grid">
-            <!-- Basic Plan -->
-            <div class="pricing-card">
-                <div class="pricing-header">
-                    <h3>BASIC</h3>
-                    <div class="pricing-price">$49<span>/month</span></div>
-                </div>
-                <ul class="pricing-features">
-                    <li>Monthly PDF reports</li>
-                    <li>Email alerts</li>
-                    <li>Basic rankings</li>
-                    <li>5 hotel analysis</li>
-                    <li>Email support</li>
-                </ul>
-                <button class="stripe-button" onclick="showPaymentModal('basic')">Subscribe with Stripe</button>
-            </div>
-
-            <!-- Premium Plan (Recommended) -->
-            <div class="pricing-card premium">
-                <div class="pricing-header">
-                    <h3>PREMIUM</h3>
-                    <div class="pricing-price">$199<span>/month</span></div>
-                </div>
-                <ul class="pricing-features">
-                    <li>Weekly PDF reports</li>
-                    <li>Real-time alerts</li>
-                    <li>Competitor comparison</li>
-                    <li>CO2/Sustainability analysis</li>
-                    <li>25 hotel analysis</li>
-                    <li>API access</li>
-                    <li>Priority support</li>
-                </ul>
-                <button class="stripe-button-gold" onclick="showPaymentModal('premium')">⭐ Subscribe with Stripe ⭐</button>
-            </div>
-
-            <!-- Enterprise Plan -->
-            <div class="pricing-card">
-                <div class="pricing-header">
-                    <h3>ENTERPRISE</h3>
-                    <div class="pricing-price">$499<span>/month</span></div>
-                </div>
-                <ul class="pricing-features">
-                    <li>Daily reports</li>
-                    <li>Custom dashboards</li>
-                    <li>Full API access</li>
-                    <li>Unlimited hotels</li>
-                    <li>Dedicated account manager</li>
-                    <li>On-premise option</li>
-                    <li>24/7 phone support</li>
-                </ul>
-                <button class="stripe-button" onclick="showPaymentModal('enterprise')">Contact Sales</button>
-            </div>
-        </div>
-    </section>
-
-    <!-- PAYMENT MODAL -->
-    <div id="paymentModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2 id="modalTitle">Subscribe to Premium</h2>
-            <form id="paymentForm">
-                <div class="form-group">
-                    <label>Hotel Name</label>
-                    <input type="text" id="hotelName" required>
-                </div>
-                <div class="form-group">
-                    <label>Manager Email</label>
-                    <input type="email" id="managerEmail" required>
-                </div>
-                <div class="form-group">
-                    <label>Hotel ID (optional)</label>
-                    <input type="text" id="hotelId">
-                </div>
-                <div id="card-element"></div>
-                <button type="submit" class="submit-btn" id="submitBtn">Pay with Stripe</button>
-            </form>
-        </div>
-    </div>
-
-    <footer class="footer">
-        ELITESTAYANALYTICS.COM &copy; 2024 | DATA INTELLIGENCE DIVISION | <a href="#">PRIVACY POLICY</a>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script>
-        // ========== STRIPE INITIALIZATION ==========
-        const stripe = Stripe('pk_test_YOUR_PUBLIC_KEY'); // Replace with your actual Stripe public key
-        let currentPlan = 'premium';
-
-        // ========== GLOBAL VARIABLES ==========
-        let darkMode = true;
-        let currentLanguage = 'en';
-        let hotelsData = [];
-        let gaugeChart = null;
-
-        // ========== FLAG EMOJI MAP ==========
-        const flagEmojis = {
-            'en': '🇺🇸', 'es': '🇪🇸', 'fr': '🇫🇷', 'de': '🇩🇪',
-            'it': '🇮🇹', 'pt': '🇧🇷', 'ja': '🇯🇵', 'ko': '🇰🇷', 'zh': '🇨🇳'
-        };
-
-        // ========== TRANSLATIONS ==========
-        const translations = {
-            en: {
-                hero_subtitle: 'Advanced analytics for the high-end hospitality industry. Empirical data, strategic vision.',
-                loading: 'Loading data...',
-                no_data: 'No data available',
-                error: 'Error loading data'
-            },
-            es: {
-                hero_subtitle: 'Análisis avanzado para la industria hotelera de alto nivel. Datos empíricos, visión estratégica.',
-                loading: 'Cargando datos...',
-                no_data: 'No hay datos disponibles',
-                error: 'Error al cargar datos'
-            },
-            fr: {
-                hero_subtitle: 'Analyses avancées pour l\'industrie hôtelière haut de gamme. Données empiriques, vision stratégique.',
-                loading: 'Chargement...',
-                no_data: 'Données non disponibles',
-                error: 'Erreur de chargement'
-            }
-        };
-
-        // ========== THEME FUNCTIONS ==========
-        function toggleTheme() {
-            darkMode = !darkMode;
-            const body = document.body;
-            const btn = document.getElementById('themeBtn');
-            
-            if (darkMode) {
-                body.classList.remove('light-mode');
-                btn.textContent = '🌙 Dark';
-            } else {
-                body.classList.add('light-mode');
-                btn.textContent = '☀️ Light';
-            }
-        }
-
-        // ========== LANGUAGE FUNCTIONS ==========
-        function setLanguage(lang) {
-            currentLanguage = lang;
-            
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.textContent.includes(lang.toUpperCase())) {
-                    btn.classList.add('active');
-                }
-            });
-            
-            const element = document.querySelector('.subtitle');
-            if (element && translations[lang]) {
-                element.textContent = translations[lang].hero_subtitle;
-            }
-        }
-
-        // ========== LOAD SEMAPHORE DATA ==========
-        async function loadSemaphoreData() {
-            try {
-                const response = await fetch('/api/semaphore/stats');
-                const data = await response.json();
-                
-                document.getElementById('yellowCount').textContent = data.yellow || 0;
-                document.getElementById('orangeCount').textContent = data.orange || 0;
-                document.getElementById('redCount').textContent = data.red || 0;
-                
-                // Simulate some data for demonstration
-                const yellowList = document.getElementById('yellowList');
-                yellowList.innerHTML = `
-                    <div class="semaphore-item">
-                        <span>Hotel Ritz Madrid</span>
-                        <span class="semaphore-badge yellow">3 issues</span>
-                    </div>
-                    <div class="semaphore-item">
-                        <span>Marriott Paris</span>
-                        <span class="semaphore-badge yellow">2 issues</span>
-                    </div>
-                `;
-                
-                const orangeList = document.getElementById('orangeList');
-                orangeList.innerHTML = `
-                    <div class="semaphore-item">
-                        <span>Hilton Downtown</span>
-                        <span class="semaphore-badge orange">4 issues</span>
-                    </div>
-                `;
-                
-                const redList = document.getElementById('redList');
-                redList.innerHTML = `
-                    <div class="semaphore-item">
-                        <span>Hotel Problemas</span>
-                        <span class="semaphore-badge red">5 issues</span>
-                    </div>
-                    <div class="semaphore-item">
-                        <span>Hotel Incidentes</span>
-                        <span class="semaphore-badge red">4 issues</span>
-                    </div>
-                `;
-                
-            } catch (error) {
-                console.error('Error loading semaphore:', error);
-            }
-        }
-
-        // ========== LOAD RANKINGS FROM API ==========
-        async function loadRankings() {
-            try {
-                const bestRes = await fetch('/api/rankings/best');
-                const best = await bestRes.json();
-                
-                const bestList = document.getElementById('bestList');
-                
-                if (best.length > 0) {
-                    bestList.innerHTML = best.map((hotel, index) => {
-                        const score = (hotel.score / 10).toFixed(2);
-                        return `
-                            <div class="ranking-item" data-hotel-id="${hotel.id}" data-hotel-name="${hotel.name.toLowerCase()}" data-hotel-city="${(hotel.city || '').toLowerCase()}">
-                                <div class="hotel-info">
-                                    <span class="hotel-rank-badge">${String(index + 1).padStart(2, '0')}</span>
-                                    <div>
-                                        <div class="hotel-name">
-                                            <a href="/hotel_detail.html?id=${hotel.id}">${hotel.name || 'Hotel'}</a>
-                                        </div>
-                                        <div class="hotel-city">${hotel.city || ''}</div>
-                                    </div>
-                                </div>
-                                <span class="hotel-score">${score} APS</span>
-                            </div>
-                        `;
-                    }).join('');
-                } else {
-                    bestList.innerHTML = `<div class="no-data">${translations[currentLanguage]?.no_data || 'No data available'}</div>`;
-                }
-
-                const worstRes = await fetch('/api/rankings/worst');
-                const worst = await worstRes.json();
-                
-                const worstList = document.getElementById('worstList');
-                
-                if (worst.length > 0) {
-                    worstList.innerHTML = worst.map((hotel, index) => {
-                        const score = (hotel.score / 10).toFixed(2);
-                        return `
-                            <div class="ranking-item" data-hotel-id="${hotel.id}" data-hotel-name="${hotel.name.toLowerCase()}" data-hotel-city="${(hotel.city || '').toLowerCase()}">
-                                <div class="hotel-info">
-                                    <span class="hotel-rank-badge">${String(index + 1).padStart(2, '0')}</span>
-                                    <div>
-                                        <div class="hotel-name">
-                                            <a href="/hotel_detail.html?id=${hotel.id}" style="color: #ff6b6b;">${hotel.name || 'Hotel'}</a>
-                                        </div>
-                                        <div class="hotel-city">${hotel.city || ''}</div>
-                                    </div>
-                                </div>
-                                <span class="hotel-score" style="color: #ff6b6b;">${score} APS</span>
-                            </div>
-                        `;
-                    }).join('');
-                } else {
-                    worstList.innerHTML = `<div class="no-data">${translations[currentLanguage]?.no_data || 'No data available'}</div>`;
-                }
-
-                hotelsData = [...document.querySelectorAll('.ranking-item')].map(item => ({
-                    element: item,
-                    id: item.dataset.hotelId,
-                    name: item.dataset.hotelName,
-                    city: item.dataset.hotelCity,
-                    text: item.textContent.toLowerCase()
-                }));
-
-            } catch (error) {
-                console.error('Error loading rankings:', error);
-                document.getElementById('bestList').innerHTML = `<div class="no-data">${translations[currentLanguage]?.error || 'Error loading data'}</div>`;
-                document.getElementById('worstList').innerHTML = `<div class="no-data">${translations[currentLanguage]?.error || 'Error loading data'}</div>`;
-            }
-        }
-
-        // ========== SEARCH FUNCTION ==========
-        function performSearch() {
-            const query = document.getElementById('hotelSearch').value.toLowerCase().trim();
-            
-            if (query === "") {
-                alert("Please enter a search parameter.");
-                return;
-            }
-
-            hotelsData.forEach(item => {
-                item.element.classList.remove('highlighted');
-                item.element.style.opacity = '1';
-            });
-
-            const idMatch = hotelsData.find(item => item.id === query);
-            
-            if (idMatch) {
-                idMatch.element.classList.add('highlighted');
-                idMatch.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                return;
-            }
-
-            let found = false;
-            hotelsData.forEach(item => {
-                if (item.name.includes(query) || item.city.includes(query) || item.text.includes(query)) {
-                    item.element.classList.add('highlighted');
-                    found = true;
-                } else {
-                    item.element.style.opacity = '0.3';
-                }
-            });
-
-            if (!found) {
-                alert(`No results found for: "${query}"`);
-                hotelsData.forEach(item => {
-                    item.element.style.opacity = '1';
-                });
-            }
-        }
-
-        // ========== GAUGE CHART ==========
-        function initGaugeChart() {
-            const ctx = document.getElementById('gaugeChart').getContext('2d');
-            
-            if (gaugeChart) {
-                gaugeChart.destroy();
-            }
-            
-            gaugeChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    datasets: [{
-                        data: [85, 15],
-                        backgroundColor: ['#00ff88', '#ff4444'],
-                        borderWidth: 0,
-                        circumference: 180,
-                        rotation: 270
-                    }]
-                },
-                options: {
-                    cutout: '70%',
-                    responsive: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { enabled: false }
-                    }
-                }
-            });
-        }
-
-        // ========== PAYMENT FUNCTIONS ==========
-        function showPaymentModal(plan) {
-            currentPlan = plan;
-            const titles = {
-                'basic': 'Subscribe to Basic Plan - $49/month',
-                'premium': 'Subscribe to Premium Plan - $199/month',
-                'enterprise': 'Contact Sales - Enterprise Plan'
-            };
-            document.getElementById('modalTitle').textContent = titles[plan] || 'Subscribe';
-            document.getElementById('paymentModal').style.display = 'block';
-            
-            // Initialize Stripe Elements
-            const elements = stripe.elements();
-            const card = elements.create('card', {
-                style: {
-                    base: {
-                        color: '#ffffff',
-                        backgroundColor: '#2a2a2a',
-                        '::placeholder': { color: '#666' }
-                    }
-                }
-            });
-            card.mount('#card-element');
-            
-            // Handle form submission
-            document.getElementById('paymentForm').onsubmit = async (e) => {
-                e.preventDefault();
-                
-                const submitBtn = document.getElementById('submitBtn');
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Processing...';
-                
-                // Simulate payment processing
-                setTimeout(() => {
-                    alert(`✅ Payment successful! Welcome to the ${currentPlan} plan.`);
-                    closeModal();
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Pay with Stripe';
-                }, 2000);
-            };
-        }
-
-        function closeModal() {
-            document.getElementById('paymentModal').style.display = 'none';
-        }
-
-        // ========== INITIALIZATION ==========
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('currentDate').textContent = new Date().toISOString().split('T')[0];
-            setLanguage('en');
-            loadRankings();
-            loadSemaphoreData();
-            initGaugeChart();
-            
-            document.getElementById('hotelSearch').addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') {
-                    performSearch();
-                }
-            });
-        });
-
-        // ========== AUTO REFRESH ==========
-        setInterval(() => {
-            loadRankings();
-            loadSemaphoreData();
-        }, 60000);
-    </script>
-</body>
-</html>
+        <div class="rankings-grid" style="grid-template-columns: repeat(3, 1fr);">
+            <div class="ranking-card" style="grid-column: span 3;">
+                <div class="ranking-list" id="newHotelsList" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                    <!-- Hoteles nuevos se gener
