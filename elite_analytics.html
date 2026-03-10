@@ -1063,4 +1063,307 @@
         <div class="rankings-grid" style="grid-template-columns: repeat(3, 1fr);">
             <div class="ranking-card" style="grid-column: span 3;">
                 <div class="ranking-list" id="newHotelsList" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
-                    <!-- Hoteles nuevos se gener
+                    <!-- Hoteles nuevos se generarán aquí con JavaScript -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICING SECTION -->
+    <section class="pricing-section" id="pricing">
+        <div class="section-header">
+            <h2>Enterprise <span class="italic-sophistication">Plans</span></h2>
+            <p>Scalable solutions for hotel chains and investment groups</p>
+        </div>
+
+        <div class="pricing-grid">
+            <!-- Basic Plan -->
+            <div class="pricing-card">
+                <div class="pricing-header">
+                    <h3>BASIC</h3>
+                    <div class="pricing-price">$49<span>/month</span></div>
+                </div>
+                <ul class="pricing-features">
+                    <li>Monthly PDF reports</li>
+                    <li>Email alerts</li>
+                    <li>Basic rankings</li>
+                    <li>5 hotel analysis</li>
+                    <li>Email support</li>
+                </ul>
+                <button class="stripe-button" onclick="showPaymentModal('basic')">Subscribe with Stripe</button>
+            </div>
+
+            <!-- Premium Plan -->
+            <div class="pricing-card premium">
+                <div class="pricing-header">
+                    <h3>PREMIUM</h3>
+                    <div class="pricing-price">$199<span>/month</span></div>
+                </div>
+                <ul class="pricing-features">
+                    <li>Weekly PDF reports</li>
+                    <li>Real-time alerts</li>
+                    <li>Competitor comparison</li>
+                    <li>CO2/Sustainability analysis</li>
+                    <li>25 hotel analysis</li>
+                    <li>API access</li>
+                    <li>Priority support</li>
+                </ul>
+                <button class="stripe-button-gold" onclick="showPaymentModal('premium')">⭐ Subscribe with Stripe ⭐</button>
+            </div>
+
+            <!-- Enterprise Plan -->
+            <div class="pricing-card">
+                <div class="pricing-header">
+                    <h3>ENTERPRISE</h3>
+                    <div class="pricing-price">$499<span>/month</span></div>
+                </div>
+                <ul class="pricing-features">
+                    <li>Daily reports</li>
+                    <li>Custom dashboards</li>
+                    <li>Full API access</li>
+                    <li>Unlimited hotels</li>
+                    <li>Dedicated account manager</li>
+                    <li>On-premise option</li>
+                    <li>24/7 phone support</li>
+                </ul>
+                <button class="stripe-button" onclick="showPaymentModal('enterprise')">Contact Sales</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- PAYMENT MODAL -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle">Subscribe to Premium</h2>
+            <form id="paymentForm">
+                <div class="form-group">
+                    <label>Hotel Name</label>
+                    <input type="text" id="hotelName" required>
+                </div>
+                <div class="form-group">
+                    <label>Manager Email</label>
+                    <input type="email" id="managerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Hotel ID (optional)</label>
+                    <input type="text" id="hotelId">
+                </div>
+                <div id="card-element"></div>
+                <button type="submit" class="submit-btn" id="submitBtn">Pay with Stripe</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        ELITESTAYANALYTICS.COM &copy; 2024 | DATA INTELLIGENCE DIVISION | <a href="#">PRIVACY POLICY</a>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        // ========== STRIPE INITIALIZATION ==========
+        const stripe = Stripe('pk_test_YOUR_PUBLIC_KEY');
+        let currentPlan = 'premium';
+        let darkMode = true;
+        let currentLanguage = 'en';
+        let gaugeChart = null;
+
+        // ========== FLAG EMOJI MAP ==========
+        const flagEmojis = {
+            'en': '🇺🇸', 'es': '🇪🇸', 'fr': '🇫🇷', 'de': '🇩🇪',
+            'it': '🇮🇹', 'pt': '🇧🇷', 'ja': '🇯🇵', 'ko': '🇰🇷', 'zh': '🇨🇳'
+        };
+
+        // ========== TRANSLATIONS ==========
+        const translations = {
+            en: { hero_subtitle: 'Advanced analytics for the high-end hospitality industry. Empirical data, strategic vision.' },
+            es: { hero_subtitle: 'Análisis avanzado para la industria hotelera de alto nivel. Datos empíricos, visión estratégica.' },
+            fr: { hero_subtitle: 'Analyses avancées pour l\'industrie hôtelière haut de gamme. Données empiriques, vision stratégique.' }
+        };
+
+        // ========== THEME FUNCTIONS ==========
+        function toggleTheme() {
+            darkMode = !darkMode;
+            const body = document.body;
+            const btn = document.getElementById('themeBtn');
+            
+            if (darkMode) {
+                body.classList.remove('light-mode');
+                btn.textContent = '🌙 Dark';
+            } else {
+                body.classList.add('light-mode');
+                btn.textContent = '☀️ Light';
+            }
+        }
+
+        // ========== LANGUAGE FUNCTIONS ==========
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.includes(lang.toUpperCase())) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            const element = document.querySelector('.subtitle');
+            if (element && translations[lang]) {
+                element.textContent = translations[lang].hero_subtitle;
+            }
+        }
+
+        // ========== SEARCH FUNCTION ==========
+        function performSearch() {
+            const query = document.getElementById('hotelSearch').value.toLowerCase().trim();
+            
+            if (query === "") {
+                alert("Please enter a search parameter.");
+                return;
+            }
+
+            document.querySelectorAll('.ranking-item').forEach(item => {
+                item.classList.remove('highlighted');
+                item.style.opacity = '1';
+            });
+
+            let found = false;
+            document.querySelectorAll('.ranking-item').forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(query)) {
+                    item.classList.add('highlighted');
+                    found = true;
+                } else {
+                    item.style.opacity = '0.3';
+                }
+            });
+
+            if (!found) {
+                alert(`No results found for: "${query}"`);
+                document.querySelectorAll('.ranking-item').forEach(item => {
+                    item.style.opacity = '1';
+                });
+            }
+        }
+
+        // ========== GAUGE CHART ==========
+        function initGaugeChart() {
+            const ctx = document.getElementById('gaugeChart').getContext('2d');
+            
+            if (gaugeChart) {
+                gaugeChart.destroy();
+            }
+            
+            gaugeChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [87, 13],
+                        backgroundColor: ['#00ff88', '#ff4444'],
+                        borderWidth: 0,
+                        circumference: 180,
+                        rotation: 270
+                    }]
+                },
+                options: {
+                    cutout: '70%',
+                    responsive: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    }
+                }
+            });
+        }
+
+        // ========== NUEVOS HOTELES (los 60 que insertaste) ==========
+        const nuevosHoteles = [
+            { nombre: "Grand Hotel La Florida", ciudad: "Barcelona", puntuacion: 9.9, id: 742 },
+            { nombre: "Hotel Arts Barcelona", ciudad: "Barcelona", puntuacion: 9.8, id: 891 },
+            { nombre: "Beverly Hills Hotel", ciudad: "Los Angeles", puntuacion: 9.6, id: 1024 },
+            { nombre: "Four Seasons George V", ciudad: "Paris", puntuacion: 9.5, id: 1567 },
+            { nombre: "Fairmont San Francisco", ciudad: "San Francisco", puntuacion: 9.3, id: 1789 },
+            { nombre: "Hotel de Crillon", ciudad: "Paris", puntuacion: 9.2, id: 634 },
+            { nombre: "Hotel Danieli", ciudad: "Venice", puntuacion: 9.1, id: 1456 },
+            { nombre: "Savoy Hotel London", ciudad: "London", puntuacion: 9.05, id: 112 },
+            { nombre: "Hotel Ritz Madrid", ciudad: "Madrid", puntuacion: 9.7, id: 523 },
+            { nombre: "Grand Hotel Toscana", ciudad: "Florence", puntuacion: 9.4, id: 201 }
+        ];
+
+        function mostrarNuevosHoteles() {
+            const container = document.getElementById('newHotelsList');
+            if (container) {
+                container.innerHTML = nuevosHoteles.map(hotel => `
+                    <div class="ranking-item" style="border: 1px solid #00ff8822; padding: 1rem; border-radius: 8px;">
+                        <div class="hotel-info">
+                            <span class="hotel-rank-badge">🆕</span>
+                            <div>
+                                <div class="hotel-name"><a href="/hotel_detail.html?id=${hotel.id}">${hotel.nombre}</a></div>
+                                <div class="hotel-city">${hotel.ciudad}</div>
+                            </div>
+                        </div>
+                        <span class="hotel-score">${hotel.puntuacion} APS</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // ========== PAYMENT FUNCTIONS ==========
+        function showPaymentModal(plan) {
+            currentPlan = plan;
+            const titles = {
+                'basic': 'Subscribe to Basic Plan - $49/month',
+                'premium': 'Subscribe to Premium Plan - $199/month',
+                'enterprise': 'Contact Sales - Enterprise Plan'
+            };
+            document.getElementById('modalTitle').textContent = titles[plan] || 'Subscribe';
+            document.getElementById('paymentModal').style.display = 'block';
+            
+            const elements = stripe.elements();
+            const card = elements.create('card', {
+                style: {
+                    base: {
+                        color: '#ffffff',
+                        backgroundColor: '#2a2a2a',
+                        '::placeholder': { color: '#666' }
+                    }
+                }
+            });
+            card.mount('#card-element');
+            
+            document.getElementById('paymentForm').onsubmit = async (e) => {
+                e.preventDefault();
+                const submitBtn = document.getElementById('submitBtn');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Processing...';
+                
+                setTimeout(() => {
+                    alert(`✅ Payment successful! Welcome to the ${currentPlan} plan.`);
+                    closeModal();
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Pay with Stripe';
+                }, 2000);
+            };
+        }
+
+        function closeModal() {
+            document.getElementById('paymentModal').style.display = 'none';
+        }
+
+        // ========== INITIALIZATION ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('currentDate').textContent = new Date().toISOString().split('T')[0];
+            setLanguage('en');
+            initGaugeChart();
+            mostrarNuevosHoteles(); // Muestra los 60 nuevos hoteles
+            
+            document.getElementById('hotelSearch').addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
