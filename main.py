@@ -5,67 +5,73 @@ import threading
 import logging
 from dotenv import load_dotenv
 
-# --- CONFIGURACIÓN DE RUTAS ---
+# --- CONFIGURACIÓN DE PATHS ---
+# Forzamos a Python a mirar en la raíz y en la carpeta 'backend'
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-if BASE_DIR not in sys.path:
-    sys.path.insert(0, BASE_DIR)
-
-# --- Logs ---
-LOG_DIR = os.path.join(BASE_DIR, 'logs')
-os.makedirs(LOG_DIR, exist_ok=True)
+sys.path.insert(0, BASE_DIR)
+if os.path.exists(os.path.join(BASE_DIR, 'backend')):
+    sys.path.insert(0, os.path.join(BASE_DIR, 'backend'))
 
 load_dotenv()
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler(os.path.join(LOG_DIR, 'elitestayanalitycs.log')),
-        logging.StreamHandler()
-    ]
-)
+# Logger
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# --- IMPORTACIÓN DE LA APP ---
+# --- IMPORTACIÓN DINÁMICA DE LA APP ---
+app = None
+
+# Intento 1: Importar server.py de la raíz (el más probable según tu lista)
 try:
-    # Como server.py está en la raíz, la importación es directa
     from server import app
-    logger.info("✅ App importada exitosamente desde server.py")
-except ImportError as e:
-    logger.error(f"❌ ERROR FATAL: No se pudo encontrar server.py o la variable 'app': {e}")
-    sys.exit(1)
+    logger.info("✅ App cargada desde la raíz (server.py)")
+except ImportError:
+    # Intento 2: Importar desde la carpeta backend
+    try:
+        from backend.api.server import app
+        logger.info("✅ App cargada desde backend.api.server")
+    except ImportError as e:
+        logger.error(f"❌ No se encontró 'app' en ninguna ubicación: {e}")
+        sys.exit(1)
 
 # --- INICIALIZACIÓN ---
 def initialize():
-    """Ejecuta tareas de inicialización (base de datos, scheduler)"""
+    """Inicializa DB y Scheduler buscando los archivos donde sea que estén"""
     if os.environ.get('INITIALIZED') == 'true':
         return
-    
-    logger.info("🚀 INICIANDO CONFIGURACIÓN DE ELITESTAY")
-    
+
     try:
-        # Importamos directamente desde la raíz
-        from schema import init_database
+        # Intentar importar schema e iniciar DB
+        try:
+            from schema import init_database
+        except ImportError:
+            from backend.database.schema import init_database
+        
         init_database()
         logger.info("✅ Base de datos inicializada")
-        
-        from scheduler import Scheduler
+
+        # Intentar importar scheduler e iniciar hilo
+        try:
+            from scheduler import Scheduler
+        except ImportError:
+            from backend.automated.scheduler import Scheduler
+            
         scheduler = Scheduler()
-        scheduler_thread = threading.Thread(target=scheduler.run, daemon=True)
-        scheduler_thread.start()
-        logger.info("⏰ Programador iniciado")
+        threading.Thread(target=scheduler.run, daemon=True).start()
+        logger.info("⏰ Scheduler iniciado")
         
         os.environ['INITIALIZED'] = 'true'
     except Exception as e:
-        logger.error(f"❌ Error en inicialización: {e}")
+        logger.error(f"⚠️ Error en inicialización: {e}")
 
-# Ejecutamos la inicialización antes de que Gunicorn tome el control
+# Ejecutar inicio
 initialize()
 
-# --- PARA GUNICORN ---
+# Referencia para Gunicorn
 application = app
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(host='0.0.0.0', port=port)
+
 
