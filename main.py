@@ -1,3 +1,13 @@
+from flask import Flask, jsonify
+import os
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return "Servidor activo"
+
+# Aquí pega el resto de tus rutas @app.route...
 #!/usr/bin/env python3
 # main.py - Versión MÍNIMA para prueba
 
@@ -24,5 +34,6 @@ application = app  # Alias por compatibilidad
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
+
 
 
