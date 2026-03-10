@@ -123,7 +123,7 @@ class GoogleReviewsCollector:
         
         headers = {
             'X-Goog-Api-Key': self.api_key,
-            'X-Goog-FieldMask': 'id,displayName,rating,userRatingCount,reviews,regularOpeningHours,websiteUri,internationalPhoneNumber,formattedAddress'
+            'X-Goog-FieldMask': 'id,displayName,rating,userRatingCount,reviews'
         }
         
         try:
@@ -169,7 +169,7 @@ class GoogleReviewsCollector:
     
     def guardar_resena(self, hotel_id, review):
         """
-        Guarda una reseña en la base de datos
+        Guarda una reseña en la base de datos (versión adaptada a tu tabla)
         """
         try:
             # Verificar si ya existe
@@ -177,10 +177,13 @@ class GoogleReviewsCollector:
             if not review_text:
                 return
             
+            # Extraer solo los primeros 200 caracteres para la comparación
+            review_short = review_text[:200]
+            
             self.cursor.execute('''
                 SELECT id FROM complaints 
                 WHERE hotel_id = ? AND source = ? AND complaint_text = ?
-            ''', (hotel_id, 'google_reviews', review_text[:200]))
+            ''', (hotel_id, 'google_reviews', review_short))
             
             if not self.cursor.fetchone():
                 # Determinar severidad basada en rating
@@ -196,18 +199,15 @@ class GoogleReviewsCollector:
                 publish_time = review.get('publishTime', '')
                 review_date = publish_time[:10] if publish_time else datetime.now().strftime('%Y-%m-%d')
                 
-                # Guardar nueva reseña
+                # Guardar nueva reseña (SOLO con las columnas que existen en tu tabla)
                 self.cursor.execute('''
                     INSERT INTO complaints 
-                    (hotel_id, source, complaint_text, complaint_text_original,
-                     language_detected, complaint_date, rating, severity, processed)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)
+                    (hotel_id, source, complaint_text, complaint_date, rating, severity, processed)
+                    VALUES (?, ?, ?, ?, ?, ?, 0)
                 ''', (
                     hotel_id,
                     'google_reviews',
                     review_text,
-                    review_text,
-                    review.get('languageCode', 'en'),
                     review_date,
                     rating,
                     severidad
