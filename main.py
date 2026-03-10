@@ -1,41 +1,35 @@
 #!/usr/bin/env python3
-# main.py - Busca server.py en raíz y en backend/api
+# main.py - Versión final para importar server.py
 
 import os
 import sys
-import logging
 
-# Configurar logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
-
-# Agregar rutas al path
+# Agregar la ruta del proyecto para que Python encuentre los módulos
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, BASE_DIR)
+sys.path.insert(0, os.path.join(BASE_DIR, 'backend'))
 sys.path.insert(0, os.path.join(BASE_DIR, 'backend', 'api'))
 
-# --- INTENTO 1: Importar desde la raíz ---
+# Importar la aplicación Flask
 try:
-    from server import app
-    logger.info("✅ App importada desde server.py (raíz)")
+    # Intento 1: Importar desde backend.api.server (estructura profesional)
+    from backend.api.server import app
+    print("✅ App importada desde backend.api.server")
 except ImportError:
-    logger.warning("⚠️ No se encontró server.py en la raíz")
-    
-    # --- INTENTO 2: Importar desde backend/api ---
     try:
-        from backend.api.server import app
-        logger.info("✅ App importada desde backend.api.server")
+        # Intento 2: Importar directamente (si server.py está en la raíz)
+        from server import app
+        print("✅ App importada desde server.py (raíz)")
     except ImportError as e:
-        logger.error(f"❌ No se encontró server.py en ninguna ubicación: {e}")
-        logger.error(f"📁 Python busca en: {sys.path}")
+        print(f"❌ Error crítico: No se pudo importar la app - {e}")
+        print(f"📁 Python busca en: {sys.path}")
         sys.exit(1)
 
-# Para Gunicorn
+# Para Gunicorn (compatibilidad máxima)
 application = app
-app = application
+
 if __name__ == '__main__':
-    port = int(os.getenv('PORT', 10000))
-    logger.info(f"Iniciando servidor en puerto {port}")
-    app.run(host='0.0.0.0', port=port)
+    port = int(os.getenv('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
 
 
