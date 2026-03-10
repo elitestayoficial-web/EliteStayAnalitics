@@ -6,15 +6,20 @@ import threading
 import logging
 from dotenv import load_dotenv
 
+# === NUEVO: Crear el directorio de logs si no existe ===
+LOG_DIR = 'logs'
+os.makedirs(LOG_DIR, exist_ok=True)
+# =====================================================
+
 # Cargar variables de entorno
 load_dotenv()
 
-# Configurar logging
+# Configurar logging (ahora con ruta segura)
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('logs/elitestayanalitycs.log'),
+        logging.FileHandler(os.path.join(LOG_DIR, 'elitestayanalitycs.log')),
         logging.StreamHandler()
     ]
 )
@@ -49,7 +54,8 @@ def main():
     logger.info("Presiona Ctrl+C para detener\n")
     
     try:
-        app.run(host='0.0.0.0', port=port, debug=True)
+        # IMPORTANTE: En producción, debug debe estar en False
+        app.run(host='0.0.0.0', port=port, debug=False)
     except KeyboardInterrupt:
         logger.info("👋 Servidor detenido por el usuario")
     except Exception as e:
