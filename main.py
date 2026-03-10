@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# main.py - Aplicación Flask completa (sin importaciones externas)
+# main.py - Aplicación Flask completa (Sin importaciones externas de server.py)
 
 import os
 import sys
@@ -12,15 +12,18 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-# --- Configuración de la base de datos (simplificada) ---
-DB_PATH = 'data/elitestayanalitycs.db'
+# --- Configuración de la base de datos ---
+# Asegurar que el directorio para la base de datos existe
+DB_DIR = 'data'
+os.makedirs(DB_DIR, exist_ok=True)
+DB_PATH = os.path.join(DB_DIR, 'elitestayanalitycs.db')
 
 def get_db():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
-# --- RUTAS DE LA API ---
+# --- RUTAS DE LA API (Copia de tu server.py) ---
 
 @app.route('/')
 def home():
@@ -170,16 +173,17 @@ def serve_elite():
 def serve_static(path):
     return send_from_directory('frontend/templates', path)
 
-# --- PARA GUNICORN Y DESARROLLO LOCAL ---
-# Esta variable es la que Gunicorn buscará (por eso se llama 'app')
-# y también se usa en el bloque `if __name__ == '__main__'` para desarrollo local.
-application = app  # Alias por compatibilidad
+# --- PUNTO DE ENTRADA PARA GUNICORN Y DESARROLLO LOCAL ---
+# Gunicorn buscará la variable 'app' (definida arriba).
+# Creamos un alias por compatibilidad, aunque no es estrictamente necesario.
+application = app
 
 if __name__ == '__main__':
-    # Usar el puerto de la variable de entorno PORT (Render lo establece automáticamente)
+    # Usar el puerto de la variable de entorno PORT (Render lo inyecta automáticamente)
     port = int(os.getenv('PORT', 10000))
     print(f"Iniciando servidor de desarrollo en puerto {port}...")
-    # Importante: Vincular a 0.0.0.0 para que Render pueda enrutar el tráfico
+    # ¡CRUCIAL! Vincular a 0.0.0.0 para que Render pueda enrutar el tráfico.
     app.run(host='0.0.0.0', port=port)
+
 
 
