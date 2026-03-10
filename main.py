@@ -52,7 +52,8 @@ initialize_services()
 # Esta línea es la que está fallando. Aseguramos que la variable se llame 'app'
 # al nivel principal del archivo.
 application = app 
-
+app = application
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
+
