@@ -16,6 +16,7 @@ import sqlite3
 from datetime import datetime
 from flask import Flask, jsonify, send_from_directory, request
 from flask_cors import CORS
+import requests  # <-- YA ESTABA, PERFECTO
 
 # --- Crear la aplicación Flask ---
 app = Flask(__name__)
@@ -282,7 +283,6 @@ init_sample_data()
 # ========== GOOGLE PLACES API ==========
 import googlemaps
 from dotenv import load_dotenv
-import requests
 
 # Cargar API key
 load_dotenv()
@@ -290,36 +290,60 @@ GOOGLE_PLACES_API_KEY = os.getenv('GOOGLE_PLACES_API_KEY')
 
 if GOOGLE_PLACES_API_KEY:
     gmaps = googlemaps.Client(key=GOOGLE_PLACES_API_KEY)
-    print("✅ Google Maps API conectada")
+    print("✅ Google Maps API conectada (legacy)")
 else:
     gmaps = None
     print("⚠️ Google Maps API no configurada")
 
+# ========== NUEVA FUNCIÓN: BUSCAR HOTELES EN GOOGLE PLACES (API 2025) ==========
 @app.route('/api/google/places')
 def buscar_google_places():
-    """Busca hoteles en Google Places"""
+    """Busca hoteles en Google Places usando la NUEVA API (POST) - Actualizada Marzo 2025"""
     query = request.args.get('q', '')
     
     if not query:
         return jsonify({"error": "Se requiere parámetro 'q'"}), 400
     
-    if not gmaps:
+    if not GOOGLE_PLACES_API_KEY:
         return jsonify({"error": "Google Maps no configurado"}), 500
     
     try:
-        # Buscar hoteles en la ciudad
-        lugares = gmaps.places(query=f"hotels in {query}")
+        # NUEVA URL de la API (v1)
+        url = "https://places.googleapis.com/v1/places:searchText"
+        
+        # Headers requeridos por la nueva API
+        headers = {
+            'Content-Type': 'application/json',
+            'X-Goog-Api-Key': GOOGLE_PLACES_API_KEY,
+            # FieldMask para pedir SOLO los campos que necesitas
+            'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.rating,places.userRatingCount,places.priceLevel'
+        }
+        
+        # Body de la petición (es POST, no GET)
+        body = {
+            "textQuery": f"hotels in {query}",
+            "pageSize": 15
+        }
+        
+        # Hacer la petición POST
+        response = requests.post(url, json=body, headers=headers)
+        
+        if response.status_code != 200:
+            return jsonify({"error": f"Error Google API: {response.status_code}"}), response.status_code
+        
+        data = response.json()
+        lugares = data.get('places', [])
         
         resultados = []
-        for lugar in lugares.get('results', [])[:15]:
+        for lugar in lugares:
             hotel = {
-                'id': lugar['place_id'],
-                'nombre': lugar.get('name', ''),
-                'direccion': lugar.get('formatted_address', ''),
+                'id': lugar.get('id', ''),
+                'nombre': lugar.get('displayName', {}).get('text', ''),
+                'direccion': lugar.get('formattedAddress', ''),
                 'ciudad': query.title(),
                 'puntuacion': lugar.get('rating', 0),
-                'total_resenas': lugar.get('user_ratings_total', 0),
-                'precio': lugar.get('price_level', 'N/A'),
+                'total_resenas': lugar.get('userRatingCount', 0),
+                'precio': lugar.get('priceLevel', 'N/A'),
                 'source': 'google'
             }
             resultados.append(hotel)
@@ -376,6 +400,48 @@ def review_summary():
                 'mensaje': 'No hay suficientes reseñas para generar un resumen automático'
             }), 200
             
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# ========== NUEVA FUNCIÓN: DETALLES DE HOTEL (API 2025) ==========
+@app.route('/api/google/place/<place_id>')
+def detalle_google_place(place_id):
+    """Obtiene detalles COMPLETOS de un hotel usando la NUEVA API"""
+    if not GOOGLE_PLACES_API_KEY:
+        return jsonify({"error": "Google Maps no configurado"}), 500
+    
+    try:
+        # NUEVA URL para obtener detalles
+        url = f"https://places.googleapis.com/v1/places/{place_id}"
+        
+        headers = {
+            'Content-Type': 'application/json',
+            'X-Goog-Api-Key': GOOGLE_PLACES_API_KEY,
+            'X-Goog-FieldMask': 'id,displayName,formattedAddress,rating,userRatingCount,priceLevel,reviews,websiteUri,nationalPhoneNumber'
+        }
+        
+        response = requests.get(url, headers=headers)
+        
+        if response.status_code != 200:
+            return jsonify({"error": f"Error Google API: {response.status_code}"}), response.status_code
+        
+        data = response.json()
+        
+        # Transformar al formato que espera tu frontend
+        resultado = {
+            'place_id': data.get('id', ''),
+            'nombre': data.get('displayName', {}).get('text', ''),
+            'direccion': data.get('formattedAddress', ''),
+            'puntuacion': data.get('rating', 0),
+            'total_resenas': data.get('userRatingCount', 0),
+            'precio': data.get('priceLevel', 'N/A'),
+            'website': data.get('websiteUri', ''),
+            'telefono': data.get('nationalPhoneNumber', ''),
+            'reviews': data.get('reviews', [])
+        }
+        
+        return jsonify(resultado)
+        
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -439,24 +505,10 @@ def buscar_hoteles_locales(query):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/api/google/place/<place_id>')
-def detalle_google_place(place_id):
-    """Obtiene detalles COMPLETOS incluyendo reseñas individuales"""
-    if not gmaps:
-        return jsonify({"error": "Google Maps no configurado"}), 500
-    
-    try:
-        detalles = gmaps.place(place_id, 
-            fields=['name', 'rating', 'user_ratings_total', 'formatted_address', 
-                   'price_level', 'reviews', 'website', 'international_phone_number'])
-        
-        return jsonify(detalles.get('result', {}))
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
