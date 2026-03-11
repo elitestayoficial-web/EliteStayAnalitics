@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital@1&family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
     <script src="https://js.stripe.com/v3/"></script>
     <style>
+        /* ===== TUS ESTILOS ORIGINALES (COMPLETOS) ===== */
         :root {
             --primary-glow: #00ff88;
             --science-blue: #00ccff;
@@ -26,124 +27,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-// ========== BUSCADOR CON API ==========
-async function performSearch() {
-    const query = document.getElementById('hotelSearch').value.trim();
-    
-    if (query === "") {
-        alert("Please enter a hotel name, city, or ID");
-        return;
-    }
 
-    // Mostrar indicador de carga
-    const searchBtn = document.querySelector('.search-btn');
-    const originalText = searchBtn.textContent;
-    searchBtn.textContent = '🔍 BUSCANDO...';
-    searchBtn.disabled = true;
-
-    try {
-        // Llamar a la API para buscar hoteles
-        const response = await fetch(`/api/hoteles/buscar?q=${encodeURIComponent(query)}`);
-        const resultados = await response.json();
-        
-        // Limpiar resultados anteriores
-        const resultadosDiv = document.getElementById('resultados-busqueda');
-        if (resultadosDiv) resultadosDiv.remove();
-        
-        // Crear contenedor de resultados
-        const contenedor = document.createElement('div');
-        contenedor.id = 'resultados-busqueda';
-        contenedor.style.position = 'fixed';
-        contenedor.style.top = '200px';
-        contenedor.style.left = '50%';
-        contenedor.style.transform = 'translateX(-50%)';
-        contenedor.style.width = '80%';
-        contenedor.style.maxWidth = '800px';
-        contenedor.style.maxHeight = '70vh';
-        contenedor.style.overflowY = 'auto';
-        contenedor.style.backgroundColor = '#0a0a0a';
-        contenedor.style.border = '1px solid #00ff88';
-        contenedor.style.borderRadius = '10px';
-        contenedor.style.padding = '20px';
-        contenedor.style.zIndex = '10000';
-        contenedor.style.boxShadow = '0 0 30px rgba(0,255,136,0.3)';
-        
-        if (resultados.length > 0) {
-            contenedor.innerHTML = `
-                <h3 style="color: #00ff88; margin-bottom: 15px;">🔍 Resultados para: "${query}"</h3>
-                ${resultados.map(hotel => `
-                    <div class="ranking-item" style="margin-bottom: 10px; padding: 10px; border-bottom: 1px solid #333;">
-                        <div class="hotel-info">
-                            <div>
-                                <div class="hotel-name" style="color: #fff; font-size: 1.1rem;">
-                                    ${hotel.nombre}
-                                    ${hotel.source === 'google' ? '<span style="color: #4285F4; font-size: 0.8rem; margin-left: 5px;">📊 Google</span>' : ''}
-                                </div>
-                                <div class="hotel-city" style="color: #666;">
-                                    ${hotel.ciudad} • ${hotel.pais || ''}
-                                </div>
-                                <div style="font-size: 0.8rem; color: #888; margin-top: 5px;">
-                                    📝 ${hotel.total_resenas} reseñas • 💰 $${hotel.precio_medio || 'N/A'}
-                                </div>
-                            </div>
-                        </div>
-                        <div style="text-align: right;">
-                            <span class="hotel-score" style="font-size: 1.2rem;">${hotel.puntuacion} ⭐</span>
-                            <br>
-                            <small style="color: #666;">${hotel.region}</small>
-                        </div>
-                    </div>
-                `).join('')}
-                <button onclick="cerrarResultados()" style="
-                    background: #00ff88;
-                    color: #050505;
-                    border: none;
-                    padding: 10px 20px;
-                    border-radius: 5px;
-                    margin-top: 15px;
-                    cursor: pointer;
-                    width: 100%;
-                    font-weight: bold;
-                ">CERRAR</button>
-            `;
-        } else {
-            contenedor.innerHTML = `
-                <h3 style="color: #ff6b6b;">❌ No se encontraron hoteles para "${query}"</h3>
-                <p style="color: #888;">Sugerencias:</p>
-                <ul style="color: #aaa;">
-                    <li>Prueba con otra ciudad (Madrid, Paris, New York)</li>
-                    <li>Prueba con nombre de hotel (Ritz, Hilton, Marriott)</li>
-                    <li>Verifica la ortografía</li>
-                </ul>
-                <button onclick="cerrarResultados()" style="
-                    background: #00ff88;
-                    color: #050505;
-                    border: none;
-                    padding: 10px 20px;
-                    border-radius: 5px;
-                    margin-top: 15px;
-                    cursor: pointer;
-                    width: 100%;
-                ">CERRAR</button>
-            `;
-        }
-        
-        document.body.appendChild(contenedor);
-        
-    } catch (error) {
-        console.error('Error en búsqueda:', error);
-        alert('Error al buscar. Por favor intenta de nuevo.');
-    } finally {
-        // Restaurar botón
-        searchBtn.textContent = originalText;
-        searchBtn.disabled = false;
-    }
-}
-
-function cerrarResultados() {
-    const div = document.getElementById('resultados-busqueda');
-    if (div) div.remove();
-}
         body {
             font-family: 'Montserrat', sans-serif;
             background: var(--dark-bg);
@@ -156,7 +40,6 @@ function cerrarResultados() {
             background-size: 50px 50px;
         }
 
-        /* Light mode */
         body.light-mode {
             --dark-bg: #f8f9fa;
             --card-bg: #ffffff;
@@ -241,7 +124,6 @@ function cerrarResultados() {
             color: var(--primary-glow);
         }
 
-        /* Navbar */
         .navbar {
             background: rgba(5, 5, 5, 0.95);
             padding: 1.5rem 5%;
@@ -343,7 +225,6 @@ function cerrarResultados() {
             100% { opacity: 1; transform: scale(1); }
         }
 
-        /* Hero Section */
         .hero {
             text-align: center;
             padding: 8rem 5% 4rem;
@@ -365,7 +246,6 @@ function cerrarResultados() {
             margin: 0 auto 3rem;
         }
 
-        /* Search Bar */
         .search-container {
             max-width: 800px;
             margin: 0 auto 4rem;
@@ -429,7 +309,6 @@ function cerrarResultados() {
             letter-spacing: 2px;
         }
 
-        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -464,7 +343,6 @@ function cerrarResultados() {
             letter-spacing: 1px;
         }
 
-        /* Semaphore Section */
         .semaphore-section {
             padding: 4rem 5%;
             max-width: 1200px;
@@ -576,7 +454,6 @@ function cerrarResultados() {
             color: #fff;
         }
 
-        /* Rankings Section */
         .rankings-section {
             padding: 6rem 5%;
             max-width: 1200px;
@@ -710,7 +587,6 @@ function cerrarResultados() {
         .hotel-semaphore.red { background: var(--semaphore-red); box-shadow: 0 0 10px var(--semaphore-red); }
         .hotel-semaphore.green { background: var(--semaphore-green); box-shadow: 0 0 10px var(--semaphore-green); }
 
-        /* Gauge Chart */
         .gauge-container {
             text-align: center;
             margin: 2rem 0;
@@ -727,7 +603,6 @@ function cerrarResultados() {
             margin: 0 auto;
         }
 
-        /* Pricing Section */
         .pricing-section {
             padding: 6rem 5%;
             background: linear-gradient(135deg, #0a0a0a 0%, #050505 100%);
@@ -834,7 +709,6 @@ function cerrarResultados() {
             box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3);
         }
 
-        /* Footer */
         .footer {
             padding: 4rem 5%;
             border-top: 1px solid #1a1a1a;
@@ -867,7 +741,6 @@ function cerrarResultados() {
             font-style: italic;
         }
 
-        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -982,7 +855,8 @@ function cerrarResultados() {
         <div class="search-container">
             <div class="search-wrapper">
                 <input type="text" id="hotelSearch" class="search-input" placeholder="Search by hotel name, city, or ID...">
-                <button class="search-btn" onclick="performSearch()">ANALYZE</button>
+                <!-- 👇 BOTÓN CORREGIDO: LE QUITÉ EL onclick="performSearch()" -->
+                <button class="search-btn">ANALYZE</button>
             </div>
             <div class="search-hint">
                 DATABASE UPDATED: <span id="currentDate"></span> UTC
@@ -1009,7 +883,6 @@ function cerrarResultados() {
         </div>
     </section>
 
-    <!-- SEMAPHORE SECTION -->
     <section class="semaphore-section" id="semaphore">
         <div class="section-header">
             <h2>Risk <span class="italic-sophistication">Semaphore</span></h2>
@@ -1017,7 +890,6 @@ function cerrarResultados() {
         </div>
 
         <div class="semaphore-grid" id="semaphoreGrid">
-            <!-- Yellow Alert Card -->
             <div class="semaphore-card yellow">
                 <div class="semaphore-header">
                     <span class="semaphore-icon">🟡</span>
@@ -1025,18 +897,10 @@ function cerrarResultados() {
                 </div>
                 <div class="semaphore-count" id="yellowCount">4</div>
                 <ul class="semaphore-list" id="yellowList">
-                    <li class="semaphore-item">
-                        <span>Hotel Ritz Madrid</span>
-                        <span class="semaphore-badge yellow">3 issues</span>
-                    </li>
-                    <li class="semaphore-item">
-                        <span>Marriott Paris</span>
-                        <span class="semaphore-badge yellow">2 issues</span>
-                    </li>
+                    <li class="semaphore-item"><span>Hotel Ritz Madrid</span><span class="semaphore-badge yellow">3 issues</span></li>
+                    <li class="semaphore-item"><span>Marriott Paris</span><span class="semaphore-badge yellow">2 issues</span></li>
                 </ul>
             </div>
-
-            <!-- Orange Incident Card -->
             <div class="semaphore-card orange">
                 <div class="semaphore-header">
                     <span class="semaphore-icon">🟠</span>
@@ -1044,14 +908,9 @@ function cerrarResultados() {
                 </div>
                 <div class="semaphore-count" id="orangeCount">2</div>
                 <ul class="semaphore-list" id="orangeList">
-                    <li class="semaphore-item">
-                        <span>Hilton Downtown</span>
-                        <span class="semaphore-badge orange">4 issues</span>
-                    </li>
+                    <li class="semaphore-item"><span>Hilton Downtown</span><span class="semaphore-badge orange">4 issues</span></li>
                 </ul>
             </div>
-
-            <!-- Red Crisis Card -->
             <div class="semaphore-card red">
                 <div class="semaphore-header">
                     <span class="semaphore-icon">🔴</span>
@@ -1059,20 +918,13 @@ function cerrarResultados() {
                 </div>
                 <div class="semaphore-count" id="redCount">3</div>
                 <ul class="semaphore-list" id="redList">
-                    <li class="semaphore-item">
-                        <span>Hotel Problemas</span>
-                        <span class="semaphore-badge red">5 issues</span>
-                    </li>
-                    <li class="semaphore-item">
-                        <span>Hotel Incidentes</span>
-                        <span class="semaphore-badge red">4 issues</span>
-                    </li>
+                    <li class="semaphore-item"><span>Hotel Problemas</span><span class="semaphore-badge red">5 issues</span></li>
+                    <li class="semaphore-item"><span>Hotel Incidentes</span><span class="semaphore-badge red">4 issues</span></li>
                 </ul>
             </div>
         </div>
     </section>
 
-    <!-- GAUGE CHART SECTION -->
     <section class="rankings-section">
         <div class="gauge-container">
             <h3 class="gauge-title">Brand Consistency Index</h3>
@@ -1081,7 +933,6 @@ function cerrarResultados() {
         </div>
     </section>
 
-    <!-- RANKINGS SECTION -->
     <section class="rankings-section" id="rankings">
         <div class="section-header">
             <h2>Global <span class="italic-sophistication">Performance</span> Index</h2>
@@ -1089,81 +940,42 @@ function cerrarResultados() {
         </div>
 
         <div class="rankings-grid">
-            <!-- Best Hotels Card -->
             <div class="ranking-card">
                 <div class="ranking-header">
                     <span class="ranking-icon">🏆</span>
                     <h3>TOP PERFORMERS</h3>
                 </div>
                 <div class="ranking-list" id="bestList">
-                    <div class="ranking-item" data-hotel-id="742" data-hotel-name="gran hotel la florida" data-hotel-city="barcelona">
-                        <div class="hotel-info">
-                            <span class="hotel-rank-badge">01</span>
-                            <div>
-                                <div class="hotel-name">Gran Hotel La Florida</div>
-                                <div class="hotel-city">Barcelona</div>
-                            </div>
-                        </div>
+                    <div class="ranking-item" data-hotel-id="742">
+                        <div class="hotel-info"><span class="hotel-rank-badge">01</span><div><div class="hotel-name">Gran Hotel La Florida</div><div class="hotel-city">Barcelona</div></div></div>
                         <span class="hotel-score">9.90 APS</span>
                     </div>
-                    <div class="ranking-item" data-hotel-id="891" data-hotel-name="hotel arts barcelona" data-hotel-city="barcelona">
-                        <div class="hotel-info">
-                            <span class="hotel-rank-badge">02</span>
-                            <div>
-                                <div class="hotel-name">Hotel Arts Barcelona</div>
-                                <div class="hotel-city">Barcelona</div>
-                            </div>
-                        </div>
+                    <div class="ranking-item" data-hotel-id="891">
+                        <div class="hotel-info"><span class="hotel-rank-badge">02</span><div><div class="hotel-name">Hotel Arts Barcelona</div><div class="hotel-city">Barcelona</div></div></div>
                         <span class="hotel-score">9.80 APS</span>
                     </div>
-                    <div class="ranking-item" data-hotel-id="523" data-hotel-name="hotel ritz madrid" data-hotel-city="madrid">
-                        <div class="hotel-info">
-                            <span class="hotel-rank-badge">03</span>
-                            <div>
-                                <div class="hotel-name">Hotel Ritz Madrid</div>
-                                <div class="hotel-city">Madrid</div>
-                            </div>
-                        </div>
+                    <div class="ranking-item" data-hotel-id="523">
+                        <div class="hotel-info"><span class="hotel-rank-badge">03</span><div><div class="hotel-name">Hotel Ritz Madrid</div><div class="hotel-city">Madrid</div></div></div>
                         <span class="hotel-score">9.70 APS</span>
                     </div>
                 </div>
             </div>
-
-            <!-- Worst Hotels Card -->
             <div class="ranking-card worst">
                 <div class="ranking-header">
                     <span class="ranking-icon">⚠️</span>
                     <h3>UNDERPERFORMING</h3>
                 </div>
                 <div class="ranking-list" id="worstList">
-                    <div class="ranking-item" data-hotel-id="1560" data-hotel-name="hotel regente" data-hotel-city="madrid">
-                        <div class="hotel-info">
-                            <span class="hotel-rank-badge">01</span>
-                            <div>
-                                <div class="hotel-name">Hotel Regente</div>
-                                <div class="hotel-city">Madrid</div>
-                            </div>
-                        </div>
+                    <div class="ranking-item" data-hotel-id="1560">
+                        <div class="hotel-info"><span class="hotel-rank-badge">01</span><div><div class="hotel-name">Hotel Regente</div><div class="hotel-city">Madrid</div></div></div>
                         <span class="hotel-score" style="color: #ff6b6b;">4.50 APS</span>
                     </div>
-                    <div class="ranking-item" data-hotel-id="423" data-hotel-name="grand palladium" data-hotel-city="barcelona">
-                        <div class="hotel-info">
-                            <span class="hotel-rank-badge">02</span>
-                            <div>
-                                <div class="hotel-name">Grand Palladium</div>
-                                <div class="hotel-city">Barcelona</div>
-                            </div>
-                        </div>
+                    <div class="ranking-item" data-hotel-id="423">
+                        <div class="hotel-info"><span class="hotel-rank-badge">02</span><div><div class="hotel-name">Grand Palladium</div><div class="hotel-city">Barcelona</div></div></div>
                         <span class="hotel-score" style="color: #ff6b6b;">4.20 APS</span>
                     </div>
-                    <div class="ranking-item" data-hotel-id="789" data-hotel-name="hotel seattle downtown" data-hotel-city="seattle">
-                        <div class="hotel-info">
-                            <span class="hotel-rank-badge">03</span>
-                            <div>
-                                <div class="hotel-name">Hotel Seattle Downtown</div>
-                                <div class="hotel-city">Seattle</div>
-                            </div>
-                        </div>
+                    <div class="ranking-item" data-hotel-id="789">
+                        <div class="hotel-info"><span class="hotel-rank-badge">03</span><div><div class="hotel-name">Hotel Seattle Downtown</div><div class="hotel-city">Seattle</div></div></div>
                         <span class="hotel-score" style="color: #ff6b6b;">4.50 APS</span>
                     </div>
                 </div>
@@ -1171,7 +983,6 @@ function cerrarResultados() {
         </div>
     </section>
 
-    <!-- SECCIÓN DE NUEVOS HOTELES (60 nuevos) -->
     <section class="rankings-section" style="padding-top: 0;">
         <div class="section-header">
             <h2>Recently <span class="italic-sophistication">Added</span></h2>
@@ -1179,93 +990,43 @@ function cerrarResultados() {
         </div>
         <div class="rankings-grid" style="grid-template-columns: repeat(3, 1fr);">
             <div class="ranking-card" style="grid-column: span 3;">
-                <div class="ranking-list" id="newHotelsList" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
-                    <!-- Hoteles nuevos se generarán aquí con JavaScript -->
-                </div>
+                <div class="ranking-list" id="newHotelsList" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;"></div>
             </div>
         </div>
     </section>
 
-    <!-- PRICING SECTION -->
     <section class="pricing-section" id="pricing">
         <div class="section-header">
             <h2>Enterprise <span class="italic-sophistication">Plans</span></h2>
             <p>Scalable solutions for hotel chains and investment groups</p>
         </div>
-
         <div class="pricing-grid">
-            <!-- Basic Plan -->
             <div class="pricing-card">
-                <div class="pricing-header">
-                    <h3>BASIC</h3>
-                    <div class="pricing-price">$49<span>/month</span></div>
-                </div>
-                <ul class="pricing-features">
-                    <li>Monthly PDF reports</li>
-                    <li>Email alerts</li>
-                    <li>Basic rankings</li>
-                    <li>5 hotel analysis</li>
-                    <li>Email support</li>
-                </ul>
+                <div class="pricing-header"><h3>BASIC</h3><div class="pricing-price">$49<span>/month</span></div></div>
+                <ul class="pricing-features"><li>Monthly PDF reports</li><li>Email alerts</li><li>Basic rankings</li><li>5 hotel analysis</li><li>Email support</li></ul>
                 <button class="stripe-button" onclick="showPaymentModal('basic')">Subscribe with Stripe</button>
             </div>
-
-            <!-- Premium Plan -->
             <div class="pricing-card premium">
-                <div class="pricing-header">
-                    <h3>PREMIUM</h3>
-                    <div class="pricing-price">$199<span>/month</span></div>
-                </div>
-                <ul class="pricing-features">
-                    <li>Weekly PDF reports</li>
-                    <li>Real-time alerts</li>
-                    <li>Competitor comparison</li>
-                    <li>CO2/Sustainability analysis</li>
-                    <li>25 hotel analysis</li>
-                    <li>API access</li>
-                    <li>Priority support</li>
-                </ul>
+                <div class="pricing-header"><h3>PREMIUM</h3><div class="pricing-price">$199<span>/month</span></div></div>
+                <ul class="pricing-features"><li>Weekly PDF reports</li><li>Real-time alerts</li><li>Competitor comparison</li><li>CO2/Sustainability analysis</li><li>25 hotel analysis</li><li>API access</li><li>Priority support</li></ul>
                 <button class="stripe-button-gold" onclick="showPaymentModal('premium')">⭐ Subscribe with Stripe ⭐</button>
             </div>
-
-            <!-- Enterprise Plan -->
             <div class="pricing-card">
-                <div class="pricing-header">
-                    <h3>ENTERPRISE</h3>
-                    <div class="pricing-price">$499<span>/month</span></div>
-                </div>
-                <ul class="pricing-features">
-                    <li>Daily reports</li>
-                    <li>Custom dashboards</li>
-                    <li>Full API access</li>
-                    <li>Unlimited hotels</li>
-                    <li>Dedicated account manager</li>
-                    <li>On-premise option</li>
-                    <li>24/7 phone support</li>
-                </ul>
+                <div class="pricing-header"><h3>ENTERPRISE</h3><div class="pricing-price">$499<span>/month</span></div></div>
+                <ul class="pricing-features"><li>Daily reports</li><li>Custom dashboards</li><li>Full API access</li><li>Unlimited hotels</li><li>Dedicated account manager</li><li>On-premise option</li><li>24/7 phone support</li></ul>
                 <button class="stripe-button" onclick="showPaymentModal('enterprise')">Contact Sales</button>
             </div>
         </div>
     </section>
 
-    <!-- PAYMENT MODAL -->
     <div id="paymentModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
             <h2 id="modalTitle">Subscribe to Premium</h2>
             <form id="paymentForm">
-                <div class="form-group">
-                    <label>Hotel Name</label>
-                    <input type="text" id="hotelName" required>
-                </div>
-                <div class="form-group">
-                    <label>Manager Email</label>
-                    <input type="email" id="managerEmail" required>
-                </div>
-                <div class="form-group">
-                    <label>Hotel ID (optional)</label>
-                    <input type="text" id="hotelId">
-                </div>
+                <div class="form-group"><label>Hotel Name</label><input type="text" id="hotelName" required></div>
+                <div class="form-group"><label>Manager Email</label><input type="email" id="managerEmail" required></div>
+                <div class="form-group"><label>Hotel ID (optional)</label><input type="text" id="hotelId"></div>
                 <div id="card-element"></div>
                 <button type="submit" class="submit-btn" id="submitBtn">Pay with Stripe</button>
             </form>
@@ -1278,252 +1039,24 @@ function cerrarResultados() {
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
-        // --- ANEXO DE DATOS REALES ---
-
-document.addEventListener('DOMContentLoaded', () => {
-    loadRealData();
-    document.getElementById('currentDate').innerText = new Date().toISOString().split('T')[0];
-});
-
-async function loadRealData() {
-    try {
-        // 1. Cargar Ranking Real (Top Performers)
-        const bestRes = await fetch('/api/rankings/best');
-        const bestHotels = await bestRes.json();
-        const bestList = document.getElementById('bestList');
-        if (bestHotels.length > 0) {
-            bestList.innerHTML = ''; // Limpia el ejemplo estático
-            bestHotels.forEach((hotel, index) => {
-                bestList.innerHTML += `
-                    <div class="ranking-item" onclick="autoSearch('${hotel.name}')">
-                        <div class="hotel-info">
-                            <span class="hotel-rank-badge">${String(index + 1).padStart(2, '0')}</span>
-                            <div>
-                                <div class="hotel-name">${hotel.name}</div>
-                                <div class="hotel-city">${hotel.city}</div>
-                            </div>
-                        </div>
-                        <span class="hotel-score">${hotel.score.toFixed(2)} APS</span>
-                    </div>`;
-            });
-        }
-
-        // 2. Cargar Semáforo Real
-        const semRes = await fetch('/api/semaphore/stats');
-        const semData = await semRes.json();
-        document.getElementById('yellowCount').innerText = semData.yellow;
-        document.getElementById('orangeCount').innerText = semData.orange;
-        document.getElementById('redCount').innerText = semData.red;
-
-    } catch (e) {
-        console.error("Error cargando datos de la API:", e);
-    }
-}
-
-// Función para el buscador (Analizar)
-async // ========== BUSCADOR QUE FUNCIONA CON TUS DATOS ACTUALES ==========
-function performSearch() {
-    const query = document.getElementById('hotelSearch').value.toLowerCase().trim();
-    
-    if (query === "") {
-        alert("🔍 Please enter a hotel name, city, or ID");
-        return;
-    }
-
-    // Resetear estilos
-    document.querySelectorAll('.ranking-item').forEach(item => {
-        item.style.backgroundColor = '';
-        item.style.borderLeft = '';
-        item.style.opacity = '1';
-    });
-
-    let encontrados = 0;
-    let resultados = [];
-
-    // Buscar en TODOS los hoteles visibles en la página
-    document.querySelectorAll('.ranking-item').forEach(item => {
-        const nombre = item.querySelector('.hotel-name')?.textContent.toLowerCase() || '';
-        const ciudad = item.querySelector('.hotel-city')?.textContent.toLowerCase() || '';
-        const id = item.dataset.hotelId || '';
-        
-        // Buscar por nombre, ciudad o ID
-        if (nombre.includes(query) || ciudad.includes(query) || id === query) {
-            item.style.backgroundColor = 'rgba(0, 255, 136, 0.2)';
-            item.style.borderLeft = '4px solid #00ff88';
-            resultados.push(item);
-            encontrados++;
-        } else {
-            item.style.opacity = '0.3';
-        }
-    });
-
-    // Mostrar resultados
-    if (encontrados > 0) {
-        // Scroll al primer resultado
-        resultados[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        // Mensaje flotante
-        const msg = document.createElement('div');
-        msg.innerHTML = `✅ ${encontrados} hotel(es) encontrado(s) para "${query}"`;
-        msg.style.cssText = `
-            position: fixed;
-            top: 100px;
-            right: 20px;
-            background: #00ff88;
-            color: #050505;
-            padding: 15px 25px;
-            border-radius: 5px;
-            font-weight: bold;
-            z-index: 9999;
-            box-shadow: 0 0 20px rgba(0,255,136,0.5);
-        `;
-        document.body.appendChild(msg);
-        setTimeout(() => msg.remove(), 3000);
-        
-    } else {
-        alert(`❌ No se encontraron hoteles para: "${query}"`);
-        
-        // Restaurar opacidad
-        document.querySelectorAll('.ranking-item').forEach(item => {
-            item.style.opacity = '1';
-        });
-    }
-}
-
-function autoSearch(name) {
-    document.getElementById('hotelSearch').value = name;
-    performSearch();
-}
-       
-        // ========== NUEVO: BÚSQUEDA EN GOOGLE API ==========
-async function buscarEnGoogle() {
-    const query = document.getElementById('hotelSearch').value.trim();
-    
-    if (query === "") {
-        alert("🔍 Please enter a hotel name or city");
-        return;
-    }
-
-    try {
-        // Llamar a Google API
-        const response = await fetch(`/api/google/places?q=${encodeURIComponent(query)}`);
-        const hoteles = await response.json();
-        
-        if (hoteles.length > 0) {
-            mostrarResultadosGoogle(hoteles, query);
-        } else {
-            // Si no encuentra en Google, usar el buscador local
-            performSearch();
-        }
-    } catch (error) {
-        console.log('Usando buscador local');
-        performSearch(); // Fallback al buscador local
-    }
-}
-
-function mostrarResultadosGoogle(hoteles, query) {
-    // Limpiar resultados anteriores
-    const resultadosDiv = document.getElementById('resultados-busqueda');
-    if (resultadosDiv) resultadosDiv.remove();
-    
-    // Crear contenedor de resultados
-    const contenedor = document.createElement('div');
-    contenedor.id = 'resultados-busqueda';
-    contenedor.style.cssText = `
-        position: fixed;
-        top: 200px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 80%;
-        max-width: 800px;
-        max-height: 70vh;
-        overflow-y: auto;
-        background: #0a0a0a;
-        border: 1px solid #00ff88;
-        border-radius: 10px;
-        padding: 20px;
-        z-index: 10000;
-        box-shadow: 0 0 30px rgba(0,255,136,0.3);
-    `;
-    
-    contenedor.innerHTML = `
-        <h3 style="color: #00ff88; margin-bottom: 15px;">
-            🔍 Hoteles en ${query} (de Google)
-        </h3>
-        ${hoteles.map(hotel => `
-            <div style="margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px;">
-                <!-- Información básica del hotel -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <div>
-                        <div style="color: #fff; font-size: 1.1rem;">
-                            ${hotel.nombre}
-                            <span style="color: #4285F4; font-size: 0.8rem; margin-left: 5px;">📊 Google</span>
-                        </div>
-                        <div style="color: #666; font-size: 0.9rem;">
-                            ${hotel.direccion || hotel.ciudad}
-                        </div>
-                    </div>
-                    <div style="text-align: right;">
-                        <span style="color: #00ff88; font-size: 1.2rem;">${hotel.puntuacion || 'N/A'} ⭐</span>
-                        <br>
-                        <small style="color: #666;">${hotel.total_resenas || 0} reseñas</small>
-                    </div>
-                </div>
-                
-                <!-- CONTENEDOR PARA EL RESUMEN (NUEVO) -->
-                <div id="resumen-${hotel.id.replace(/[^a-zA-Z0-9]/g, '')}" style="margin-top: 10px;"></div>
-            </div>
-        `).join('')}
-        <button onclick="cerrarResultadosGoogle()" style="
-            background: #00ff88;
-            color: #050505;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            margin-top: 15px;
-            cursor: pointer;
-            width: 100%;
-            font-weight: bold;
-        ">CERRAR</button>
-    `;
-    
-    document.body.appendChild(contenedor);
-    
-    // NUEVO: Cargar resúmenes para cada hotel
-    hoteles.forEach(hotel => {
-        const safeId = hotel.id.replace(/[^a-zA-Z0-9]/g, '');
-        // Pequeño retraso para no sobrecargar
-        setTimeout(() => {
-            mostrarResumenResenas(hotel.id, hotel.nombre, `resumen-${safeId}`);
-        }, 200);
-    });
-}
-        // ========== STRIPE INITIALIZATION ==========
+        // ========== CONFIGURACIÓN INICIAL ==========
         const stripe = Stripe('pk_test_YOUR_PUBLIC_KEY');
         let currentPlan = 'premium';
         let darkMode = true;
         let currentLanguage = 'en';
         let gaugeChart = null;
 
-        // ========== FLAG EMOJI MAP ==========
-        const flagEmojis = {
-            'en': '🇺🇸', 'es': '🇪🇸', 'fr': '🇫🇷', 'de': '🇩🇪',
-            'it': '🇮🇹', 'pt': '🇧🇷', 'ja': '🇯🇵', 'ko': '🇰🇷', 'zh': '🇨🇳'
-        };
-
-        // ========== TRANSLATIONS ==========
+        // ========== FUNCIONES DE INTERFAZ (Temas, Idioma) ==========
         const translations = {
             en: { hero_subtitle: 'Advanced analytics for the high-end hospitality industry. Empirical data, strategic vision.' },
             es: { hero_subtitle: 'Análisis avanzado para la industria hotelera de alto nivel. Datos empíricos, visión estratégica.' },
             fr: { hero_subtitle: 'Analyses avancées pour l\'industrie hôtelière haut de gamme. Données empiriques, vision stratégique.' }
         };
 
-        // ========== THEME FUNCTIONS ==========
         function toggleTheme() {
             darkMode = !darkMode;
             const body = document.body;
             const btn = document.getElementById('themeBtn');
-            
             if (darkMode) {
                 body.classList.remove('light-mode');
                 btn.textContent = '🌙 Dark';
@@ -1533,147 +1066,148 @@ function mostrarResultadosGoogle(hoteles, query) {
             }
         }
 
-        // ========== LANGUAGE FUNCTIONS ==========
         function setLanguage(lang) {
             currentLanguage = lang;
-            
             document.querySelectorAll('.lang-btn').forEach(btn => {
                 btn.classList.remove('active');
-                if (btn.textContent.includes(lang.toUpperCase())) {
-                    btn.classList.add('active');
-                }
+                if (btn.textContent.includes(lang.toUpperCase())) btn.classList.add('active');
             });
-            
             const element = document.querySelector('.subtitle');
-            if (element && translations[lang]) {
-                element.textContent = translations[lang].hero_subtitle;
+            if (element && translations[lang]) element.textContent = translations[lang].hero_subtitle;
+        }
+
+        function initGaugeChart() {
+            const ctx = document.getElementById('gaugeChart').getContext('2d');
+            if (gaugeChart) gaugeChart.destroy();
+            gaugeChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: { datasets: [{ data: [87, 13], backgroundColor: ['#00ff88', '#ff4444'], borderWidth: 0, circumference: 180, rotation: 270 }] },
+                options: { cutout: '70%', responsive: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+            });
+        }
+
+        // ========== CARGA DE DATOS INICIALES (Rankings, Semáforo) ==========
+        async function loadRealData() {
+            try {
+                const bestRes = await fetch('/api/rankings/best');
+                const bestHotels = await bestRes.json();
+                const bestList = document.getElementById('bestList');
+                if (bestHotels.length > 0) {
+                    bestList.innerHTML = '';
+                    bestHotels.forEach((hotel, index) => {
+                        bestList.innerHTML += `
+                            <div class="ranking-item" onclick="autoSearch('${hotel.name}')">
+                                <div class="hotel-info">
+                                    <span class="hotel-rank-badge">${String(index + 1).padStart(2, '0')}</span>
+                                    <div>
+                                        <div class="hotel-name">${hotel.name}</div>
+                                        <div class="hotel-city">${hotel.city}</div>
+                                    </div>
+                                </div>
+                                <span class="hotel-score">${hotel.score.toFixed(2)} APS</span>
+                            </div>`;
+                    });
+                }
+                const semRes = await fetch('/api/semaphore/stats');
+                const semData = await semRes.json();
+                document.getElementById('yellowCount').innerText = semData.yellow;
+                document.getElementById('orangeCount').innerText = semData.orange;
+                document.getElementById('redCount').innerText = semData.red;
+            } catch (e) {
+                console.error("Error cargando datos de la API:", e);
             }
         }
 
-        // ========== SEARCH FUNCTION ==========
-        function performSearch() {
-            const query = document.getElementById('hotelSearch').value.toLowerCase().trim();
-            
+        // ========== FUNCIÓN DE BÚSQUEDA GLOBAL (CORREGIDA Y ÚNICA) ==========
+        window.buscarEnGoogle = async function() {
+            const query = document.getElementById('hotelSearch').value.trim();
             if (query === "") {
-                alert("Please enter a search parameter.");
+                alert("🔍 Please enter a hotel name or city");
                 return;
             }
 
-            document.querySelectorAll('.ranking-item').forEach(item => {
-                item.classList.remove('highlighted');
-                item.style.opacity = '1';
-            });
+            const searchBtn = document.querySelector('.search-btn');
+            const originalText = searchBtn.textContent;
+            searchBtn.textContent = '🔍 BUSCANDO...';
+            searchBtn.disabled = true;
 
-            let found = false;
-            document.querySelectorAll('.ranking-item').forEach(item => {
-                const text = item.textContent.toLowerCase();
-                if (text.includes(query)) {
-                    item.classList.add('highlighted');
-                    found = true;
+            try {
+                const response = await fetch(`/api/google/places?q=${encodeURIComponent(query)}`);
+                const hoteles = await response.json();
+                if (hoteles && hoteles.length > 0) {
+                    window.mostrarResultadosGoogle(hoteles, query);
                 } else {
-                    item.style.opacity = '0.3';
+                    alert(`❌ No se encontraron hoteles para: "${query}"`);
                 }
-            });
-
-            if (!found) {
-                alert(`No results found for: "${query}"`);
-                document.querySelectorAll('.ranking-item').forEach(item => {
-                    item.style.opacity = '1';
-                });
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error en la búsqueda. Intenta de nuevo.");
+            } finally {
+                searchBtn.textContent = originalText;
+                searchBtn.disabled = false;
             }
-        }
-async function performSearch() {
-    const input = document.getElementById('hotelSearch');
-    const query = input.value;
-    const title = document.getElementById('mainTitle');
+        };
 
-    if (!query) return;
+        window.mostrarResultadosGoogle = function(hoteles, query) {
+            const resultadosDiv = document.getElementById('resultados-busqueda');
+            if (resultadosDiv) resultadosDiv.remove();
 
-    // Cambiamos el título para dar feedback de que está trabajando
-    title.innerHTML = `ANALYZING <span class="italic-sophistication">"${query}"</span>...`;
+            const contenedor = document.createElement('div');
+            contenedor.id = 'resultados-busqueda';
+            contenedor.style.cssText = `
+                position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                width: 90%; max-width: 1000px; max-height: 80vh; overflow-y: auto;
+                background: #0a0a0a; border: 2px solid #00ff88; border-radius: 15px;
+                padding: 25px; z-index: 10000; box-shadow: 0 0 40px rgba(0,255,136,0.5);
+                font-family: 'Montserrat', sans-serif;
+            `;
 
-    try {
-        const response = await fetch(`/api/get_google_data/${encodeURIComponent(query)}`);
-        const data = await response.json();
+            let html = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px;">
+                    <h2 style="color: #00ff88; margin: 0; font-size: 1.8rem;">🌍 Hoteles en ${query}</h2>
+                    <span style="color: #888; background: #1a1a1a; padding: 5px 15px; border-radius: 20px;">${hoteles.length} resultados</span>
+                </div>
+            `;
 
-        if (data.status === "success") {
-            // Actualiza el título con el Score real
-            title.innerHTML = `${query} <span class="italic-sophistication">${data.rating} APS</span>`;
-            
-            // Actualiza los números de las tarjetas de estadísticas
-            document.getElementById('statReviews').innerText = data.user_ratings_total.toLocaleString();
-            document.getElementById('statAccuracy').innerText = "99.9%";
-        } else {
-            title.innerHTML = `HOTEL <span class="italic-sophistication">NOT FOUND</span>`;
-        }
-    } catch (error) {
-        console.error("Error:", error);
-        title.innerHTML = `SYSTEM <span class="italic-sophistication">OFFLINE</span>`;
-    }
-}
-        // ========== GAUGE CHART ==========
-        function initGaugeChart() {
-            const ctx = document.getElementById('gaugeChart').getContext('2d');
-            
-            if (gaugeChart) {
-                gaugeChart.destroy();
-            }
-            
-            gaugeChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    datasets: [{
-                        data: [87, 13],
-                        backgroundColor: ['#00ff88', '#ff4444'],
-                        borderWidth: 0,
-                        circumference: 180,
-                        rotation: 270
-                    }]
-                },
-                options: {
-                    cutout: '70%',
-                    responsive: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { enabled: false }
-                    }
-                }
-            });
-        }
-
-        // ========== NUEVOS HOTELES (los 60 que insertaste) ==========
-        const nuevosHoteles = [
-            { nombre: "Grand Hotel La Florida", ciudad: "Barcelona", puntuacion: 9.9, id: 742 },
-            { nombre: "Hotel Arts Barcelona", ciudad: "Barcelona", puntuacion: 9.8, id: 891 },
-            { nombre: "Beverly Hills Hotel", ciudad: "Los Angeles", puntuacion: 9.6, id: 1024 },
-            { nombre: "Four Seasons George V", ciudad: "Paris", puntuacion: 9.5, id: 1567 },
-            { nombre: "Fairmont San Francisco", ciudad: "San Francisco", puntuacion: 9.3, id: 1789 },
-            { nombre: "Hotel de Crillon", ciudad: "Paris", puntuacion: 9.2, id: 634 },
-            { nombre: "Hotel Danieli", ciudad: "Venice", puntuacion: 9.1, id: 1456 },
-            { nombre: "Savoy Hotel London", ciudad: "London", puntuacion: 9.05, id: 112 },
-            { nombre: "Hotel Ritz Madrid", ciudad: "Madrid", puntuacion: 9.7, id: 523 },
-            { nombre: "Grand Hotel Toscana", ciudad: "Florence", puntuacion: 9.4, id: 201 }
-        ];
-
-        function mostrarNuevosHoteles() {
-            const container = document.getElementById('newHotelsList');
-            if (container) {
-                container.innerHTML = nuevosHoteles.map(hotel => `
-                    <div class="ranking-item" style="border: 1px solid #00ff8822; padding: 1rem; border-radius: 8px;">
-                        <div class="hotel-info">
-                            <span class="hotel-rank-badge">🆕</span>
-                            <div>
-                                <div class="hotel-name"><a href="/hotel_detail.html?id=${hotel.id}">${hotel.nombre}</a></div>
-                                <div class="hotel-city">${hotel.ciudad}</div>
+            hoteles.forEach(hotel => {
+                html += `
+                    <div style="margin-bottom: 15px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 3px solid #00ff88;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div style="flex: 1;">
+                                <div style="color: #fff; font-size: 1.3rem; font-weight: bold; margin-bottom: 5px;">${hotel.nombre}</div>
+                                <div style="color: #aaa; font-size: 0.95rem; margin-bottom: 8px;">📍 ${hotel.direccion || hotel.ciudad}</div>
+                            </div>
+                            <div style="text-align: right; background: #1a1a1a; padding: 10px; border-radius: 8px; min-width: 120px;">
+                                <div style="color: #00ff88; font-size: 2rem; font-weight: bold; line-height: 1;">${hotel.puntuacion || 'N/A'}</div>
+                                <div style="color: #666; font-size: 0.9rem;">📊 ${hotel.total_resenas || 0} reseñas</div>
                             </div>
                         </div>
-                        <span class="hotel-score">${hotel.puntuacion} APS</span>
                     </div>
-                `).join('');
-            }
-        }
+                `;
+            });
 
-        // ========== PAYMENT FUNCTIONS ==========
+            html += `<button onclick="cerrarResultadosGoogle()" style="
+                background: #00ff88; color: #050505; border: none; padding: 15px;
+                border-radius: 8px; margin-top: 20px; cursor: pointer; width: 100%;
+                font-weight: bold; font-size: 1.1rem;
+            ">CERRAR RESULTADOS</button>`;
+
+            contenedor.innerHTML = html;
+            document.body.appendChild(contenedor);
+        };
+
+        window.cerrarResultadosGoogle = function() {
+            const div = document.getElementById('resultados-busqueda');
+            if (div) div.remove();
+        };
+
+        // Función auxiliar para búsqueda desde rankings
+        window.autoSearch = function(name) {
+            document.getElementById('hotelSearch').value = name;
+            buscarEnGoogle();
+        };
+
+        // ========== FUNCIONES DE PAGO (Stripe) ==========
         function showPaymentModal(plan) {
             currentPlan = plan;
             const titles = {
@@ -1685,15 +1219,7 @@ async function performSearch() {
             document.getElementById('paymentModal').style.display = 'block';
             
             const elements = stripe.elements();
-            const card = elements.create('card', {
-                style: {
-                    base: {
-                        color: '#ffffff',
-                        backgroundColor: '#2a2a2a',
-                        '::placeholder': { color: '#666' }
-                    }
-                }
-            });
+            const card = elements.create('card', { style: { base: { color: '#ffffff', backgroundColor: '#2a2a2a', '::placeholder': { color: '#666' } } } });
             card.mount('#card-element');
             
             document.getElementById('paymentForm').onsubmit = async (e) => {
@@ -1701,7 +1227,6 @@ async function performSearch() {
                 const submitBtn = document.getElementById('submitBtn');
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Processing...';
-                
                 setTimeout(() => {
                     alert(`✅ Payment successful! Welcome to the ${currentPlan} plan.`);
                     closeModal();
@@ -1714,647 +1239,73 @@ async function performSearch() {
         function closeModal() {
             document.getElementById('paymentModal').style.display = 'none';
         }
-        // ========== FUNCIONES DE BÚSQUEDA GLOBAL ==========
-window.buscarEnGoogle = async function() {
-    const query = document.getElementById('hotelSearch').value.trim();
-    
-    if (query === "") {
-        alert("🔍 Please enter a hotel name or city");
-        return;
-    }
 
-    try {
-        const response = await fetch(`/api/google/places?q=${encodeURIComponent(query)}`);
-        const hoteles = await response.json();
-        
-        if (hoteles && hoteles.length > 0) {
-            mostrarResultadosGoogle(hoteles, query);
-        } else {
-            alert(`❌ No se encontraron hoteles para: "${query}"`);
-        }
-    } catch (error) {
-        console.error("Error:", error);
-        alert("Error en la búsqueda");
-    }
-};
-
-window.mostrarResultadosGoogle = function(hoteles, query) {
-    const resultadosDiv = document.getElementById('resultados-busqueda');
-    if (resultadosDiv) resultadosDiv.remove();
-    
-    const contenedor = document.createElement('div');
-    contenedor.id = 'resultados-busqueda';
-    contenedor.style.cssText = `
-        position: fixed;
-        top: 150px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90%;
-        max-width: 900px;
-        max-height: 80vh;
-        overflow-y: auto;
-        background: #0a0a0a;
-        border: 2px solid #00ff88;
-        border-radius: 15px;
-        padding: 25px;
-        z-index: 10000;
-        box-shadow: 0 0 40px rgba(0,255,136,0.5);
-    `;
-    
-    let html = `
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2 style="color: #00ff88; margin: 0;">🌍 Hoteles en ${query}</h2>
-            <span style="color: #888;">${hoteles.length} resultados</span>
-        </div>
-    `;
-    
-    hoteles.forEach(hotel => {
-        html += `
-            <div style="margin-bottom: 15px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px;">
-                <div style="display: flex; justify-content: space-between;">
-                    <div style="flex: 1;">
-                        <div style="color: #fff; font-size: 1.2rem; font-weight: bold;">${hotel.nombre}</div>
-                        <div style="color: #aaa; font-size: 0.9rem;">📍 ${hotel.direccion || hotel.ciudad}</div>
-                    </div>
-                    <div style="text-align: right;">
-                        <div style="color: #00ff88; font-size: 1.5rem;">${hotel.puntuacion || 'N/A'} ⭐</div>
-                        <div style="color: #666; font-size: 0.8rem;">${hotel.total_resenas || 0} reseñas</div>
-                    </div>
-                </div>
-            </div>
-        `;
-    });
-    
-    html += `<button onclick="cerrarResultadosGoogle()" style="
-        background: #00ff88;
-        color: #050505;
-        border: none;
-        padding: 10px;
-        border-radius: 5px;
-        margin-top: 15px;
-        cursor: pointer;
-        width: 100%;
-    ">CERRAR</button>`;
-    
-    contenedor.innerHTML = html;
-    document.body.appendChild(contenedor);
-};
-
-window.cerrarResultadosGoogle = function() {
-    const div = document.getElementById('resultados-busqueda');
-    if (div) div.remove();
-};
-
-// Conectar el botón al cargar la página
-document.addEventListener('DOMContentLoaded', function() {
-    const searchBtn = document.querySelector('.search-btn');
-    if (searchBtn) {
-        searchBtn.onclick = function(e) {
-            e.preventDefault();
-            buscarEnGoogle();
-        };
-    }
-});
-<script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script>
-    // ========== CONFIGURACIÓN INICIAL ==========
-    const stripe = Stripe('pk_test_YOUR_PUBLIC_KEY');
-    let currentPlan = 'premium';
-    let darkMode = true;
-    let currentLanguage = 'en';
-    let gaugeChart = null;
-
-    // ========== FUNCIONES DE INTERFAZ (Temas, Idioma, etc) ==========
-    const translations = {
-        en: { hero_subtitle: 'Advanced analytics for the high-end hospitality industry. Empirical data, strategic vision.' },
-        es: { hero_subtitle: 'Análisis avanzado para la industria hotelera de alto nivel. Datos empíricos, visión estratégica.' },
-        fr: { hero_subtitle: 'Analyses avancées pour l\'industrie hôtelière haut de gamme. Données empiriques, vision stratégique.' }
-    };
-
-    function toggleTheme() {
-        darkMode = !darkMode;
-        const body = document.body;
-        const btn = document.getElementById('themeBtn');
-        if (darkMode) {
-            body.classList.remove('light-mode');
-            btn.textContent = '🌙 Dark';
-        } else {
-            body.classList.add('light-mode');
-            btn.textContent = '☀️ Light';
-        }
-    }
-
-    function setLanguage(lang) {
-        currentLanguage = lang;
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.classList.remove('active');
-            if (btn.textContent.includes(lang.toUpperCase())) btn.classList.add('active');
-        });
-        const element = document.querySelector('.subtitle');
-        if (element && translations[lang]) element.textContent = translations[lang].hero_subtitle;
-    }
-
-    function initGaugeChart() {
-        const ctx = document.getElementById('gaugeChart').getContext('2d');
-        if (gaugeChart) gaugeChart.destroy();
-        gaugeChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: { datasets: [{ data: [87, 13], backgroundColor: ['#00ff88', '#ff4444'], borderWidth: 0, circumference: 180, rotation: 270 }] },
-            options: { cutout: '70%', responsive: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
-        });
-    }
-
-    // ========== CARGA DE DATOS INICIALES (Rankings, Semáforo) ==========
-    async function loadRealData() {
-        try {
-            const bestRes = await fetch('/api/rankings/best');
-            const bestHotels = await bestRes.json();
-            const bestList = document.getElementById('bestList');
-            if (bestHotels.length > 0) {
-                bestList.innerHTML = '';
-                bestHotels.forEach((hotel, index) => {
-                    bestList.innerHTML += `
-                        <div class="ranking-item" onclick="autoSearch('${hotel.name}')">
-                            <div class="hotel-info">
-                                <span class="hotel-rank-badge">${String(index + 1).padStart(2, '0')}</span>
-                                <div>
-                                    <div class="hotel-name">${hotel.name}</div>
-                                    <div class="hotel-city">${hotel.city}</div>
-                                </div>
+        // ========== INICIALIZACIÓN DE LA PÁGINA ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar fecha
+            document.getElementById('currentDate').innerText = new Date().toISOString().split('T')[0];
+            
+            // Inicializar gráfico y datos
+            initGaugeChart();
+            loadRealData();
+            
+            // Mostrar nuevos hoteles (estáticos de ejemplo)
+            const nuevosHoteles = [
+                { nombre: "Grand Hotel La Florida", ciudad: "Barcelona", puntuacion: 9.9, id: 742 },
+                { nombre: "Hotel Arts Barcelona", ciudad: "Barcelona", puntuacion: 9.8, id: 891 },
+                { nombre: "Beverly Hills Hotel", ciudad: "Los Angeles", puntuacion: 9.6, id: 1024 },
+                { nombre: "Four Seasons George V", ciudad: "Paris", puntuacion: 9.5, id: 1567 },
+                { nombre: "Fairmont San Francisco", ciudad: "San Francisco", puntuacion: 9.3, id: 1789 },
+                { nombre: "Hotel de Crillon", ciudad: "Paris", puntuacion: 9.2, id: 634 },
+                { nombre: "Hotel Danieli", ciudad: "Venice", puntuacion: 9.1, id: 1456 },
+                { nombre: "Savoy Hotel London", ciudad: "London", puntuacion: 9.05, id: 112 },
+                { nombre: "Hotel Ritz Madrid", ciudad: "Madrid", puntuacion: 9.7, id: 523 },
+                { nombre: "Grand Hotel Toscana", ciudad: "Florence", puntuacion: 9.4, id: 201 }
+            ];
+            const container = document.getElementById('newHotelsList');
+            if (container) {
+                container.innerHTML = nuevosHoteles.map(hotel => `
+                    <div class="ranking-item" style="border: 1px solid #00ff8822; padding: 1rem; border-radius: 8px;">
+                        <div class="hotel-info">
+                            <span class="hotel-rank-badge">🆕</span>
+                            <div>
+                                <div class="hotel-name">${hotel.nombre}</div>
+                                <div class="hotel-city">${hotel.ciudad}</div>
                             </div>
-                            <span class="hotel-score">${hotel.score.toFixed(2)} APS</span>
-                        </div>`;
+                        </div>
+                        <span class="hotel-score">${hotel.puntuacion} APS</span>
+                    </div>
+                `).join('');
+            }
+
+            // 👇 CONEXIÓN DEL BOTÓN DE BÚSQUEDA (LA PARTE CLAVE)
+            const searchBtn = document.querySelector('.search-btn');
+            if (searchBtn) {
+                searchBtn.onclick = function(e) {
+                    e.preventDefault();
+                    window.buscarEnGoogle();
+                };
+            }
+
+            // Conectar la tecla Enter
+            const searchInput = document.getElementById('hotelSearch');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        window.buscarEnGoogle();
+                    }
                 });
             }
-            const semRes = await fetch('/api/semaphore/stats');
-            const semData = await semRes.json();
-            document.getElementById('yellowCount').innerText = semData.yellow;
-            document.getElementById('orangeCount').innerText = semData.orange;
-            document.getElementById('redCount').innerText = semData.red;
-        } catch (e) {
-            console.error("Error cargando datos de la API:", e);
-        }
-    }
 
-    // ========== FUNCIONES DE BÚSQUEDA GLOBAL (GOOGLE PLACES) ==========
-    window.buscarEnGoogle = async function() {
-        const query = document.getElementById('hotelSearch').value.trim();
-        if (query === "") { alert("🔍 Please enter a hotel name or city"); return; }
-
-        const searchBtn = document.querySelector('.search-btn');
-        const originalText = searchBtn.textContent;
-        searchBtn.textContent = '🔍 BUSCANDO...';
-        searchBtn.disabled = true;
-
-        try {
-            const response = await fetch(`/api/google/places?q=${encodeURIComponent(query)}`);
-            const hoteles = await response.json();
-            if (hoteles && hoteles.length > 0) {
-                window.mostrarResultadosGoogle(hoteles, query);
-            } else {
-                alert(`❌ No se encontraron hoteles en Google para: "${query}"`);
-            }
-        } catch (error) {
-            console.error("Error en búsqueda global:", error);
-            alert("Error en la búsqueda. Intenta de nuevo.");
-        } finally {
-            searchBtn.textContent = originalText;
-            searchBtn.disabled = false;
-        }
-    };
-
-    window.mostrarResultadosGoogle = function(hoteles, query) {
-        const resultadosDiv = document.getElementById('resultados-busqueda');
-        if (resultadosDiv) resultadosDiv.remove();
-
-        const contenedor = document.createElement('div');
-        contenedor.id = 'resultados-busqueda';
-        contenedor.style.cssText = `
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 90%; max-width: 1000px; max-height: 80vh; overflow-y: auto;
-            background: #0a0a0a; border: 2px solid #00ff88; border-radius: 15px;
-            padding: 25px; z-index: 10000; box-shadow: 0 0 40px rgba(0,255,136,0.5);
-            font-family: 'Montserrat', sans-serif;
-        `;
-
-        let html = `
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px;">
-                <h2 style="color: #00ff88; margin: 0; font-size: 1.8rem;">🌍 Hoteles en ${query}</h2>
-                <span style="color: #888; background: #1a1a1a; padding: 5px 15px; border-radius: 20px;">${hoteles.length} resultados</span>
-            </div>
-        `;
-
-        hoteles.forEach(hotel => {
-            html += `
-                <div style="margin-bottom: 15px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 3px solid #00ff88;">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                        <div style="flex: 1;">
-                            <div style="color: #fff; font-size: 1.3rem; font-weight: bold; margin-bottom: 5px;">${hotel.nombre}</div>
-                            <div style="color: #aaa; font-size: 0.95rem; margin-bottom: 8px;">📍 ${hotel.direccion || hotel.ciudad}</div>
-                        </div>
-                        <div style="text-align: right; background: #1a1a1a; padding: 10px; border-radius: 8px; min-width: 120px;">
-                            <div style="color: #00ff88; font-size: 2rem; font-weight: bold; line-height: 1;">${hotel.puntuacion || 'N/A'}</div>
-                            <div style="color: #666; font-size: 0.9rem;">📊 ${hotel.total_resenas || 0} reseñas</div>
-                        </div>
-                    </div>
-                </div>
-            `;
+            console.log("✅ Página inicializada correctamente. Buscador global listo.");
         });
 
-        html += `<button onclick="cerrarResultadosGoogle()" style="
-            background: #00ff88; color: #050505; border: none; padding: 15px;
-            border-radius: 8px; margin-top: 20px; cursor: pointer; width: 100%;
-            font-weight: bold; font-size: 1.1rem;
-        ">CERRAR RESULTADOS</button>`;
-
-        contenedor.innerHTML = html;
-        document.body.appendChild(contenedor);
-    };
-
-    window.cerrarResultadosGoogle = function() {
-        const div = document.getElementById('resultados-busqueda');
-        if (div) div.remove();
-    };
-
-    // ========== FUNCIÓN DE BÚSQUEDA LOCAL (RESPALDO) ==========
-    function autoSearch(name) {
-        document.getElementById('hotelSearch').value = name;
-        buscarEnGoogle();
-    }
-
-    // ========== FUNCIONES DE PAGO (Stripe) ==========
-    function showPaymentModal(plan) {
-        currentPlan = plan;
-        const titles = {
-            'basic': 'Subscribe to Basic Plan - $49/month',
-            'premium': 'Subscribe to Premium Plan - $199/month',
-            'enterprise': 'Contact Sales - Enterprise Plan'
-        };
-        document.getElementById('modalTitle').textContent = titles[plan] || 'Subscribe';
-        document.getElementById('paymentModal').style.display = 'block';
-        
-        const elements = stripe.elements();
-        const card = elements.create('card', { style: { base: { color: '#ffffff', backgroundColor: '#2a2a2a', '::placeholder': { color: '#666' } } } });
-        card.mount('#card-element');
-        
-        document.getElementById('paymentForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Processing...';
-            setTimeout(() => {
-                alert(`✅ Payment successful! Welcome to the ${currentPlan} plan.`);
-                closeModal();
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Pay with Stripe';
-            }, 2000);
-        };
-    }
-
-    function closeModal() {
-        document.getElementById('paymentModal').style.display = 'none';
-    }
-
-    // ========== INICIALIZACIÓN DE LA PÁGINA ==========
-    document.addEventListener('DOMContentLoaded', function() {
-        // Configurar fecha
-        document.getElementById('currentDate').innerText = new Date().toISOString().split('T')[0];
-        
-        // Inicializar gráfico y datos
-        initGaugeChart();
-        loadRealData();
-        
-        // Mostrar nuevos hoteles (estáticos de ejemplo)
-        const nuevosHoteles = [
-            { nombre: "Grand Hotel La Florida", ciudad: "Barcelona", puntuacion: 9.9, id: 742 },
-            { nombre: "Hotel Arts Barcelona", ciudad: "Barcelona", puntuacion: 9.8, id: 891 },
-            { nombre: "Beverly Hills Hotel", ciudad: "Los Angeles", puntuacion: 9.6, id: 1024 },
-            { nombre: "Four Seasons George V", ciudad: "Paris", puntuacion: 9.5, id: 1567 },
-            { nombre: "Fairmont San Francisco", ciudad: "San Francisco", puntuacion: 9.3, id: 1789 },
-            { nombre: "Hotel de Crillon", ciudad: "Paris", puntuacion: 9.2, id: 634 },
-            { nombre: "Hotel Danieli", ciudad: "Venice", puntuacion: 9.1, id: 1456 },
-            { nombre: "Savoy Hotel London", ciudad: "London", puntuacion: 9.05, id: 112 },
-            { nombre: "Hotel Ritz Madrid", ciudad: "Madrid", puntuacion: 9.7, id: 523 },
-            { nombre: "Grand Hotel Toscana", ciudad: "Florence", puntuacion: 9.4, id: 201 }
-        ];
-        const container = document.getElementById('newHotelsList');
-        if (container) {
-            container.innerHTML = nuevosHoteles.map(hotel => `
-                <div class="ranking-item" style="border: 1px solid #00ff8822; padding: 1rem; border-radius: 8px;">
-                    <div class="hotel-info">
-                        <span class="hotel-rank-badge">🆕</span>
-                        <div>
-                            <div class="hotel-name">${hotel.nombre}</div>
-                            <div class="hotel-city">${hotel.ciudad}</div>
-                        </div>
-                    </div>
-                    <span class="hotel-score">${hotel.puntuacion} APS</span>
-                </div>
-            `).join('');
-        }
-
-        // Conectar el botón de búsqueda a la función global
-        const searchBtn = document.querySelector('.search-btn');
-        if (searchBtn) {
-            searchBtn.onclick = function(e) {
-                e.preventDefault();
-                buscarEnGoogle();
-            };
-        }
-
-        // Conectar la tecla Enter
-        const searchInput = document.getElementById('hotelSearch');
-        if (searchInput) {
-            searchInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    buscarEnGoogle();
-                }
-            });
-        }
-
-        console.log("✅ Página inicializada correctamente. Buscador global listo.");
-    });
-</script>
-    // ========== FUNCIÓN PRINCIPAL DE BÚSQUEDA CON GOOGLE ==========
-window.buscarEnGoogle = async function() {
-    const query = document.getElementById('hotelSearch').value.trim();
-    
-    if (query === "") {
-        alert("🔍 Please enter a hotel name or city");
-        return;
-    }
-
-    try {
-        console.log("Buscando:", query);
-        const response = await fetch(`/api/google/places?q=${encodeURIComponent(query)}`);
-        const hoteles = await response.json();
-        
-        console.log("Hoteles encontrados:", hoteles);
-        
-        if (hoteles && hoteles.length > 0) {
-            window.mostrarResultadosGoogle(hoteles, query);
-        } else {
-            // Si no encuentra en Google, intentar con búsqueda local
-            performSearch();
-        }
-    } catch (error) {
-        console.error("Error:", error);
-        alert("Error en la búsqueda. Usando búsqueda local...");
-        performSearch();
-    }
-};
-
-// ========== FUNCIÓN PARA MOSTRAR RESULTADOS DE GOOGLE ==========
-window.mostrarResultadosGoogle = function(hoteles, query) {
-    // Limpiar resultados anteriores
-    const resultadosDiv = document.getElementById('resultados-busqueda');
-    if (resultadosDiv) resultadosDiv.remove();
-    
-    // Crear contenedor de resultados
-    const contenedor = document.createElement('div');
-    contenedor.id = 'resultados-busqueda';
-    contenedor.style.cssText = `
-        position: fixed;
-        top: 200px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90%;
-        max-width: 900px;
-        max-height: 80vh;
-        overflow-y: auto;
-        background: #0a0a0a;
-        border: 2px solid #00ff88;
-        border-radius: 15px;
-        padding: 25px;
-        z-index: 10000;
-        box-shadow: 0 0 40px rgba(0,255,136,0.5);
-        font-family: 'Montserrat', sans-serif;
-    `;
-    
-    let html = `
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2 style="color: #00ff88; margin: 0;">🌍 Hoteles en ${query}</h2>
-            <span style="color: #888;">${hoteles.length} resultados</span>
-        </div>
-    `;
-    
-    hoteles.forEach(hotel => {
-        html += `
-            <div style="margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div style="flex: 1;">
-                        <div style="color: #fff; font-size: 1.3rem; font-weight: bold;">${hotel.nombre}</div>
-                        <div style="color: #aaa; font-size: 0.95rem; margin-top: 8px;">
-                            📍 ${hotel.direccion || hotel.ciudad}
-                        </div>
-                        ${hotel.precio !== 'N/A' ? `<div style="color: #00ff88; font-size: 0.9rem; margin-top: 5px;">💰 Nivel: ${hotel.precio}</div>` : ''}
-                    </div>
-                    <div style="text-align: right; min-width: 120px;">
-                        <div style="color: #00ff88; font-size: 2rem; font-weight: bold;">${hotel.puntuacion || 'N/A'}</div>
-                        <div style="color: #00ff88; font-size: 0.9rem;">⭐ puntuación</div>
-                        <div style="color: #666; font-size: 0.85rem; margin-top: 5px;">📊 ${hotel.total_resenas || 0} reseñas</div>
-                    </div>
-                </div>
-            </div>
-        `;
-    });
-    
-    html += `
-        <button onclick="cerrarResultadosGoogle()" style="
-            background: #00ff88;
-            color: #050505;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 8px;
-            margin-top: 20px;
-            cursor: pointer;
-            width: 100%;
-            font-weight: bold;
-            font-size: 1.1rem;
-        ">CERRAR RESULTADOS</button>
-    `;
-    
-    contenedor.innerHTML = html;
-    document.body.appendChild(contenedor);
-};
-
-// ========== FUNCIÓN PARA CERRAR RESULTADOS ==========
-window.cerrarResultadosGoogle = function() {
-    const div = document.getElementById('resultados-busqueda');
-    if (div) div.remove();
-};
-
-// ========== MODIFICAR EL BOTÓN DE BÚSQUEDA ==========
-document.addEventListener('DOMContentLoaded', function() {
-    const searchBtn = document.querySelector('.search-btn');
-    if (searchBtn) {
-        searchBtn.onclick = function(e) {
-            e.preventDefault();
-            buscarEnGoogle();
-        };
-    }
-    
-    const searchInput = document.getElementById('hotelSearch');
-    if (searchInput) {
-        searchInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                buscarEnGoogle();
-            }
-        });
-    }
-});
-    // ========== CONEXIÓN CON DATOS REALES DE GOOGLE API ==========
-async function cargarDatosRealesGoogle() {
-    try {
-        console.log('🌍 Cargando datos globales de Google API...');
-        
-        // 1. Cargar estadísticas globales
-        const statsRes = await fetch('/api/stats/global');
-        const stats = await statsRes.json();
-        
-        // Actualizar SOLO los números en tu HTML
-        document.getElementById('statHotels').textContent = stats.total_hoteles.toLocaleString();
-        document.getElementById('statReviews').textContent = stats.total_resenas_google.toLocaleString();
-        
-        // 2. Cargar TOP 10 hoteles del mundo
-        const topRes = await fetch('/api/rankings/global/top');
-        const topHoteles = await topRes.json();
-        
-        // Actualizar la lista de TOP PERFORMERS
-        const bestList = document.getElementById('bestList');
-        if (bestList && topHoteles.length > 0) {
-            bestList.innerHTML = topHoteles.map((hotel, index) => `
-                <div class="ranking-item" data-hotel-id="${hotel.id}">
-                    <div class="hotel-info">
-                        <span class="hotel-rank-badge">${String(index + 1).padStart(2, '0')}</span>
-                        <div>
-                            <div class="hotel-name">
-                                ${hotel.nombre} ${hotel.region}
-                            </div>
-                            <div class="hotel-city">${hotel.ciudad} • ${hotel.resenas} reseñas</div>
-                        </div>
-                    </div>
-                    <span class="hotel-score">${hotel.puntuacion} ⭐</span>
-                </div>
-            `).join('');
-        }
-        
-        // 3. Cargar UNDERPERFORMING hoteles
-        const worstRes = await fetch('/api/rankings/global/worst');
-        const worstHoteles = await worstRes.json();
-        
-        const worstList = document.getElementById('worstList');
-        if (worstList && worstHoteles.length > 0) {
-            worstList.innerHTML = worstHoteles.map((hotel, index) => `
-                <div class="ranking-item" data-hotel-id="${hotel.id}">
-                    <div class="hotel-info">
-                        <span class="hotel-rank-badge">${String(index + 1).padStart(2, '0')}</span>
-                        <div>
-                            <div class="hotel-name" style="color: #ff6b6b;">
-                                ${hotel.nombre}
-                            </div>
-                            <div class="hotel-city">${hotel.ciudad} • ${hotel.resenas} reseñas</div>
-                        </div>
-                    </div>
-                    <span class="hotel-score" style="color: #ff6b6b;">${hotel.puntuacion} ⭐</span>
-                </div>
-            `).join('');
-        }
-        
-        // 4. Cargar SEMAPHORE (alertas globales)
-        const semRes = await fetch('/api/semaphore/global');
-        const semaphore = await semRes.json();
-        
-        document.getElementById('yellowCount').textContent = semaphore.alert.count;
-        document.getElementById('orangeCount').textContent = semaphore.incident.count;
-        document.getElementById('redCount').textContent = semaphore.crisis.count;
-        
-        console.log('✅ Datos globales cargados correctamente');
-        
-    } catch (error) {
-        console.error('Error cargando datos globales:', error);
-        // Si falla, mantener tus datos de demostración
-        console.log('📊 Usando datos de demostración');
-    }
-}
-
-// ========== FILTRO POR REGIÓN (opcional) ==========
-function filtrarPorRegion(region) {
-    const regionMap = {
-        'usa': '🇺🇸',
-        'europa': '🇪🇺', 
-        'asia': '🇯🇵',
-        'sudamerica': '🇧🇷'
-    };
-    
-    document.querySelectorAll('.ranking-item').forEach(item => {
-        const texto = item.textContent;
-        if (region === 'todos' || texto.includes(regionMap[region])) {
-            item.style.display = 'flex';
-        } else {
-            item.style.display = 'none';
-        }
-    });
-}
-
-// ========== AGREGAR BOTONES DE FILTRO GLOBAL ==========
-function agregarFiltrosGlobales() {
-    const header = document.querySelector('.section-header');
-    if (header && !document.getElementById('filtros-globales')) {
-        const filtros = document.createElement('div');
-        filtros.id = 'filtros-globales';
-        filtros.style.marginTop = '20px';
-        filtros.style.display = 'flex';
-        filtros.style.gap = '10px';
-        filtros.style.justifyContent = 'center';
-        filtros.style.flexWrap = 'wrap';
-        
-        filtros.innerHTML = `
-            <button class="lang-btn active" onclick="filtrarPorRegion('todos')">🌍 Todos</button>
-            <button class="lang-btn" onclick="filtrarPorRegion('usa')">🇺🇸 USA</button>
-            <button class="lang-btn" onclick="filtrarPorRegion('europa')">🇪🇺 Europa</button>
-            <button class="lang-btn" onclick="filtrarPorRegion('asia')">🇯🇵 Asia</button>
-            <button class="lang-btn" onclick="filtrarPorRegion('sudamerica')">🇧🇷 Sudamérica</button>
-        `;
-        
-        header.appendChild(filtros);
-    }
-}
-
-// ========== INICIALIZAR CON DATOS REALES ==========
-// Esto se ejecuta cuando la página carga
-document.addEventListener('DOMContentLoaded', function() {
-    // Tus funciones existentes
-    document.getElementById('currentDate').textContent = new Date().toISOString().split('T')[0];
-    setLanguage('en');
-    initGaugeChart();
-    mostrarNuevosHoteles();
-    
-    // NUEVO: Cargar datos reales de Google API
-    cargarDatosRealesGoogle();
-    agregarFiltrosGlobales();
-    
-    // Actualizar cada 5 minutos
-    setInterval(cargarDatosRealesGoogle, 300000);
-});
-        // ========== INITIALIZATION ==========
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('currentDate').textContent = new Date().toISOString().split('T')[0];
-            setLanguage('en');
-            initGaugeChart();
-            mostrarNuevosHoteles(); // Muestra los 60 nuevos hoteles
-            
-            document.getElementById('hotelSearch').addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') {
-                    performSearch();
-                }
-            });
-        });
+        // Eliminadas todas las funciones antiguas duplicadas (performSearch, etc.)
     </script>
 </body>
 </html>
+
 
 
 
