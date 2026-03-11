@@ -157,7 +157,7 @@ if __name__ == '__main__':
 @app.route('/api/get_google_data/<hotel_name>')
 def get_google_data(hotel_name):
     # Sustituye con tu clave real
-    GOOGLE_API_KEY = "TU_API_KEY_AQUÍ"
+    GOOGLE_API_KEY =AIzaSyAgaIl3lWbKyQZs1vyfnygA95ClqPD6oPY
     try:
         import requests
         search_url = f"https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input={hotel_name}&inputtype=textquery&fields=place_id,rating,user_ratings_total,formatted_address&key={GOOGLE_API_KEY}"
@@ -172,6 +172,7 @@ def get_google_data(hotel_name):
         return jsonify({"status": "not_found"}), 404
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
+
 
 
 
