@@ -10,7 +10,7 @@ app = Flask(__name__)
 CORS(app)
 
 # CONFIGURACIÓN GOOGLE API
-GOOGLE_API_KEY = "TU_API_KEY_DE_GOOGLE" # <-- PEGA AQUÍ TU CLAVE
+GOOGLE_API_KEY = os.getenv('GOOGLE_PLACES_API_KEY') # <-- PEGA AQUÍ TU CLAVE
 
 # --- Configuración de la base de datos ---
 DB_DIR = 'data'
@@ -172,6 +172,7 @@ def get_google_data(hotel_name):
         return jsonify({"status": "not_found"}), 404
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
+
 
 
 
