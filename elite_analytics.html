@@ -1451,21 +1451,27 @@ function mostrarResultadosGoogle(hoteles, query) {
             🔍 Hoteles en ${query} (de Google)
         </h3>
         ${hoteles.map(hotel => `
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #333;">
-                <div>
-                    <div style="color: #fff; font-size: 1.1rem;">
-                        ${hotel.nombre}
-                        <span style="color: #4285F4; font-size: 0.8rem; margin-left: 5px;">📊 Google</span>
+            <div style="margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px;">
+                <!-- Información básica del hotel -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <div>
+                        <div style="color: #fff; font-size: 1.1rem;">
+                            ${hotel.nombre}
+                            <span style="color: #4285F4; font-size: 0.8rem; margin-left: 5px;">📊 Google</span>
+                        </div>
+                        <div style="color: #666; font-size: 0.9rem;">
+                            ${hotel.direccion || hotel.ciudad}
+                        </div>
                     </div>
-                    <div style="color: #666; font-size: 0.9rem;">
-                        ${hotel.direccion || hotel.ciudad}
+                    <div style="text-align: right;">
+                        <span style="color: #00ff88; font-size: 1.2rem;">${hotel.puntuacion || 'N/A'} ⭐</span>
+                        <br>
+                        <small style="color: #666;">${hotel.total_resenas || 0} reseñas</small>
                     </div>
                 </div>
-                <div style="text-align: right;">
-                    <span style="color: #00ff88; font-size: 1.2rem;">${hotel.puntuacion || 'N/A'} ⭐</span>
-                    <br>
-                    <small style="color: #666;">${hotel.total_resenas || 0} reseñas</small>
-                </div>
+                
+                <!-- CONTENEDOR PARA EL RESUMEN (NUEVO) -->
+                <div id="resumen-${hotel.id.replace(/[^a-zA-Z0-9]/g, '')}" style="margin-top: 10px;"></div>
             </div>
         `).join('')}
         <button onclick="cerrarResultadosGoogle()" style="
@@ -1482,18 +1488,16 @@ function mostrarResultadosGoogle(hoteles, query) {
     `;
     
     document.body.appendChild(contenedor);
+    
+    // NUEVO: Cargar resúmenes para cada hotel
+    hoteles.forEach(hotel => {
+        const safeId = hotel.id.replace(/[^a-zA-Z0-9]/g, '');
+        // Pequeño retraso para no sobrecargar
+        setTimeout(() => {
+            mostrarResumenResenas(hotel.id, hotel.nombre, `resumen-${safeId}`);
+        }, 200);
+    });
 }
-
-function cerrarResultadosGoogle() {
-    const div = document.getElementById('resultados-busqueda');
-    if (div) div.remove();
-}
-
-// Modificar SOLO el event listener del botón
-document.querySelector('.search-btn').onclick = function(e) {
-    e.preventDefault();
-    buscarEnGoogle(); // Ahora usa Google primero
-};
         // ========== STRIPE INITIALIZATION ==========
         const stripe = Stripe('pk_test_YOUR_PUBLIC_KEY');
         let currentPlan = 'premium';
@@ -1910,6 +1914,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </script>
 </body>
 </html>
+
 
 
 
