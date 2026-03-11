@@ -1232,7 +1232,35 @@ window.mostrarResultadosGoogle = function(hoteles, query) {
         function closeModal() {
             document.getElementById('paymentModal').style.display = 'none';
         }
+// ========== FUNCIÓN DE BÚSQUEDA GLOBAL ==========
+window.buscarEnGoogle = async function() {
+    const query = document.getElementById('hotelSearch').value.trim();
+    if (query === "") {
+        alert("🔍 Please enter a hotel name or city");
+        return;
+    }
 
+    const searchBtn = document.querySelector('.search-btn');
+    const originalText = searchBtn.textContent;
+    searchBtn.textContent = '🔍 BUSCANDO...';
+    searchBtn.disabled = true;
+
+    try {
+        const response = await fetch(`/api/google/places?q=${encodeURIComponent(query)}`);
+        const hoteles = await response.json();
+        if (hoteles && hoteles.length > 0) {
+            window.mostrarResultadosGoogle(hoteles, query);
+        } else {
+            alert(`❌ No se encontraron hoteles para: "${query}"`);
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Error en la búsqueda. Intenta de nuevo.");
+    } finally {
+        searchBtn.textContent = originalText;
+        searchBtn.disabled = false;
+    }
+};
         // ========== INICIALIZACIÓN DE LA PÁGINA ==========
         document.addEventListener('DOMContentLoaded', function() {
             // Configurar fecha
@@ -1296,6 +1324,7 @@ window.mostrarResultadosGoogle = function(hoteles, query) {
     </script>
 </body>
 </html>
+
 
 
 
