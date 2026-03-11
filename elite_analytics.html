@@ -1321,25 +1321,72 @@ async function loadRealData() {
 }
 
 // Función para el buscador (Analizar)
-async function performSearch() {
-    const query = document.getElementById('hotelSearch').value;
-    const mainTitle = document.getElementById('mainTitle');
-    if (!query) return;
+async // ========== BUSCADOR QUE FUNCIONA CON TUS DATOS ACTUALES ==========
+function performSearch() {
+    const query = document.getElementById('hotelSearch').value.toLowerCase().trim();
+    
+    if (query === "") {
+        alert("🔍 Please enter a hotel name, city, or ID");
+        return;
+    }
 
-    mainTitle.innerHTML = `ANALYZING <span class="italic-sophistication">"${query.toUpperCase()}"</span>...`;
+    // Resetear estilos
+    document.querySelectorAll('.ranking-item').forEach(item => {
+        item.style.backgroundColor = '';
+        item.style.borderLeft = '';
+        item.style.opacity = '1';
+    });
 
-    try {
-        const response = await fetch(`/api/get_google_data/${encodeURIComponent(query)}`);
-        const data = await response.json();
+    let encontrados = 0;
+    let resultados = [];
 
-        if (data.status === "success") {
-            mainTitle.innerHTML = `${query.toUpperCase()} <span class="italic-sophistication">${data.rating} STARS</span>`;
-            document.getElementById('statReviews').innerText = data.user_ratings_total.toLocaleString();
+    // Buscar en TODOS los hoteles visibles en la página
+    document.querySelectorAll('.ranking-item').forEach(item => {
+        const nombre = item.querySelector('.hotel-name')?.textContent.toLowerCase() || '';
+        const ciudad = item.querySelector('.hotel-city')?.textContent.toLowerCase() || '';
+        const id = item.dataset.hotelId || '';
+        
+        // Buscar por nombre, ciudad o ID
+        if (nombre.includes(query) || ciudad.includes(query) || id === query) {
+            item.style.backgroundColor = 'rgba(0, 255, 136, 0.2)';
+            item.style.borderLeft = '4px solid #00ff88';
+            resultados.push(item);
+            encontrados++;
         } else {
-            mainTitle.innerHTML = `NOT FOUND <span class="italic-sophistication">IN DATABASE</span>`;
+            item.style.opacity = '0.3';
         }
-    } catch (error) {
-        mainTitle.innerHTML = `OFFLINE <span class="italic-sophistication">SYSTEM</span>`;
+    });
+
+    // Mostrar resultados
+    if (encontrados > 0) {
+        // Scroll al primer resultado
+        resultados[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Mensaje flotante
+        const msg = document.createElement('div');
+        msg.innerHTML = `✅ ${encontrados} hotel(es) encontrado(s) para "${query}"`;
+        msg.style.cssText = `
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: #00ff88;
+            color: #050505;
+            padding: 15px 25px;
+            border-radius: 5px;
+            font-weight: bold;
+            z-index: 9999;
+            box-shadow: 0 0 20px rgba(0,255,136,0.5);
+        `;
+        document.body.appendChild(msg);
+        setTimeout(() => msg.remove(), 3000);
+        
+    } else {
+        alert(`❌ No se encontraron hoteles para: "${query}"`);
+        
+        // Restaurar opacidad
+        document.querySelectorAll('.ranking-item').forEach(item => {
+            item.style.opacity = '1';
+        });
     }
 }
 
@@ -1763,6 +1810,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </script>
 </body>
 </html>
+
 
 
 
