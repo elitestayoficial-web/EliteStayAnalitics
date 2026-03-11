@@ -1394,6 +1394,105 @@ function autoSearch(name) {
     document.getElementById('hotelSearch').value = name;
     performSearch();
 }
+        // ========== NUEVO: BÚSQUEDA EN GOOGLE API ==========
+async function buscarEnGoogle() {
+    const query = document.getElementById('hotelSearch').value.trim();
+    
+    if (query === "") {
+        alert("🔍 Please enter a hotel name or city");
+        return;
+    }
+
+    try {
+        // Llamar a Google API
+        const response = await fetch(`/api/hoteles/buscar?q=${encodeURIComponent(query)}`);
+        const hoteles = await response.json();
+        
+        if (hoteles.length > 0) {
+            mostrarResultadosGoogle(hoteles, query);
+        } else {
+            // Si no encuentra en Google, usar el buscador local
+            performSearch();
+        }
+    } catch (error) {
+        console.log('Usando buscador local');
+        performSearch(); // Fallback al buscador local
+    }
+}
+
+function mostrarResultadosGoogle(hoteles, query) {
+    // Limpiar resultados anteriores
+    const resultadosDiv = document.getElementById('resultados-busqueda');
+    if (resultadosDiv) resultadosDiv.remove();
+    
+    // Crear contenedor de resultados
+    const contenedor = document.createElement('div');
+    contenedor.id = 'resultados-busqueda';
+    contenedor.style.cssText = `
+        position: fixed;
+        top: 200px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        max-width: 800px;
+        max-height: 70vh;
+        overflow-y: auto;
+        background: #0a0a0a;
+        border: 1px solid #00ff88;
+        border-radius: 10px;
+        padding: 20px;
+        z-index: 10000;
+        box-shadow: 0 0 30px rgba(0,255,136,0.3);
+    `;
+    
+    contenedor.innerHTML = `
+        <h3 style="color: #00ff88; margin-bottom: 15px;">
+            🔍 Hoteles en ${query} (de Google)
+        </h3>
+        ${hoteles.map(hotel => `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #333;">
+                <div>
+                    <div style="color: #fff; font-size: 1.1rem;">
+                        ${hotel.nombre}
+                        <span style="color: #4285F4; font-size: 0.8rem; margin-left: 5px;">📊 Google</span>
+                    </div>
+                    <div style="color: #666; font-size: 0.9rem;">
+                        ${hotel.direccion || hotel.ciudad}
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <span style="color: #00ff88; font-size: 1.2rem;">${hotel.puntuacion || 'N/A'} ⭐</span>
+                    <br>
+                    <small style="color: #666;">${hotel.total_resenas || 0} reseñas</small>
+                </div>
+            </div>
+        `).join('')}
+        <button onclick="cerrarResultadosGoogle()" style="
+            background: #00ff88;
+            color: #050505;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-top: 15px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+        ">CERRAR</button>
+    `;
+    
+    document.body.appendChild(contenedor);
+}
+
+function cerrarResultadosGoogle() {
+    const div = document.getElementById('resultados-busqueda');
+    if (div) div.remove();
+}
+
+// Modificar SOLO el event listener del botón
+document.querySelector('.search-btn').onclick = function(e) {
+    e.preventDefault();
+    buscarEnGoogle(); // Ahora usa Google primero
+};
         // ========== STRIPE INITIALIZATION ==========
         const stripe = Stripe('pk_test_YOUR_PUBLIC_KEY');
         let currentPlan = 'premium';
@@ -1810,6 +1909,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </script>
 </body>
 </html>
+
 
 
 
