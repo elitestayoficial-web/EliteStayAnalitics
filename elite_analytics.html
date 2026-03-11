@@ -1405,7 +1405,7 @@ async function buscarEnGoogle() {
 
     try {
         // Llamar a Google API
-        const response = await fetch(`/api/hoteles/buscar?q=${encodeURIComponent(query)}`);
+        const response = await fetch(`/api/hotel/search?q=${encodeURIComponent(query)}`);
         const hoteles = await response.json();
         
         if (hoteles.length > 0) {
@@ -1909,6 +1909,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </script>
 </body>
 </html>
+
 
 
 
