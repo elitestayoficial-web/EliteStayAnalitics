@@ -855,7 +855,6 @@
         <div class="search-container">
             <div class="search-wrapper">
                 <input type="text" id="hotelSearch" class="search-input" placeholder="Search by hotel name, city, or ID...">
-                <!-- 👇 BOTÓN CORREGIDO: LE QUITÉ EL onclick="performSearch()" -->
                 <button class="search-btn">ANALYZE</button>
             </div>
             <div class="search-hint">
@@ -1085,116 +1084,61 @@
                 options: { cutout: '70%', responsive: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
             });
         }
-// ========== FUNCIÓN PARA MOSTRAR RESULTADOS DE GOOGLE (PERMANENTE) ==========
-window.mostrarResultadosGoogle = function(hoteles, query) {
-    const resultadosDiv = document.getElementById('resultados-busqueda');
-    if (resultadosDiv) resultadosDiv.remove();
 
-    const contenedor = document.createElement('div');
-    contenedor.id = 'resultados-busqueda';
-    contenedor.style.cssText = `
-        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-        width: 90%; max-width: 1000px; max-height: 80vh; overflow-y: auto;
-        background: #0a0a0a; border: 2px solid #00ff88; border-radius: 15px;
-        padding: 25px; z-index: 10000; box-shadow: 0 0 40px rgba(0,255,136,0.5);
-        font-family: 'Montserrat', sans-serif;
-    `;
+        // ========== FUNCIÓN PARA MOSTRAR RESULTADOS DE GOOGLE ==========
+        window.mostrarResultadosGoogle = function(hoteles, query) {
+            const resultadosDiv = document.getElementById('resultados-busqueda');
+            if (resultadosDiv) resultadosDiv.remove();
 
-    let html = `
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px;">
-            <h2 style="color: #00ff88; margin: 0; font-size: 1.8rem;">🌍 Hoteles en ${query}</h2>
-            <span style="color: #888; background: #1a1a1a; padding: 5px 15px; border-radius: 20px;">${hoteles.length} resultados</span>
-        </div>
-    `;
+            const contenedor = document.createElement('div');
+            contenedor.id = 'resultados-busqueda';
+            contenedor.style.cssText = `
+                position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                width: 90%; max-width: 1000px; max-height: 80vh; overflow-y: auto;
+                background: #0a0a0a; border: 2px solid #00ff88; border-radius: 15px;
+                padding: 25px; z-index: 10000; box-shadow: 0 0 40px rgba(0,255,136,0.5);
+                font-family: 'Montserrat', sans-serif;
+            `;
 
-    hoteles.forEach(hotel => {
-        html += `
-            <div style="margin-bottom: 15px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 3px solid #00ff88;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <div style="flex: 1;">
-                        <div style="color: #fff; font-size: 1.3rem; font-weight: bold; margin-bottom: 5px;">${hotel.nombre}</div>
-                        <div style="color: #aaa; font-size: 0.95rem; margin-bottom: 8px;">📍 ${hotel.direccion || hotel.ciudad}</div>
-                    </div>
-                    <div style="text-align: right; background: #1a1a1a; padding: 10px; border-radius: 8px; min-width: 120px;">
-                        <div style="color: #00ff88; font-size: 2rem; font-weight: bold; line-height: 1;">${hotel.puntuacion || 'N/A'}</div>
-                        <div style="color: #666; font-size: 0.9rem;">📊 ${hotel.total_resenas || 0} reseñas</div>
-                    </div>
+            let html = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px;">
+                    <h2 style="color: #00ff88; margin: 0; font-size: 1.8rem;">🌍 Hoteles en ${query}</h2>
+                    <span style="color: #888; background: #1a1a1a; padding: 5px 15px; border-radius: 20px;">${hoteles.length} resultados</span>
                 </div>
-            </div>
-        `;
-    });
+            `;
 
-    html += `<button onclick="cerrarResultadosGoogle()" style="
-        background: #00ff88; color: #050505; border: none; padding: 15px;
-        border-radius: 8px; margin-top: 20px; cursor: pointer; width: 100%;
-        font-weight: bold; font-size: 1.1rem;
-    ">CERRAR RESULTADOS</button>`;
-
-    contenedor.innerHTML = html;
-    document.body.appendChild(contenedor);
-};
-
-window.cerrarResultadosGoogle = function() {
-    const div = document.getElementById('resultados-busqueda');
-    if (div) div.remove();
-};
-
-console.log("✅ Funciones de búsqueda instaladas permanentemente en HTML");
-window.mostrarResultadosGoogle = function(hoteles, query) {
-    // Eliminar resultados anteriores
-    const resultadosDiv = document.getElementById('resultados-busqueda');
-    if (resultadosDiv) resultadosDiv.remove();
-
-    // Crear contenedor
-    const contenedor = document.createElement('div');
-    contenedor.id = 'resultados-busqueda';
-    contenedor.style.cssText = `
-        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-        width: 90%; max-width: 1000px; max-height: 80vh; overflow-y: auto;
-        background: #0a0a0a; border: 2px solid #00ff88; border-radius: 15px;
-        padding: 25px; z-index: 10000; box-shadow: 0 0 40px rgba(0,255,136,0.5);
-        font-family: 'Montserrat', sans-serif;
-    `;
-
-    let html = `
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px;">
-            <h2 style="color: #00ff88; margin: 0; font-size: 1.8rem;">🌍 Hoteles en ${query}</h2>
-            <span style="color: #888; background: #1a1a1a; padding: 5px 15px; border-radius: 20px;">${hoteles.length} resultados</span>
-        </div>
-    `;
-
-    hoteles.forEach(hotel => {
-        html += `
-            <div style="margin-bottom: 15px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 3px solid #00ff88;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <div style="flex: 1;">
-                        <div style="color: #fff; font-size: 1.3rem; font-weight: bold; margin-bottom: 5px;">${hotel.nombre}</div>
-                        <div style="color: #aaa; font-size: 0.95rem; margin-bottom: 8px;">📍 ${hotel.direccion || hotel.ciudad}</div>
+            hoteles.forEach(hotel => {
+                html += `
+                    <div style="margin-bottom: 15px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 3px solid #00ff88;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div style="flex: 1;">
+                                <div style="color: #fff; font-size: 1.3rem; font-weight: bold; margin-bottom: 5px;">${hotel.nombre}</div>
+                                <div style="color: #aaa; font-size: 0.95rem; margin-bottom: 8px;">📍 ${hotel.direccion || hotel.ciudad}</div>
+                            </div>
+                            <div style="text-align: right; background: #1a1a1a; padding: 10px; border-radius: 8px; min-width: 120px;">
+                                <div style="color: #00ff88; font-size: 2rem; font-weight: bold; line-height: 1;">${hotel.puntuacion || 'N/A'}</div>
+                                <div style="color: #666; font-size: 0.9rem;">📊 ${hotel.total_resenas || 0} reseñas</div>
+                            </div>
+                        </div>
                     </div>
-                    <div style="text-align: right; background: #1a1a1a; padding: 10px; border-radius: 8px; min-width: 120px;">
-                        <div style="color: #00ff88; font-size: 2rem; font-weight: bold; line-height: 1;">${hotel.puntuacion || 'N/A'}</div>
-                        <div style="color: #666; font-size: 0.9rem;">📊 ${hotel.total_resenas || 0} reseñas</div>
-                    </div>
-                </div>
-            </div>
-        `;
-    });
+                `;
+            });
 
-    html += `<button onclick="cerrarResultadosGoogle()" style="
-        background: #00ff88; color: #050505; border: none; padding: 15px;
-        border-radius: 8px; margin-top: 20px; cursor: pointer; width: 100%;
-        font-weight: bold; font-size: 1.1rem;
-    ">CERRAR RESULTADOS</button>`;
+            html += `<button onclick="cerrarResultadosGoogle()" style="
+                background: #00ff88; color: #050505; border: none; padding: 15px;
+                border-radius: 8px; margin-top: 20px; cursor: pointer; width: 100%;
+                font-weight: bold; font-size: 1.1rem;
+            ">CERRAR RESULTADOS</button>`;
 
-    contenedor.innerHTML = html;
-    document.body.appendChild(contenedor);
-};
+            contenedor.innerHTML = html;
+            document.body.appendChild(contenedor);
+        };
 
-// ========== FUNCIÓN PARA CERRAR RESULTADOS ==========
-window.cerrarResultadosGoogle = function() {
-    const div = document.getElementById('resultados-busqueda');
-    if (div) div.remove();
-};
+        window.cerrarResultadosGoogle = function() {
+            const div = document.getElementById('resultados-busqueda');
+            if (div) div.remove();
+        };
+
         // ========== CARGA DE DATOS INICIALES (Rankings, Semáforo) ==========
         async function loadRealData() {
             try {
@@ -1255,59 +1199,6 @@ window.cerrarResultadosGoogle = function() {
                 searchBtn.textContent = originalText;
                 searchBtn.disabled = false;
             }
-        };
-
-        window.mostrarResultadosGoogle = function(hoteles, query) {
-            const resultadosDiv = document.getElementById('resultados-busqueda');
-            if (resultadosDiv) resultadosDiv.remove();
-
-            const contenedor = document.createElement('div');
-            contenedor.id = 'resultados-busqueda';
-            contenedor.style.cssText = `
-                position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-                width: 90%; max-width: 1000px; max-height: 80vh; overflow-y: auto;
-                background: #0a0a0a; border: 2px solid #00ff88; border-radius: 15px;
-                padding: 25px; z-index: 10000; box-shadow: 0 0 40px rgba(0,255,136,0.5);
-                font-family: 'Montserrat', sans-serif;
-            `;
-
-            let html = `
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px;">
-                    <h2 style="color: #00ff88; margin: 0; font-size: 1.8rem;">🌍 Hoteles en ${query}</h2>
-                    <span style="color: #888; background: #1a1a1a; padding: 5px 15px; border-radius: 20px;">${hoteles.length} resultados</span>
-                </div>
-            `;
-
-            hoteles.forEach(hotel => {
-                html += `
-                    <div style="margin-bottom: 15px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 3px solid #00ff88;">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                            <div style="flex: 1;">
-                                <div style="color: #fff; font-size: 1.3rem; font-weight: bold; margin-bottom: 5px;">${hotel.nombre}</div>
-                                <div style="color: #aaa; font-size: 0.95rem; margin-bottom: 8px;">📍 ${hotel.direccion || hotel.ciudad}</div>
-                            </div>
-                            <div style="text-align: right; background: #1a1a1a; padding: 10px; border-radius: 8px; min-width: 120px;">
-                                <div style="color: #00ff88; font-size: 2rem; font-weight: bold; line-height: 1;">${hotel.puntuacion || 'N/A'}</div>
-                                <div style="color: #666; font-size: 0.9rem;">📊 ${hotel.total_resenas || 0} reseñas</div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            html += `<button onclick="cerrarResultadosGoogle()" style="
-                background: #00ff88; color: #050505; border: none; padding: 15px;
-                border-radius: 8px; margin-top: 20px; cursor: pointer; width: 100%;
-                font-weight: bold; font-size: 1.1rem;
-            ">CERRAR RESULTADOS</button>`;
-
-            contenedor.innerHTML = html;
-            document.body.appendChild(contenedor);
-        };
-
-        window.cerrarResultadosGoogle = function() {
-            const div = document.getElementById('resultados-busqueda');
-            if (div) div.remove();
         };
 
         // Función auxiliar para búsqueda desde rankings
@@ -1386,54 +1277,15 @@ window.cerrarResultadosGoogle = function() {
                     </div>
                 `).join('');
             }
-            // Esperamos a que la página cargue para conectar el botón
-document.addEventListener('DOMContentLoaded', () => {
-    
-    const searchBtn = document.querySelector('.search-btn');
-    
-    if (searchBtn) {
-        searchBtn.onclick = async function(e) {
-            e.preventDefault();
-            
-            // 1. Obtener lo que escribió el usuario
-            const input = document.getElementById('hotelSearch');
-            const query = input ? input.value.trim() : "";
-            
-            if (!query) {
-                alert("Por favor, escribe el nombre de un hotel o ciudad.");
-                return;
+
+            // 👇 CONEXIÓN CORRECTA DEL BOTÓN DE BÚSQUEDA
+            const searchBtn = document.querySelector('.search-btn');
+            if (searchBtn) {
+                searchBtn.onclick = function(e) {
+                    e.preventDefault();
+                    window.buscarEnGoogle();
+                };
             }
-
-            console.log("Buscando:", query);
-
-            try {
-                // 2. Pedir datos a tu servidor Flask
-                const response = await fetch(`/api/hotel/search?q=${encodeURIComponent(query)}`);
-                const hoteles = await response.json();
-
-                // 3. Formatear datos para la ventana visual
-                const resultados = hoteles.map(h => ({
-                    nombre: h.name,
-                    direccion: h.city,
-                    puntuacion: h.overall_score || h.score || 'N/A'
-                }));
-
-                // 4. Llamar a la ventana (asegúrate de que window.mostrarResultadosGoogle esté definido)
-                if (typeof window.mostrarResultadosGoogle === 'function') {
-                    window.mostrarResultadosGoogle(resultados, query);
-                } else {
-                    console.error("La función de visualización no está cargada.");
-                }
-
-            } catch (error) {
-                console.error("Error en la conexión:", error);
-                alert("No se pudo conectar con el servidor. Verifica que Flask esté corriendo.");
-            }
-        };
-    } else {
-        console.error("No se encontró el botón con la clase '.search-btn'");
-    }
-});
 
             // Conectar la tecla Enter
             const searchInput = document.getElementById('hotelSearch');
@@ -1448,70 +1300,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             console.log("✅ Página inicializada correctamente. Buscador global listo.");
         });
-// ========== FUNCIÓN PARA MOSTRAR RESULTADOS DE GOOGLE (PERMANENTE) ==========
-window.mostrarResultadosGoogle = function(hoteles, query) {
-    // Eliminar resultados anteriores
-    const resultadosDiv = document.getElementById('resultados-busqueda');
-    if (resultadosDiv) resultadosDiv.remove();
-
-    // Crear contenedor
-    const contenedor = document.createElement('div');
-    contenedor.id = 'resultados-busqueda';
-    contenedor.style.cssText = `
-        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-        width: 90%; max-width: 1000px; max-height: 80vh; overflow-y: auto;
-        background: #0a0a0a; border: 2px solid #00ff88; border-radius: 15px;
-        padding: 25px; z-index: 10000; box-shadow: 0 0 40px rgba(0,255,136,0.5);
-        font-family: 'Montserrat', sans-serif;
-    `;
-
-    let html = `
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px;">
-            <h2 style="color: #00ff88; margin: 0; font-size: 1.8rem;">🌍 Hoteles en ${query}</h2>
-            <span style="color: #888; background: #1a1a1a; padding: 5px 15px; border-radius: 20px;">${hoteles.length} resultados</span>
-        </div>
-    `;
-
-    hoteles.forEach(hotel => {
-        html += `
-            <div style="margin-bottom: 15px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 3px solid #00ff88;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <div style="flex: 1;">
-                        <div style="color: #fff; font-size: 1.3rem; font-weight: bold; margin-bottom: 5px;">${hotel.nombre}</div>
-                        <div style="color: #aaa; font-size: 0.95rem; margin-bottom: 8px;">📍 ${hotel.direccion || hotel.ciudad}</div>
-                    </div>
-                    <div style="text-align: right; background: #1a1a1a; padding: 10px; border-radius: 8px; min-width: 120px;">
-                        <div style="color: #00ff88; font-size: 2rem; font-weight: bold; line-height: 1;">${hotel.puntuacion || 'N/A'}</div>
-                        <div style="color: #666; font-size: 0.9rem;">📊 ${hotel.total_resenas || 0} reseñas</div>
-                    </div>
-                </div>
-            </div>
-        `;
-    });
-
-    html += `<button onclick="cerrarResultadosGoogle()" style="
-        background: #00ff88; color: #050505; border: none; padding: 15px;
-        border-radius: 8px; margin-top: 20px; cursor: pointer; width: 100%;
-        font-weight: bold; font-size: 1.1rem;
-    ">CERRAR RESULTADOS</button>`;
-
-    contenedor.innerHTML = html;
-    document.body.appendChild(contenedor);
-};
-
-window.cerrarResultadosGoogle = function() {
-    const div = document.getElementById('resultados-busqueda');
-    if (div) div.remove();
-};
-
-console.log("✅ Función mostrarResultadosGoogle instalada permanentemente"); </script>
+    </script>
 </body>
 </html>
-
-
-
-
-
 
 
 
