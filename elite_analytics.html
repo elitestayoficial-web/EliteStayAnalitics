@@ -1356,68 +1356,10 @@ window.cerrarResultadosGoogle = function() {
             console.log("✅ Página inicializada correctamente. Buscador global listo.");
         });
 
-        // Eliminadas todas las funciones antiguas duplicadas (performSearch, etc.)
-        // ========== FUNCIÓN PARA MOSTRAR RESULTADOS DE GOOGLE (AGREGADA PERMANENTEMENTE) ==========
-window.mostrarResultadosGoogle = function(hoteles, query) {
-    // Eliminar resultados anteriores
-    const resultadosDiv = document.getElementById('resultados-busqueda');
-    if (resultadosDiv) resultadosDiv.remove();
-
-    // Crear contenedor
-    const contenedor = document.createElement('div');
-    contenedor.id = 'resultados-busqueda';
-    contenedor.style.cssText = `
-        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-        width: 90%; max-width: 1000px; max-height: 80vh; overflow-y: auto;
-        background: #0a0a0a; border: 2px solid #00ff88; border-radius: 15px;
-        padding: 25px; z-index: 10000; box-shadow: 0 0 40px rgba(0,255,136,0.5);
-        font-family: 'Montserrat', sans-serif;
-    `;
-
-    let html = `
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px;">
-            <h2 style="color: #00ff88; margin: 0; font-size: 1.8rem;">🌍 Hoteles en ${query}</h2>
-            <span style="color: #888; background: #1a1a1a; padding: 5px 15px; border-radius: 20px;">${hoteles.length} resultados</span>
-        </div>
-    `;
-
-    hoteles.forEach(hotel => {
-        html += `
-            <div style="margin-bottom: 15px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 3px solid #00ff88;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <div style="flex: 1;">
-                        <div style="color: #fff; font-size: 1.3rem; font-weight: bold; margin-bottom: 5px;">${hotel.nombre}</div>
-                        <div style="color: #aaa; font-size: 0.95rem; margin-bottom: 8px;">📍 ${hotel.direccion || hotel.ciudad}</div>
-                    </div>
-                    <div style="text-align: right; background: #1a1a1a; padding: 10px; border-radius: 8px; min-width: 120px;">
-                        <div style="color: #00ff88; font-size: 2rem; font-weight: bold; line-height: 1;">${hotel.puntuacion || 'N/A'}</div>
-                        <div style="color: #666; font-size: 0.9rem;">📊 ${hotel.total_resenas || 0} reseñas</div>
-                    </div>
-                </div>
-            </div>
-        `;
-    });
-
-    html += `<button onclick="cerrarResultadosGoogle()" style="
-        background: #00ff88; color: #050505; border: none; padding: 15px;
-        border-radius: 8px; margin-top: 20px; cursor: pointer; width: 100%;
-        font-weight: bold; font-size: 1.1rem;
-    ">CERRAR RESULTADOS</button>`;
-
-    contenedor.innerHTML = html;
-    document.body.appendChild(contenedor);
-};
-
-// ========== FUNCIÓN PARA CERRAR RESULTADOS ==========
-window.cerrarResultadosGoogle = function() {
-    const div = document.getElementById('resultados-busqueda');
-    if (div) div.remove();
-};
-
-console.log("✅ Funciones de búsqueda global instaladas permanentemente");
     </script>
 </body>
 </html>
+
 
 
 
