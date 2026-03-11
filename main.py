@@ -277,9 +277,102 @@ def init_sample_data():
 
 # Ejecutar la inicialización al arrancar
 init_sample_data()
+# ========== NUEVAS RUTAS PARA GOOGLE PLACES API ==========
+import googlemaps
+from dotenv import load_dotenv
+
+# Cargar API key del archivo .env
+load_dotenv()
+GOOGLE_PLACES_API_KEY = os.getenv('GOOGLE_PLACES_API_KEY')
+
+if GOOGLE_PLACES_API_KEY:
+    gmaps = googlemaps.Client(key=GOOGLE_PLACES_API_KEY)
+    print("✅ Google Maps API conectada")
+else:
+    gmaps = None
+    print("⚠️ Google Maps API no configurada")
+
+@app.route('/api/hoteles/buscar')
+def buscar_hoteles_google():
+    """Busca hoteles en Google Places"""
+    query = request.args.get('q', '')
+    
+    if not query:
+        return jsonify({"error": "Se requiere parámetro 'q'"}), 400
+    
+    if not gmaps:
+        # Si no hay API key, usar datos de ejemplo de tu BD
+        return buscar_hoteles_locales(query)
+    
+    try:
+        # Buscar en Google Places
+        lugares = gmaps.places(query=f"hotels in {query}")
+        
+        resultados = []
+        for lugar in lugares.get('results', [])[:10]:
+            hotel = {
+                'id': lugar['place_id'],
+                'nombre': lugar.get('name', ''),
+                'direccion': lugar.get('formatted_address', ''),
+                'ciudad': query.title(),
+                'puntuacion': lugar.get('rating', 0),
+                'total_resenas': lugar.get('user_ratings_total', 0),
+                'source': 'google',
+                'precio': lugar.get('price_level', 'N/A')
+            }
+            resultados.append(hotel)
+        
+        return jsonify(resultados)
+        
+    except Exception as e:
+        print(f"Error en Google Places: {e}")
+        # Fallback a búsqueda local
+        return buscar_hoteles_locales(query)
+
+def buscar_hoteles_locales(query):
+    """Función de respaldo que busca en tu BD local"""
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            SELECT id, name, city, overall_score as puntuacion
+            FROM hotels 
+            WHERE LOWER(name) LIKE ? OR LOWER(city) LIKE ?
+            LIMIT 10
+        ''', (f'%{query.lower()}%', f'%{query.lower()}%'))
+        
+        results = cursor.fetchall()
+        conn.close()
+        
+        return jsonify([{
+            'id': r[0],
+            'nombre': r[1],
+            'ciudad': r[2],
+            'puntuacion': r[3] or 0,
+            'source': 'local'
+        } for r in results])
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/hoteles/place/<place_id>')
+def detalle_hotel_google(place_id):
+    """Obtiene detalles completos de un hotel por su place_id"""
+    if not gmaps:
+        return jsonify({"error": "Google Maps no configurado"}), 400
+    
+    try:
+        detalles = gmaps.place(place_id, 
+            fields=['name', 'rating', 'user_ratings_total', 'formatted_address', 
+                   'price_level', 'reviews', 'website', 'international_phone_number'])
+        
+        return jsonify(detalles.get('result', {}))
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
