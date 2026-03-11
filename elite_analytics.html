@@ -26,7 +26,124 @@
             padding: 0;
             box-sizing: border-box;
         }
+// ========== BUSCADOR CON API ==========
+async function performSearch() {
+    const query = document.getElementById('hotelSearch').value.trim();
+    
+    if (query === "") {
+        alert("Please enter a hotel name, city, or ID");
+        return;
+    }
 
+    // Mostrar indicador de carga
+    const searchBtn = document.querySelector('.search-btn');
+    const originalText = searchBtn.textContent;
+    searchBtn.textContent = '🔍 BUSCANDO...';
+    searchBtn.disabled = true;
+
+    try {
+        // Llamar a la API para buscar hoteles
+        const response = await fetch(`/api/hoteles/buscar?q=${encodeURIComponent(query)}`);
+        const resultados = await response.json();
+        
+        // Limpiar resultados anteriores
+        const resultadosDiv = document.getElementById('resultados-busqueda');
+        if (resultadosDiv) resultadosDiv.remove();
+        
+        // Crear contenedor de resultados
+        const contenedor = document.createElement('div');
+        contenedor.id = 'resultados-busqueda';
+        contenedor.style.position = 'fixed';
+        contenedor.style.top = '200px';
+        contenedor.style.left = '50%';
+        contenedor.style.transform = 'translateX(-50%)';
+        contenedor.style.width = '80%';
+        contenedor.style.maxWidth = '800px';
+        contenedor.style.maxHeight = '70vh';
+        contenedor.style.overflowY = 'auto';
+        contenedor.style.backgroundColor = '#0a0a0a';
+        contenedor.style.border = '1px solid #00ff88';
+        contenedor.style.borderRadius = '10px';
+        contenedor.style.padding = '20px';
+        contenedor.style.zIndex = '10000';
+        contenedor.style.boxShadow = '0 0 30px rgba(0,255,136,0.3)';
+        
+        if (resultados.length > 0) {
+            contenedor.innerHTML = `
+                <h3 style="color: #00ff88; margin-bottom: 15px;">🔍 Resultados para: "${query}"</h3>
+                ${resultados.map(hotel => `
+                    <div class="ranking-item" style="margin-bottom: 10px; padding: 10px; border-bottom: 1px solid #333;">
+                        <div class="hotel-info">
+                            <div>
+                                <div class="hotel-name" style="color: #fff; font-size: 1.1rem;">
+                                    ${hotel.nombre}
+                                    ${hotel.source === 'google' ? '<span style="color: #4285F4; font-size: 0.8rem; margin-left: 5px;">📊 Google</span>' : ''}
+                                </div>
+                                <div class="hotel-city" style="color: #666;">
+                                    ${hotel.ciudad} • ${hotel.pais || ''}
+                                </div>
+                                <div style="font-size: 0.8rem; color: #888; margin-top: 5px;">
+                                    📝 ${hotel.total_resenas} reseñas • 💰 $${hotel.precio_medio || 'N/A'}
+                                </div>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <span class="hotel-score" style="font-size: 1.2rem;">${hotel.puntuacion} ⭐</span>
+                            <br>
+                            <small style="color: #666;">${hotel.region}</small>
+                        </div>
+                    </div>
+                `).join('')}
+                <button onclick="cerrarResultados()" style="
+                    background: #00ff88;
+                    color: #050505;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    margin-top: 15px;
+                    cursor: pointer;
+                    width: 100%;
+                    font-weight: bold;
+                ">CERRAR</button>
+            `;
+        } else {
+            contenedor.innerHTML = `
+                <h3 style="color: #ff6b6b;">❌ No se encontraron hoteles para "${query}"</h3>
+                <p style="color: #888;">Sugerencias:</p>
+                <ul style="color: #aaa;">
+                    <li>Prueba con otra ciudad (Madrid, Paris, New York)</li>
+                    <li>Prueba con nombre de hotel (Ritz, Hilton, Marriott)</li>
+                    <li>Verifica la ortografía</li>
+                </ul>
+                <button onclick="cerrarResultados()" style="
+                    background: #00ff88;
+                    color: #050505;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    margin-top: 15px;
+                    cursor: pointer;
+                    width: 100%;
+                ">CERRAR</button>
+            `;
+        }
+        
+        document.body.appendChild(contenedor);
+        
+    } catch (error) {
+        console.error('Error en búsqueda:', error);
+        alert('Error al buscar. Por favor intenta de nuevo.');
+    } finally {
+        // Restaurar botón
+        searchBtn.textContent = originalText;
+        searchBtn.disabled = false;
+    }
+}
+
+function cerrarResultados() {
+    const div = document.getElementById('resultados-busqueda');
+    if (div) div.remove();
+}
         body {
             font-family: 'Montserrat', sans-serif;
             background: var(--dark-bg);
@@ -1646,6 +1763,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </script>
 </body>
 </html>
+
 
 
 
