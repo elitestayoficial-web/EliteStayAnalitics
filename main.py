@@ -432,9 +432,59 @@ def detalle_hotel_google(place_id):
         return jsonify(detalles.get('result', {}))
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+        # ========== GOOGLE PLACES API ENDPOINT ==========
+import googlemaps
+from dotenv import load_dotenv
+
+# Cargar API key
+load_dotenv()
+GOOGLE_PLACES_API_KEY = os.getenv('GOOGLE_PLACES_API_KEY')
+
+# Inicializar Google Maps si hay API key
+if GOOGLE_PLACES_API_KEY:
+    gmaps = googlemaps.Client(key=GOOGLE_PLACES_API_KEY)
+    print("✅ Google Maps API conectada")
+else:
+    gmaps = None
+    print("⚠️ Google Maps API no configurada")
+
+@app.route('/api/google/places')
+def buscar_google_places():
+    """Busca hoteles en Google Places"""
+    query = request.args.get('q', '')
+    
+    if not query:
+        return jsonify({"error": "Se requiere parámetro 'q'"}), 400
+    
+    if not gmaps:
+        return jsonify({"error": "Google Maps no configurado"}), 500
+    
+    try:
+        # Buscar hoteles en la ciudad
+        lugares = gmaps.places(query=f"hotels in {query}")
+        
+        resultados = []
+        for lugar in lugares.get('results', [])[:15]:
+            hotel = {
+                'id': lugar['place_id'],
+                'nombre': lugar.get('name', ''),
+                'direccion': lugar.get('formatted_address', ''),
+                'ciudad': query.title(),
+                'puntuacion': lugar.get('rating', 0),
+                'total_resenas': lugar.get('user_ratings_total', 0),
+                'precio': lugar.get('price_level', 'N/A'),
+                'source': 'google'
+            }
+            resultados.append(hotel)
+        
+        return jsonify(resultados)
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
