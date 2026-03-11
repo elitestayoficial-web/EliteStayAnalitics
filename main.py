@@ -154,6 +154,24 @@ init_sample_data()
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
+@app.route('/api/get_google_data/<hotel_name>')
+def get_google_data(hotel_name):
+    # Sustituye con tu clave real
+    GOOGLE_API_KEY = "TU_API_KEY_AQUÍ"
+    try:
+        import requests
+        search_url = f"https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input={hotel_name}&inputtype=textquery&fields=place_id,rating,user_ratings_total,formatted_address&key={GOOGLE_API_KEY}"
+        response = requests.get(search_url).json()
+        if response.get('candidates'):
+            hotel = response['candidates'][0]
+            return jsonify({
+                "status": "success",
+                "rating": hotel.get('rating', 0),
+                "user_ratings_total": hotel.get('user_ratings_total', 0)
+            })
+        return jsonify({"status": "not_found"}), 404
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 
 
