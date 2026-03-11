@@ -1764,6 +1764,134 @@ async function performSearch() {
     // Actualizar la fecha del sistema automáticamente
     document.getElementById('currentDate').innerText = new Date().toISOString().split('T')[0];
 </script>
+    // ========== FUNCIÓN PRINCIPAL DE BÚSQUEDA CON GOOGLE ==========
+window.buscarEnGoogle = async function() {
+    const query = document.getElementById('hotelSearch').value.trim();
+    
+    if (query === "") {
+        alert("🔍 Please enter a hotel name or city");
+        return;
+    }
+
+    try {
+        console.log("Buscando:", query);
+        const response = await fetch(`/api/google/places?q=${encodeURIComponent(query)}`);
+        const hoteles = await response.json();
+        
+        console.log("Hoteles encontrados:", hoteles);
+        
+        if (hoteles && hoteles.length > 0) {
+            window.mostrarResultadosGoogle(hoteles, query);
+        } else {
+            // Si no encuentra en Google, intentar con búsqueda local
+            performSearch();
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Error en la búsqueda. Usando búsqueda local...");
+        performSearch();
+    }
+};
+
+// ========== FUNCIÓN PARA MOSTRAR RESULTADOS DE GOOGLE ==========
+window.mostrarResultadosGoogle = function(hoteles, query) {
+    // Limpiar resultados anteriores
+    const resultadosDiv = document.getElementById('resultados-busqueda');
+    if (resultadosDiv) resultadosDiv.remove();
+    
+    // Crear contenedor de resultados
+    const contenedor = document.createElement('div');
+    contenedor.id = 'resultados-busqueda';
+    contenedor.style.cssText = `
+        position: fixed;
+        top: 200px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 900px;
+        max-height: 80vh;
+        overflow-y: auto;
+        background: #0a0a0a;
+        border: 2px solid #00ff88;
+        border-radius: 15px;
+        padding: 25px;
+        z-index: 10000;
+        box-shadow: 0 0 40px rgba(0,255,136,0.5);
+        font-family: 'Montserrat', sans-serif;
+    `;
+    
+    let html = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="color: #00ff88; margin: 0;">🌍 Hoteles en ${query}</h2>
+            <span style="color: #888;">${hoteles.length} resultados</span>
+        </div>
+    `;
+    
+    hoteles.forEach(hotel => {
+        html += `
+            <div style="margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="flex: 1;">
+                        <div style="color: #fff; font-size: 1.3rem; font-weight: bold;">${hotel.nombre}</div>
+                        <div style="color: #aaa; font-size: 0.95rem; margin-top: 8px;">
+                            📍 ${hotel.direccion || hotel.ciudad}
+                        </div>
+                        ${hotel.precio !== 'N/A' ? `<div style="color: #00ff88; font-size: 0.9rem; margin-top: 5px;">💰 Nivel: ${hotel.precio}</div>` : ''}
+                    </div>
+                    <div style="text-align: right; min-width: 120px;">
+                        <div style="color: #00ff88; font-size: 2rem; font-weight: bold;">${hotel.puntuacion || 'N/A'}</div>
+                        <div style="color: #00ff88; font-size: 0.9rem;">⭐ puntuación</div>
+                        <div style="color: #666; font-size: 0.85rem; margin-top: 5px;">📊 ${hotel.total_resenas || 0} reseñas</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += `
+        <button onclick="cerrarResultadosGoogle()" style="
+            background: #00ff88;
+            color: #050505;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            margin-top: 20px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            font-size: 1.1rem;
+        ">CERRAR RESULTADOS</button>
+    `;
+    
+    contenedor.innerHTML = html;
+    document.body.appendChild(contenedor);
+};
+
+// ========== FUNCIÓN PARA CERRAR RESULTADOS ==========
+window.cerrarResultadosGoogle = function() {
+    const div = document.getElementById('resultados-busqueda');
+    if (div) div.remove();
+};
+
+// ========== MODIFICAR EL BOTÓN DE BÚSQUEDA ==========
+document.addEventListener('DOMContentLoaded', function() {
+    const searchBtn = document.querySelector('.search-btn');
+    if (searchBtn) {
+        searchBtn.onclick = function(e) {
+            e.preventDefault();
+            buscarEnGoogle();
+        };
+    }
+    
+    const searchInput = document.getElementById('hotelSearch');
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                buscarEnGoogle();
+            }
+        });
+    }
+});
     // ========== CONEXIÓN CON DATOS REALES DE GOOGLE API ==========
 async function cargarDatosRealesGoogle() {
     try {
@@ -1914,6 +2042,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </script>
 </body>
 </html>
+
 
 
 
