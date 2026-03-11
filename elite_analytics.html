@@ -1386,15 +1386,54 @@ window.cerrarResultadosGoogle = function() {
                     </div>
                 `).join('');
             }
-
-            // 👇 CONEXIÓN DEL BOTÓN DE BÚSQUEDA (LA PARTE CLAVE)
-            const searchBtn = document.querySelector('.search-btn');
-            if (searchBtn) {
-                searchBtn.onclick = function(e) {
-                    e.preventDefault();
-                    window.buscarEnGoogle();
-                };
+            // Esperamos a que la página cargue para conectar el botón
+document.addEventListener('DOMContentLoaded', () => {
+    
+    const searchBtn = document.querySelector('.search-btn');
+    
+    if (searchBtn) {
+        searchBtn.onclick = async function(e) {
+            e.preventDefault();
+            
+            // 1. Obtener lo que escribió el usuario
+            const input = document.getElementById('hotelSearch');
+            const query = input ? input.value.trim() : "";
+            
+            if (!query) {
+                alert("Por favor, escribe el nombre de un hotel o ciudad.");
+                return;
             }
+
+            console.log("Buscando:", query);
+
+            try {
+                // 2. Pedir datos a tu servidor Flask
+                const response = await fetch(`/api/hotel/search?q=${encodeURIComponent(query)}`);
+                const hoteles = await response.json();
+
+                // 3. Formatear datos para la ventana visual
+                const resultados = hoteles.map(h => ({
+                    nombre: h.name,
+                    direccion: h.city,
+                    puntuacion: h.overall_score || h.score || 'N/A'
+                }));
+
+                // 4. Llamar a la ventana (asegúrate de que window.mostrarResultadosGoogle esté definido)
+                if (typeof window.mostrarResultadosGoogle === 'function') {
+                    window.mostrarResultadosGoogle(resultados, query);
+                } else {
+                    console.error("La función de visualización no está cargada.");
+                }
+
+            } catch (error) {
+                console.error("Error en la conexión:", error);
+                alert("No se pudo conectar con el servidor. Verifica que Flask esté corriendo.");
+            }
+        };
+    } else {
+        console.error("No se encontró el botón con la clase '.search-btn'");
+    }
+});
 
             // Conectar la tecla Enter
             const searchInput = document.getElementById('hotelSearch');
@@ -1409,10 +1448,10 @@ window.cerrarResultadosGoogle = function() {
 
             console.log("✅ Página inicializada correctamente. Buscador global listo.");
         });
-
-    </script>
+ </script>
 </body>
 </html>
+
 
 
 
