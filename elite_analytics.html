@@ -2063,6 +2063,48 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+        // ========== CORRECCIÓN DEL BOTÓN ==========
+// Esto fuerza la conexión del botón después de que todo cargue
+window.onload = function() {
+    // Buscar el botón por su texto
+    const botones = document.querySelectorAll('button');
+    let searchBtn = null;
+    
+    botones.forEach(btn => {
+        if (btn.textContent.includes('ANALYZE')) {
+            searchBtn = btn;
+        }
+    });
+    
+    // Si no funciona, buscar por clase
+    if (!searchBtn) {
+        searchBtn = document.querySelector('.search-btn');
+    }
+    
+    // Si encontramos el botón, lo conectamos
+    if (searchBtn) {
+        searchBtn.onclick = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            buscarEnGoogle();
+            return false;
+        };
+        console.log('✅ Botón ANALYZE conectado correctamente');
+    } else {
+        console.log('❌ No se encontró el botón ANALYZE');
+    }
+    
+    // Conectar también el Enter en el input
+    const input = document.getElementById('hotelSearch');
+    if (input) {
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                buscarEnGoogle();
+            }
+        });
+    }
+};
 </script>
     // ========== FUNCIÓN PRINCIPAL DE BÚSQUEDA CON GOOGLE ==========
 window.buscarEnGoogle = async function() {
@@ -2342,6 +2384,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </script>
 </body>
 </html>
+
 
 
 
