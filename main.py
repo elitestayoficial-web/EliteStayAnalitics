@@ -481,9 +481,25 @@ def buscar_google_places():
         
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+        @app.route('/api/google/place/<place_id>')
+def detalle_google_place(place_id):
+    """Obtiene detalles COMPLETOS incluyendo reseñas individuales"""
+    if not gmaps:
+        return jsonify({"error": "Google Maps no configurado"}), 500
+    
+    try:
+        # Pedir TODOS los campos, incluyendo reseñas
+        detalles = gmaps.place(place_id, 
+            fields=['name', 'rating', 'user_ratings_total', 'formatted_address', 
+                   'price_level', 'reviews', 'website', 'international_phone_number'])
+        
+        return jsonify(detalles.get('result', {}))
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
