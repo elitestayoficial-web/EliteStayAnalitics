@@ -432,6 +432,59 @@ def detalle_hotel_google(place_id):
         return jsonify(detalles.get('result', {}))
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+        
+        @app.route('/api/google/review-summary')
+def review_summary():
+    """Obtiene el resumen de reseñas de un hotel usando la API oficial de Google (legal)"""
+    place_id = request.args.get('place_id', '')
+    
+    if not place_id:
+        return jsonify({"error": "Se requiere place_id"}), 400
+    
+    if not GOOGLE_PLACES_API_KEY:
+        return jsonify({"error": "Google Maps no configurado"}), 500
+    
+    try:
+        # Usar la nueva API de Places con field mask para reviewSummary
+        url = f"https://places.googleapis.com/v1/places/{place_id}"
+        headers = {
+            'Content-Type': 'application/json',
+            'X-Goog-Api-Key': GOOGLE_PLACES_API_KEY,
+            'X-Goog-FieldMask': 'displayName,reviewSummary,googleMapsLinks.reviewsUri'
+        }
+        
+        import requests
+        response = requests.get(url, headers=headers)
+        
+        if response.status_code != 200:
+            return jsonify({"error": "Error al consultar Google API"}), response.status_code
+        
+        data = response.json()
+        
+        # Verificar si tiene reviewSummary
+        if 'reviewSummary' in data:
+            # Extraer los campos importantes
+            resumen = data['reviewSummary'].get('text', {}).get('text', '')
+            atribucion = data['reviewSummary'].get('disclosureText', {}).get('text', 'Summarized with Gemini')
+            enlace_resenas = data.get('googleMapsLinks', {}).get('reviewsUri', '')
+            flag_url = data['reviewSummary'].get('flagContentUri', '')
+            
+            return jsonify({
+                'place_id': place_id,
+                'resumen': resumen,
+                'atribucion': atribucion,
+                'enlace_resenas': enlace_resenas,
+                'flag_url': flag_url
+            })
+        else:
+            return jsonify({
+                'place_id': place_id,
+                'resumen': None,
+                'mensaje': 'No hay suficientes reseñas para generar un resumen automático'
+            }), 200
+            
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
         # ========== GOOGLE PLACES API ENDPOINT ==========
 import googlemaps
 from dotenv import load_dotenv
@@ -499,6 +552,7 @@ def detalle_google_place(place_id):
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
