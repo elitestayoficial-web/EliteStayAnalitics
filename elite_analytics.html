@@ -1496,6 +1496,140 @@ async function performSearch() {
     // Actualizar la fecha del sistema automáticamente
     document.getElementById('currentDate').innerText = new Date().toISOString().split('T')[0];
 </script>
+    // ========== CONEXIÓN CON DATOS REALES DE GOOGLE API ==========
+async function cargarDatosRealesGoogle() {
+    try {
+        console.log('🌍 Cargando datos globales de Google API...');
+        
+        // 1. Cargar estadísticas globales
+        const statsRes = await fetch('/api/stats/global');
+        const stats = await statsRes.json();
+        
+        // Actualizar SOLO los números en tu HTML
+        document.getElementById('statHotels').textContent = stats.total_hoteles.toLocaleString();
+        document.getElementById('statReviews').textContent = stats.total_resenas_google.toLocaleString();
+        
+        // 2. Cargar TOP 10 hoteles del mundo
+        const topRes = await fetch('/api/rankings/global/top');
+        const topHoteles = await topRes.json();
+        
+        // Actualizar la lista de TOP PERFORMERS
+        const bestList = document.getElementById('bestList');
+        if (bestList && topHoteles.length > 0) {
+            bestList.innerHTML = topHoteles.map((hotel, index) => `
+                <div class="ranking-item" data-hotel-id="${hotel.id}">
+                    <div class="hotel-info">
+                        <span class="hotel-rank-badge">${String(index + 1).padStart(2, '0')}</span>
+                        <div>
+                            <div class="hotel-name">
+                                ${hotel.nombre} ${hotel.region}
+                            </div>
+                            <div class="hotel-city">${hotel.ciudad} • ${hotel.resenas} reseñas</div>
+                        </div>
+                    </div>
+                    <span class="hotel-score">${hotel.puntuacion} ⭐</span>
+                </div>
+            `).join('');
+        }
+        
+        // 3. Cargar UNDERPERFORMING hoteles
+        const worstRes = await fetch('/api/rankings/global/worst');
+        const worstHoteles = await worstRes.json();
+        
+        const worstList = document.getElementById('worstList');
+        if (worstList && worstHoteles.length > 0) {
+            worstList.innerHTML = worstHoteles.map((hotel, index) => `
+                <div class="ranking-item" data-hotel-id="${hotel.id}">
+                    <div class="hotel-info">
+                        <span class="hotel-rank-badge">${String(index + 1).padStart(2, '0')}</span>
+                        <div>
+                            <div class="hotel-name" style="color: #ff6b6b;">
+                                ${hotel.nombre}
+                            </div>
+                            <div class="hotel-city">${hotel.ciudad} • ${hotel.resenas} reseñas</div>
+                        </div>
+                    </div>
+                    <span class="hotel-score" style="color: #ff6b6b;">${hotel.puntuacion} ⭐</span>
+                </div>
+            `).join('');
+        }
+        
+        // 4. Cargar SEMAPHORE (alertas globales)
+        const semRes = await fetch('/api/semaphore/global');
+        const semaphore = await semRes.json();
+        
+        document.getElementById('yellowCount').textContent = semaphore.alert.count;
+        document.getElementById('orangeCount').textContent = semaphore.incident.count;
+        document.getElementById('redCount').textContent = semaphore.crisis.count;
+        
+        console.log('✅ Datos globales cargados correctamente');
+        
+    } catch (error) {
+        console.error('Error cargando datos globales:', error);
+        // Si falla, mantener tus datos de demostración
+        console.log('📊 Usando datos de demostración');
+    }
+}
+
+// ========== FILTRO POR REGIÓN (opcional) ==========
+function filtrarPorRegion(region) {
+    const regionMap = {
+        'usa': '🇺🇸',
+        'europa': '🇪🇺', 
+        'asia': '🇯🇵',
+        'sudamerica': '🇧🇷'
+    };
+    
+    document.querySelectorAll('.ranking-item').forEach(item => {
+        const texto = item.textContent;
+        if (region === 'todos' || texto.includes(regionMap[region])) {
+            item.style.display = 'flex';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+// ========== AGREGAR BOTONES DE FILTRO GLOBAL ==========
+function agregarFiltrosGlobales() {
+    const header = document.querySelector('.section-header');
+    if (header && !document.getElementById('filtros-globales')) {
+        const filtros = document.createElement('div');
+        filtros.id = 'filtros-globales';
+        filtros.style.marginTop = '20px';
+        filtros.style.display = 'flex';
+        filtros.style.gap = '10px';
+        filtros.style.justifyContent = 'center';
+        filtros.style.flexWrap = 'wrap';
+        
+        filtros.innerHTML = `
+            <button class="lang-btn active" onclick="filtrarPorRegion('todos')">🌍 Todos</button>
+            <button class="lang-btn" onclick="filtrarPorRegion('usa')">🇺🇸 USA</button>
+            <button class="lang-btn" onclick="filtrarPorRegion('europa')">🇪🇺 Europa</button>
+            <button class="lang-btn" onclick="filtrarPorRegion('asia')">🇯🇵 Asia</button>
+            <button class="lang-btn" onclick="filtrarPorRegion('sudamerica')">🇧🇷 Sudamérica</button>
+        `;
+        
+        header.appendChild(filtros);
+    }
+}
+
+// ========== INICIALIZAR CON DATOS REALES ==========
+// Esto se ejecuta cuando la página carga
+document.addEventListener('DOMContentLoaded', function() {
+    // Tus funciones existentes
+    document.getElementById('currentDate').textContent = new Date().toISOString().split('T')[0];
+    setLanguage('en');
+    initGaugeChart();
+    mostrarNuevosHoteles();
+    
+    // NUEVO: Cargar datos reales de Google API
+    cargarDatosRealesGoogle();
+    agregarFiltrosGlobales();
+    
+    // Actualizar cada 5 minutos
+    setInterval(cargarDatosRealesGoogle, 300000);
+});
         // ========== INITIALIZATION ==========
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('currentDate').textContent = new Date().toISOString().split('T')[0];
@@ -1512,6 +1646,7 @@ async function performSearch() {
     </script>
 </body>
 </html>
+
 
 
 
