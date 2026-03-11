@@ -16,7 +16,7 @@ import sqlite3
 from datetime import datetime
 from flask import Flask, jsonify, send_from_directory, request
 from flask_cors import CORS
-import requests  # <-- YA ESTABA, PERFECTO
+import requests
 
 # --- Crear la aplicación Flask ---
 app = Flask(__name__)
@@ -280,8 +280,7 @@ def init_sample_data():
 # Ejecutar la inicialización al arrancar
 init_sample_data()
 
-# ========== GOOGLE PLACES API ==========
-import googlemaps
+# ========== GOOGLE PLACES API (NUEVA 2025) ==========
 from dotenv import load_dotenv
 
 # Cargar API key
@@ -289,10 +288,8 @@ load_dotenv()
 GOOGLE_PLACES_API_KEY = os.getenv('GOOGLE_PLACES_API_KEY')
 
 if GOOGLE_PLACES_API_KEY:
-    gmaps = googlemaps.Client(key=GOOGLE_PLACES_API_KEY)
-    print("✅ Google Maps API conectada (legacy)")
+    print("✅ Google Maps API Key configurada")
 else:
-    gmaps = None
     print("⚠️ Google Maps API no configurada")
 
 # ========== NUEVA FUNCIÓN: BUSCAR HOTELES EN GOOGLE PLACES (API 2025) ==========
@@ -444,40 +441,6 @@ def detalle_google_place(place_id):
         
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-@app.route('/api/hoteles/buscar')
-def buscar_hoteles_google():
-    """Busca hoteles en Google Places"""
-    query = request.args.get('q', '')
-    
-    if not query:
-        return jsonify({"error": "Se requiere parámetro 'q'"}), 400
-    
-    if not gmaps:
-        return buscar_hoteles_locales(query)
-    
-    try:
-        lugares = gmaps.places(query=f"hotels in {query}")
-        
-        resultados = []
-        for lugar in lugares.get('results', [])[:10]:
-            hotel = {
-                'id': lugar['place_id'],
-                'nombre': lugar.get('name', ''),
-                'direccion': lugar.get('formatted_address', ''),
-                'ciudad': query.title(),
-                'puntuacion': lugar.get('rating', 0),
-                'total_resenas': lugar.get('user_ratings_total', 0),
-                'source': 'google',
-                'precio': lugar.get('price_level', 'N/A')
-            }
-            resultados.append(hotel)
-        
-        return jsonify(resultados)
-        
-    except Exception as e:
-        print(f"Error en Google Places: {e}")
-        return buscar_hoteles_locales(query)
 
 def buscar_hoteles_locales(query):
     """Función de respaldo que busca en tu BD local"""
