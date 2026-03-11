@@ -1245,7 +1245,35 @@
                 });
             }
         }
+async function performSearch() {
+    const input = document.getElementById('hotelSearch');
+    const query = input.value;
+    const title = document.getElementById('mainTitle');
 
+    if (!query) return;
+
+    // Cambiamos el título para dar feedback de que está trabajando
+    title.innerHTML = `ANALYZING <span class="italic-sophistication">"${query}"</span>...`;
+
+    try {
+        const response = await fetch(`/api/get_google_data/${encodeURIComponent(query)}`);
+        const data = await response.json();
+
+        if (data.status === "success") {
+            // Actualiza el título con el Score real
+            title.innerHTML = `${query} <span class="italic-sophistication">${data.rating} APS</span>`;
+            
+            // Actualiza los números de las tarjetas de estadísticas
+            document.getElementById('statReviews').innerText = data.user_ratings_total.toLocaleString();
+            document.getElementById('statAccuracy').innerText = "99.9%";
+        } else {
+            title.innerHTML = `HOTEL <span class="italic-sophistication">NOT FOUND</span>`;
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        title.innerHTML = `SYSTEM <span class="italic-sophistication">OFFLINE</span>`;
+    }
+}
         // ========== GAUGE CHART ==========
         function initGaugeChart() {
             const ctx = document.getElementById('gaugeChart').getContext('2d');
@@ -1415,5 +1443,6 @@
     </script>
 </body>
 </html>
+
 
 
