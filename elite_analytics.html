@@ -1349,7 +1349,56 @@
         function closeModal() {
             document.getElementById('paymentModal').style.display = 'none';
         }
+<script>
+    async function performSearch() {
+        const query = document.getElementById('hotelSearch').value;
+        const mainTitle = document.getElementById('mainTitle');
+        const statReviews = document.getElementById('statReviews');
+        const statHotels = document.getElementById('statHotels');
 
+        if (!query) {
+            alert("Please enter a hotel name or city.");
+            return;
+        }
+
+        // Efecto visual de carga
+        mainTitle.innerHTML = `Analyzing <span class="italic-sophistication">"${query}"</span>...`;
+        
+        try {
+            // Llamada a tu API en Render (asegúrate de que tu main.py tenga esta ruta)
+            const response = await fetch(`/api/get_google_data/${encodeURIComponent(query)}`);
+            const data = await response.json();
+
+            if (data.status === "success") {
+                // 1. Actualizamos el título con el nombre y su score real
+                mainTitle.innerHTML = `${query} <span class="italic-sophistication">${data.rating} Stars</span>`;
+                
+                // 2. Actualizamos las estadísticas con datos reales de la búsqueda
+                statReviews.innerText = data.user_ratings_total || "N/A";
+                statHotels.innerText = "1"; // Estamos analizando este hotel específico
+                
+                // 3. Pequeño feedback visual en la consola
+                console.log("Data retrieved from Google:", data);
+            } else {
+                mainTitle.innerHTML = `Not <span class="italic-sophistication">Found</span>`;
+                alert("Hotel not found in Google database.");
+            }
+        } catch (error) {
+            console.error("Connection error:", error);
+            mainTitle.innerHTML = `System <span class="italic-sophistication">Error</span>`;
+        }
+    }
+
+    // Permitir buscar al presionar 'Enter' en el teclado
+    document.getElementById('hotelSearch').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            performSearch();
+        }
+    });
+
+    // Actualizar la fecha del sistema automáticamente
+    document.getElementById('currentDate').innerText = new Date().toISOString().split('T')[0];
+</script>
         // ========== INITIALIZATION ==========
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('currentDate').textContent = new Date().toISOString().split('T')[0];
@@ -1366,4 +1415,5 @@
     </script>
 </body>
 </html>
+
 
