@@ -1045,9 +1045,8 @@ window.verResenasHotel = async function(placeId, nombreHotel) {
     }
 };
 
-// ========== FUNCIÓN PARA MOSTRAR VENTANA DE RESEÑAS (VERSIÓN CORREGIDA) ==========
+// ========== FUNCIÓN PARA MOSTRAR VENTANA DE RESEÑAS (VERSIÓN FINAL) ==========
 function mostrarVentanaResenas(data, nombreHotel) {
-    // Eliminar ventana anterior si existe
     const existente = document.getElementById('ventana-resenas');
     if (existente) existente.remove();
 
@@ -1061,14 +1060,12 @@ function mostrarVentanaResenas(data, nombreHotel) {
         font-family: 'Montserrat', sans-serif;
     `;
 
-    // Extraer datos
     const puntuacion = data.puntuacion || data.rating || 'N/A';
     const totalResenas = data.total_resenas || data.userRatingCount || 0;
     const direccion = data.direccion || data.formattedAddress || 'Dirección no disponible';
     const telefono = data.telefono || data.nationalPhoneNumber || 'Teléfono no disponible';
     const website = data.website || data.websiteUri || '#';
     
-    // Separar reseñas (verificar que existan)
     const todasResenas = data.reviews || [];
     const resenasNegativas = todasResenas.filter(r => r.rating <= 2);
     const resenasPositivas = todasResenas.filter(r => r.rating >= 4);
@@ -1096,7 +1093,7 @@ function mostrarVentanaResenas(data, nombreHotel) {
         </div>
     `;
 
-    // Reseñas negativas (destacadas)
+    // Reseñas negativas
     if (resenasNegativas.length > 0) {
         html += `
             <div style="margin-bottom: 20px;">
@@ -1107,7 +1104,9 @@ function mostrarVentanaResenas(data, nombreHotel) {
         `;
         
         resenasNegativas.slice(0, 5).forEach(r => {
-            const textoResena = r.text || 'No hay texto disponible';
+            // ✅ LÍNEA CORREGIDA
+            const textoResena = r.text?.text || r.text || 'No hay texto disponible';
+            
             html += `
                 <div style="background: rgba(255,107,107,0.1); margin: 10px 0; padding: 15px; border-radius: 8px;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
@@ -1134,8 +1133,10 @@ function mostrarVentanaResenas(data, nombreHotel) {
         `;
         
         resenasPositivas.slice(0, 3).forEach(r => {
-            const textoResena = r.text || '';
+            // ✅ LÍNEA CORREGIDA
+            const textoResena = r.text?.text || r.text || '';
             const textoCorto = textoResena.length > 100 ? textoResena.substring(0, 100) + '...' : textoResena;
+            
             html += `
                 <div style="background: rgba(0,255,136,0.05); margin: 10px 0; padding: 10px; border-radius: 5px;">
                     <div style="display: flex; justify-content: space-between;">
@@ -1289,6 +1290,7 @@ function mostrarVentanaResenas(data, nombreHotel) {
 </script>
 </body>
 </html>
+
 
 
 
