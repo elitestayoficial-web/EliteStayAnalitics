@@ -1044,8 +1044,10 @@ window.verResenasHotel = async function(placeId, nombreHotel) {
         document.getElementById('loading-resenas')?.remove();
     }
 };
-// ========== FUNCIÓN PARA MOSTRAR VENTANA DE RESEÑAS (VERSIÓN FINAL) ==========
+// ========== FUNCIÓN PARA MOSTRAR VENTANA DE RESEÑAS (VERSIÓN CON LOGS) ==========
 function mostrarVentanaResenas(data, nombreHotel) {
+    console.log('🔥 DATOS COMPLETOS RECIBIDOS:', data);
+    
     const existente = document.getElementById('ventana-resenas');
     if (existente) existente.remove();
 
@@ -1065,7 +1067,27 @@ function mostrarVentanaResenas(data, nombreHotel) {
     const telefono = data.telefono || data.nationalPhoneNumber || 'Teléfono no disponible';
     const website = data.website || data.websiteUri || '#';
     
+    // 🔍 INVESTIGAR LAS RESEÑAS
     const todasResenas = data.reviews || [];
+    console.log('📝 ARRAY DE RESEÑAS:', todasResenas);
+    console.log('📝 CANTIDAD DE RESEÑAS:', todasResenas.length);
+    
+    if (todasResenas.length > 0) {
+        console.log('🔍 PRIMERA RESEÑA (COMPLETA):', todasResenas[0]);
+        console.log('🔍 TIPO DE LA PRIMERA RESEÑA:', typeof todasResenas[0]);
+        console.log('🔍 CAMPOS DE LA PRIMERA RESEÑA:', Object.keys(todasResenas[0]));
+        
+        // Ver específicamente el campo text
+        console.log('🔍 VALOR DE text:', todasResenas[0].text);
+        console.log('🔍 TIPO DE text:', typeof todasResenas[0].text);
+        
+        // Si text es un objeto, ver sus propiedades
+        if (todasResenas[0].text && typeof todasResenas[0].text === 'object') {
+            console.log('🔍 PROPIEDADES DE text:', Object.keys(todasResenas[0].text));
+            console.log('🔍 VALOR DE text.text:', todasResenas[0].text.text);
+        }
+    }
+    
     const resenasNegativas = todasResenas.filter(r => r.rating <= 2);
     const resenasPositivas = todasResenas.filter(r => r.rating >= 4);
 
@@ -1103,17 +1125,29 @@ function mostrarVentanaResenas(data, nombreHotel) {
         `;
         
         resenasNegativas.slice(0, 5).forEach(r => {
-            // ✅ LÍNEA CORREGIDA
-            const textoResena = r.text?.text || r.text || 'No hay texto disponible';
+            // Extraer texto de forma inteligente
+            let textoResena = 'No hay texto disponible';
+            
+            if (r.text) {
+                if (typeof r.text === 'string') {
+                    textoResena = r.text;
+                } else if (typeof r.text === 'object') {
+                    textoResena = r.text.text || r.text.value || JSON.stringify(r.text);
+                }
+            } else if (r.originalText) {
+                textoResena = r.originalText;
+            } else if (r.snippet) {
+                textoResena = r.snippet;
+            }
             
             html += `
                 <div style="background: rgba(255,107,107,0.1); margin: 10px 0; padding: 15px; border-radius: 8px;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                        <span style="color: #ff6b6b; font-weight: bold;">${r.author_name || 'Anónimo'}</span>
+                        <span style="color: #ff6b6b; font-weight: bold;">${r.author_name || r.authorName || 'Anónimo'}</span>
                         <span style="color: #ff6b6b;">${r.rating} ⭐</span>
                     </div>
                     <p style="color: #fff; margin: 5px 0; font-style: italic;">"${textoResena}"</p>
-                    <div style="color: #888; font-size: 0.8rem;">${r.time ? new Date(r.time * 1000).toLocaleDateString() : ''}</div>
+                    <div style="color: #888; font-size: 0.8rem;">${r.time ? new Date(r.time * 1000).toLocaleDateString() : r.relativeTime || ''}</div>
                 </div>
             `;
         });
@@ -1132,14 +1166,26 @@ function mostrarVentanaResenas(data, nombreHotel) {
         `;
         
         resenasPositivas.slice(0, 3).forEach(r => {
-            // ✅ LÍNEA CORREGIDA
-            const textoResena = r.text?.text || r.text || '';
+            let textoResena = '';
+            
+            if (r.text) {
+                if (typeof r.text === 'string') {
+                    textoResena = r.text;
+                } else if (typeof r.text === 'object') {
+                    textoResena = r.text.text || r.text.value || '';
+                }
+            } else if (r.originalText) {
+                textoResena = r.originalText;
+            } else if (r.snippet) {
+                textoResena = r.snippet;
+            }
+            
             const textoCorto = textoResena.length > 100 ? textoResena.substring(0, 100) + '...' : textoResena;
             
             html += `
                 <div style="background: rgba(0,255,136,0.05); margin: 10px 0; padding: 10px; border-radius: 5px;">
                     <div style="display: flex; justify-content: space-between;">
-                        <span style="color: #00ff88;">${r.author_name || 'Anónimo'}</span>
+                        <span style="color: #00ff88;">${r.author_name || r.authorName || 'Anónimo'}</span>
                         <span style="color: #00ff88;">${r.rating} ⭐</span>
                     </div>
                     <p style="color: #aaa; margin-top: 5px;">"${textoCorto}"</p>
@@ -1289,6 +1335,7 @@ function mostrarVentanaResenas(data, nombreHotel) {
 </script>
 </body>
 </html>
+
 
 
 
