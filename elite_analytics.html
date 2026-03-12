@@ -879,298 +879,247 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script>
-        // ========== CONFIGURACIÓN INICIAL ==========
-        const stripe = Stripe('pk_test_YOUR_PUBLIC_KEY');
-        let currentPlan = 'premium';
-        let darkMode = true;
-        let currentLanguage = 'en';
-        let gaugeChart = null;
+<script>
+    // ========== CONFIGURACIÓN INICIAL ==========
+    const stripe = Stripe('pk_test_YOUR_PUBLIC_KEY');
+    let currentPlan = 'premium';
+    let darkMode = true;
+    let currentLanguage = 'en';
+    let gaugeChart = null;
 
-        // ========== FUNCIONES DE INTERFAZ ==========
-        const translations = {
-            en: { hero_subtitle: 'Advanced analytics for the high-end hospitality industry. Empirical data, strategic vision.' },
-            es: { hero_subtitle: 'Análisis avanzado para la industria hotelera de alto nivel. Datos empíricos, visión estratégica.' },
-            fr: { hero_subtitle: 'Analyses avancées pour l\'industrie hôtelière haut de gamme. Données empiriques, vision stratégique.' }
-        };
+    // ========== FUNCIONES DE INTERFAZ ==========
+    const translations = {
+        en: { hero_subtitle: 'Advanced analytics for the high-end hospitality industry. Empirical data, strategic vision.' },
+        es: { hero_subtitle: 'Análisis avanzado para la industria hotelera de alto nivel. Datos empíricos, visión estratégica.' },
+        fr: { hero_subtitle: 'Analyses avancées pour l\'industrie hôtelière haut de gamme. Données empiriques, vision stratégique.' }
+    };
 
-        function toggleTheme() {
-            darkMode = !darkMode;
-            const body = document.body;
-            const btn = document.getElementById('themeBtn');
-            if (darkMode) {
-                body.classList.remove('light-mode');
-                btn.textContent = '🌙 Dark';
-            } else {
-                body.classList.add('light-mode');
-                btn.textContent = '☀️ Light';
-            }
-        }
+    function toggleTheme() {
+        darkMode = !darkMode;
+        const body = document.body;
+        const btn = document.getElementById('themeBtn');
+        body.classList.toggle('light-mode', !darkMode);
+        btn.textContent = darkMode ? '🌙 Dark' : '☀️ Light';
+    }
 
-        function setLanguage(lang) {
-            currentLanguage = lang;
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.textContent.includes(lang.toUpperCase())) btn.classList.add('active');
-            });
-            const element = document.querySelector('.subtitle');
-            if (element && translations[lang]) element.textContent = translations[lang].hero_subtitle;
-        }
+    function setLanguage(lang) {
+        currentLanguage = lang;
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.textContent.includes(lang.toUpperCase()));
+        });
+        const element = document.querySelector('.subtitle');
+        if (element && translations[lang]) element.textContent = translations[lang].hero_subtitle;
+    }
 
-        function initGaugeChart() {
-            const ctx = document.getElementById('gaugeChart').getContext('2d');
-            if (gaugeChart) gaugeChart.destroy();
-            gaugeChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: { datasets: [{ data: [87, 13], backgroundColor: ['#00ff88', '#ff4444'], borderWidth: 0, circumference: 180, rotation: 270 }] },
-                options: { cutout: '70%', responsive: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
-            });
-        }
+    function initGaugeChart() {
+        const ctx = document.getElementById('gaugeChart')?.getContext('2d');
+        if (!ctx) return;
+        if (gaugeChart) gaugeChart.destroy();
+        gaugeChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: { datasets: [{ data: [87, 13], backgroundColor: ['#00ff88', '#ff4444'], borderWidth: 0, circumference: 180, rotation: 270 }] },
+            options: { cutout: '70%', responsive: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+        });
+    }
 
-        // ========== FUNCIÓN PARA MOSTRAR RESULTADOS DE BÚSQUEDA ==========
-        window.mostrarResultadosGoogle = function(hoteles, query) {
-            const existente = document.getElementById('resultados-busqueda');
-            if (existente) existente.remove();
+    // ========== FUNCIÓN PARA MOSTRAR RESULTADOS DE BÚSQUEDA ==========
+    window.mostrarResultadosGoogle = function(hoteles, query) {
+        const existente = document.getElementById('resultados-busqueda');
+        if (existente) existente.remove();
 
-            const contenedor = document.createElement('div');
-            contenedor.id = 'resultados-busqueda';
-            contenedor.style.cssText = `
-                position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-                width: 90%; max-width: 900px; max-height: 80vh; overflow-y: auto;
-                background: #0a0a0a; border: 2px solid #00ff88; border-radius: 15px;
-                padding: 25px; z-index: 10000; box-shadow: 0 0 40px rgba(0,255,136,0.5);
-                font-family: 'Montserrat', sans-serif;
-            `;
+        const contenedor = document.createElement('div');
+        contenedor.id = 'resultados-busqueda';
+        contenedor.style.cssText = `
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 90%; max-width: 900px; max-height: 80vh; overflow-y: auto;
+            background: #0a0a0a; border: 2px solid #00ff88; border-radius: 15px;
+            padding: 25px; z-index: 10000; box-shadow: 0 0 40px rgba(0,255,136,0.5);
+            font-family: 'Montserrat', sans-serif;
+        `;
 
-            let html = `
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px;">
-                    <h2 style="color: #00ff88; margin: 0; font-size: 1.8rem;">🌍 Hoteles en ${query}</h2>
-                    <span style="color: #888; background: #1a1a1a; padding: 5px 15px; border-radius: 20px;">${hoteles.length} resultados</span>
-                </div>
-            `;
+        let html = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px;">
+                <h2 style="color: #00ff88; margin: 0; font-size: 1.8rem;">🌍 Hoteles en ${query}</h2>
+                <span style="color: #888; background: #1a1a1a; padding: 5px 15px; border-radius: 20px;">${hoteles.length} resultados</span>
+            </div>
+        `;
 
-            hoteles.forEach(hotel => {
-                html += `
-                    <div style="margin-bottom: 15px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 3px solid #00ff88;">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                            <div style="flex: 1;">
-                                <div style="color: #fff; font-size: 1.3rem; font-weight: bold; margin-bottom: 5px;">${hotel.nombre}</div>
-                                <div style="color: #aaa; font-size: 0.95rem; margin-bottom: 8px;">📍 ${hotel.direccion || hotel.ciudad}</div>
-                            </div>
-                            <div style="text-align: right; background: #1a1a1a; padding: 10px; border-radius: 8px; min-width: 120px;">
-                                <div style="color: #00ff88; font-size: 2rem; font-weight: bold; line-height: 1;">${hotel.puntuacion || 'N/A'}</div>
-                                <div style="color: #666; font-size: 0.9rem;">📊 ${hotel.total_resenas || 0} reseñas</div>
-                            </div>
+        hoteles.forEach(hotel => {
+            html += `
+                <div style="margin-bottom: 15px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 3px solid #00ff88;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div style="flex: 1;">
+                            <div style="color: #fff; font-size: 1.3rem; font-weight: bold; margin-bottom: 5px;">${hotel.nombre}</div>
+                            <div style="color: #aaa; font-size: 0.95rem; margin-bottom: 8px;">📍 ${hotel.direccion || hotel.ciudad}</div>
+                        </div>
+                        <div style="text-align: right; background: #1a1a1a; padding: 10px; border-radius: 8px; min-width: 120px;">
+                            <div style="color: #00ff88; font-size: 2rem; font-weight: bold; line-height: 1;">${hotel.puntuacion || 'N/A'}</div>
+                            <div style="color: #666; font-size: 0.9rem;">📊 ${hotel.total_resenas || 0} reseñas</div>
                         </div>
                     </div>
-                `;
-            });
+                </div>
+            `;
+        });
 
-            html += `<button onclick="this.parentElement.remove()" style="
-                background: #00ff88; color: #050505; border: none; padding: 15px;
-                border-radius: 8px; margin-top: 20px; cursor: pointer; width: 100%;
-                font-weight: bold; font-size: 1.1rem;
-            ">CERRAR</button>`;
+        html += `<button onclick="this.parentElement.remove()" style="
+            background: #00ff88; color: #050505; border: none; padding: 15px;
+            border-radius: 8px; margin-top: 20px; cursor: pointer; width: 100%;
+            font-weight: bold; font-size: 1.1rem;
+        ">CERRAR</button>`;
 
-            contenedor.innerHTML = html;
-            document.body.appendChild(contenedor);
-        };
+        contenedor.innerHTML = html;
+        document.body.appendChild(contenedor);
+    };
 
-        // ========== CARGA DE DATOS INICIALES (Rankings Reales) ==========
-        async function loadRealData() {
-            try {
-                // Cargar TOP 10 mejores hoteles
-                const bestRes = await fetch('/api/rankings/best');
+    // ========== CARGA DE DATOS INICIALES (Rankings) ==========
+    async function loadRealData() {
+        try {
+            const [bestRes, worstRes, semRes] = await Promise.all([
+                fetch('/api/rankings/best').catch(e => ({ ok: false, json: () => ({}) })),
+                fetch('/api/rankings/worst').catch(e => ({ ok: false, json: () => ({}) })),
+                fetch('/api/semaphore/stats').catch(e => ({ ok: false, json: () => ({}) }))
+            ]);
+
+            if (bestRes.ok) {
                 const bestHotels = await bestRes.json();
                 const bestList = document.getElementById('bestList');
-                if (bestHotels.length > 0) {
-                    bestList.innerHTML = '';
-                    bestHotels.forEach((hotel, index) => {
-                        bestList.innerHTML += `
-                            <div class="ranking-item" onclick="autoSearch('${hotel.name}')">
-                                <div class="hotel-info">
-                                    <span class="hotel-rank-badge">${String(index + 1).padStart(2, '0')}</span>
-                                    <div>
-                                        <div class="hotel-name">${hotel.name}</div>
-                                        <div class="hotel-city">${hotel.city}</div>
-                                    </div>
+                if (bestList && bestHotels.length) {
+                    bestList.innerHTML = bestHotels.map((hotel, i) => `
+                        <div class="ranking-item" onclick="autoSearch('${hotel.name}')">
+                            <div class="hotel-info">
+                                <span class="hotel-rank-badge">${String(i+1).padStart(2, '0')}</span>
+                                <div>
+                                    <div class="hotel-name">${hotel.name}</div>
+                                    <div class="hotel-city">${hotel.city}</div>
                                 </div>
-                                <span class="hotel-score">${hotel.score.toFixed(2)} APS</span>
-                            </div>`;
-                    });
+                            </div>
+                            <span class="hotel-score">${hotel.score.toFixed(2)} APS</span>
+                        </div>
+                    `).join('');
                 }
+            }
 
-                // Cargar TOP 10 peores hoteles
-                const worstRes = await fetch('/api/rankings/worst');
+            if (worstRes.ok) {
                 const worstHotels = await worstRes.json();
                 const worstList = document.getElementById('worstList');
-                if (worstHotels.length > 0) {
-                    worstList.innerHTML = '';
-                    worstHotels.forEach((hotel, index) => {
-                        worstList.innerHTML += `
-                            <div class="ranking-item" onclick="autoSearch('${hotel.name}')">
-                                <div class="hotel-info">
-                                    <span class="hotel-rank-badge">${String(index + 1).padStart(2, '0')}</span>
-                                    <div>
-                                        <div class="hotel-name" style="color: #ff6b6b;">${hotel.name}</div>
-                                        <div class="hotel-city">${hotel.city}</div>
-                                    </div>
+                if (worstList && worstHotels.length) {
+                    worstList.innerHTML = worstHotels.map((hotel, i) => `
+                        <div class="ranking-item" onclick="autoSearch('${hotel.name}')">
+                            <div class="hotel-info">
+                                <span class="hotel-rank-badge">${String(i+1).padStart(2, '0')}</span>
+                                <div>
+                                    <div class="hotel-name" style="color: #ff6b6b;">${hotel.name}</div>
+                                    <div class="hotel-city">${hotel.city}</div>
                                 </div>
-                                <span class="hotel-score" style="color: #ff6b6b;">${hotel.score.toFixed(2)} APS</span>
-                            </div>`;
-                    });
+                            </div>
+                            <span class="hotel-score" style="color: #ff6b6b;">${hotel.score.toFixed(2)} APS</span>
+                        </div>
+                    `).join('');
                 }
+            }
 
-                // Cargar estadísticas del semáforo
-                const semRes = await fetch('/api/semaphore/stats');
+            if (semRes.ok) {
                 const semData = await semRes.json();
                 document.getElementById('yellowCount').innerText = semData.yellow || 0;
                 document.getElementById('orangeCount').innerText = semData.orange || 0;
                 document.getElementById('redCount').innerText = semData.red || 0;
-
-                // Opcional: Cargar estadísticas globales (hoteles, reseñas)
-                // const statsRes = await fetch('/api/stats/global');
-                // const statsData = await statsRes.json();
-                // document.getElementById('statHotels').innerText = statsData.total_hoteles.toLocaleString();
-                // document.getElementById('statReviews').innerText = statsData.total_resenas.toLocaleString();
-
-            } catch (e) {
-                console.error("Error cargando datos de la API:", e);
             }
+        } catch (e) {
+            console.error("Error cargando datos:", e);
         }
+    }
 
-        // ========== FUNCIÓN DE BÚSQUEDA GLOBAL ==========
-        window.buscarEnGoogle = async function() {
-            const query = document.getElementById('hotelSearch').value.trim();
-            if (query === "") {
-                alert("🔍 Please enter a hotel name or city");
-                return;
+    // ========== FUNCIÓN DE BÚSQUEDA GLOBAL ==========
+    window.buscarEnGoogle = async function() {
+        const query = document.getElementById('hotelSearch').value.trim();
+        if (!query) return alert("🔍 Please enter a hotel name or city");
+
+        const searchBtn = document.querySelector('.search-btn');
+        const originalText = searchBtn.textContent;
+        searchBtn.textContent = '🔍 BUSCANDO...';
+        searchBtn.disabled = true;
+
+        try {
+            const response = await fetch(`/api/google/places?q=${encodeURIComponent(query)}`);
+            const hoteles = await response.json();
+            if (hoteles?.length) {
+                window.mostrarResultadosGoogle(hoteles, query);
+            } else {
+                alert(`❌ No se encontraron hoteles para: "${query}"`);
             }
+        } catch (error) {
+            alert("Error en la búsqueda. Intenta de nuevo.");
+        } finally {
+            searchBtn.textContent = originalText;
+            searchBtn.disabled = false;
+        }
+    };
 
-            const searchBtn = document.querySelector('.search-btn');
-            const originalText = searchBtn.textContent;
-            searchBtn.textContent = '🔍 BUSCANDO...';
-            searchBtn.disabled = true;
+    // ========== FUNCIÓN AUXILIAR ==========
+    window.autoSearch = function(name) {
+        document.getElementById('hotelSearch').value = name;
+        window.buscarEnGoogle();
+    };
 
-            try {
-                const response = await fetch(`/api/google/places?q=${encodeURIComponent(query)}`);
-                const hoteles = await response.json();
-                if (hoteles && hoteles.length > 0) {
-                    window.mostrarResultadosGoogle(hoteles, query);
-                } else {
-                    alert(`❌ No se encontraron hoteles para: "${query}"`);
-                }
-            } catch (error) {
-                console.error("Error:", error);
-                alert("Error en la búsqueda. Intenta de nuevo.");
-            } finally {
-                searchBtn.textContent = originalText;
-                searchBtn.disabled = false;
-            }
+    // ========== FUNCIONES DE PAGO ==========
+    function showPaymentModal(plan) {
+        currentPlan = plan;
+        const titles = { basic: 'Subscribe to Basic Plan - $49/month', premium: 'Subscribe to Premium Plan - $199/month', enterprise: 'Contact Sales - Enterprise Plan' };
+        document.getElementById('modalTitle').textContent = titles[plan] || 'Subscribe';
+        document.getElementById('paymentModal').style.display = 'block';
+        const card = stripe.elements().create('card', { style: { base: { color: '#ffffff', backgroundColor: '#2a2a2a', '::placeholder': { color: '#666' } } } });
+        card.mount('#card-element');
+        document.getElementById('paymentForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true; btn.textContent = 'Processing...';
+            setTimeout(() => { alert(`✅ Payment successful! Welcome to the ${currentPlan} plan.`); closeModal(); btn.disabled = false; btn.textContent = 'Pay with Stripe'; }, 2000);
         };
+    }
+    function closeModal() { document.getElementById('paymentModal').style.display = 'none'; }
 
-        // ========== FUNCIÓN AUXILIAR PARA BÚSQUEDA DESDE RANKINGS ==========
-        window.autoSearch = function(name) {
-            document.getElementById('hotelSearch').value = name;
-            buscarEnGoogle();
-        };
+    // ========== INICIALIZACIÓN DE LA PÁGINA ==========
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('currentDate').innerText = new Date().toISOString().split('T')[0];
+        initGaugeChart();
+        loadRealData();
 
-        // ========== FUNCIONES DE PAGO ==========
-        function showPaymentModal(plan) {
-            currentPlan = plan;
-            const titles = {
-                'basic': 'Subscribe to Basic Plan - $49/month',
-                'premium': 'Subscribe to Premium Plan - $199/month',
-                'enterprise': 'Contact Sales - Enterprise Plan'
-            };
-            document.getElementById('modalTitle').textContent = titles[plan] || 'Subscribe';
-            document.getElementById('paymentModal').style.display = 'block';
-            
-            const elements = stripe.elements();
-            const card = elements.create('card', { style: { base: { color: '#ffffff', backgroundColor: '#2a2a2a', '::placeholder': { color: '#666' } } } });
-            card.mount('#card-element');
-            
-            document.getElementById('paymentForm').onsubmit = async (e) => {
-                e.preventDefault();
-                const submitBtn = document.getElementById('submitBtn');
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Processing...';
-                setTimeout(() => {
-                    alert(`✅ Payment successful! Welcome to the ${currentPlan} plan.`);
-                    closeModal();
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Pay with Stripe';
-                }, 2000);
-            };
-        }
-
-        function closeModal() {
-            document.getElementById('paymentModal').style.display = 'none';
-        }
-
-        // ========== INICIALIZACIÓN DE LA PÁGINA ==========
-        document.addEventListener('DOMContentLoaded', function() {
-            // Configurar fecha
-            document.getElementById('currentDate').innerText = new Date().toISOString().split('T')[0];
-            
-            // Inicializar gráfico y datos
-            initGaugeChart();
-            loadRealData();
-            
-            // Mostrar nuevos hoteles (estáticos de ejemplo)
-            const nuevosHoteles = [
-                { nombre: "Grand Hotel La Florida", ciudad: "Barcelona", puntuacion: 9.9, id: 742 },
-                { nombre: "Hotel Arts Barcelona", ciudad: "Barcelona", puntuacion: 9.8, id: 891 },
-                { nombre: "Beverly Hills Hotel", ciudad: "Los Angeles", puntuacion: 9.6, id: 1024 },
-                { nombre: "Four Seasons George V", ciudad: "Paris", puntuacion: 9.5, id: 1567 },
-                { nombre: "Fairmont San Francisco", ciudad: "San Francisco", puntuacion: 9.3, id: 1789 },
-                { nombre: "Hotel de Crillon", ciudad: "Paris", puntuacion: 9.2, id: 634 },
-                { nombre: "Hotel Danieli", ciudad: "Venice", puntuacion: 9.1, id: 1456 },
-                { nombre: "Savoy Hotel London", ciudad: "London", puntuacion: 9.05, id: 112 },
-                { nombre: "Hotel Ritz Madrid", ciudad: "Madrid", puntuacion: 9.7, id: 523 },
-                { nombre: "Grand Hotel Toscana", ciudad: "Florence", puntuacion: 9.4, id: 201 }
-            ];
-            const container = document.getElementById('newHotelsList');
-            if (container) {
-                container.innerHTML = nuevosHoteles.map(hotel => `
-                    <div class="ranking-item" style="border: 1px solid #00ff8822; padding: 1rem; border-radius: 8px;">
-                        <div class="hotel-info">
-                            <span class="hotel-rank-badge">🆕</span>
-                            <div>
-                                <div class="hotel-name">${hotel.nombre}</div>
-                                <div class="hotel-city">${hotel.ciudad}</div>
-                            </div>
+        // Mostrar nuevos hoteles (estáticos)
+        const nuevosHoteles = [ /* ... tus hoteles ... */ ];
+        const container = document.getElementById('newHotelsList');
+        if (container) {
+            container.innerHTML = nuevosHoteles.map(h => `
+                <div class="ranking-item" style="border: 1px solid #00ff8822; padding: 1rem; border-radius: 8px;">
+                    <div class="hotel-info">
+                        <span class="hotel-rank-badge">🆕</span>
+                        <div>
+                            <div class="hotel-name">${h.nombre}</div>
+                            <div class="hotel-city">${h.ciudad}</div>
                         </div>
-                        <span class="hotel-score">${hotel.puntuacion} APS</span>
                     </div>
-                `).join('');
-            }
+                    <span class="hotel-score">${h.puntuacion} APS</span>
+                </div>
+            `).join('');
+        }
 
-            // CONEXIÓN DEL BOTÓN DE BÚSQUEDA
-            const searchBtn = document.querySelector('.search-btn');
-            if (searchBtn) {
-                searchBtn.onclick = function(e) {
-                    e.preventDefault();
-                    window.buscarEnGoogle();
-                };
-            }
+        // Conectar botón de búsqueda
+        const searchBtn = document.querySelector('.search-btn');
+        if (searchBtn) {
+            searchBtn.onclick = (e) => { e.preventDefault(); window.buscarEnGoogle(); };
+        }
 
-            // Conectar tecla Enter
-            const searchInput = document.getElementById('hotelSearch');
-            if (searchInput) {
-                searchInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        window.buscarEnGoogle();
-                    }
-                });
-            }
+        // Conectar tecla Enter
+        const searchInput = document.getElementById('hotelSearch');
+        if (searchInput) {
+            searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); window.buscarEnGoogle(); } });
+        }
 
-            console.log("✅ Página inicializada correctamente. Buscador global listo.");
-        });
-    </script>
+        console.log("✅ Página inicializada. Buscador listo.");
+    });
+</script>
 </body>
 </html>
+
 
 
 
