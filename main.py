@@ -604,77 +604,94 @@ def get_global_alerts(category):
         'avg_score': round(a[3], 2),
         'total_reviews': a[4]
     } for a in alerts])
-    # ========== RANKINGS GLOBALES (NUEVAS RUTAS) ==========
+    # ========== RANKINGS GLOBALES (CORREGIDO) ==========
 @app.route('/api/rankings/global/best')
 def get_global_best():
     """Top 10 hoteles mejor valorados del mundo"""
+    conn = None
     try:
         conn = get_db()
-        best = conn.execute("""
+        cursor = conn.cursor()
+        # Asegurémonos de que las tablas y columnas existen
+        cursor.execute("""
             SELECT 
                 h.id,
                 h.name,
                 h.city,
-                AVG(r.puntuacion) as avg_rating,
-                COUNT(r.id) as total_reviews,
-                (AVG(r.puntuacion) + (COUNT(r.id) * 0.005)) as score_ia
+                COALESCE(AVG(r.puntuacion), 0) as avg_rating,
+                COUNT(r.id) as total_reviews
             FROM hotels h
-            JOIN resenas r ON h.id = r.hotel_id
-            WHERE r.source = 'google'
+            LEFT JOIN resenas r ON h.id = r.hotel_id AND r.source = 'google'
             GROUP BY h.id
-            HAVING COUNT(r.id) >= 5
-            ORDER BY score_ia DESC, avg_rating DESC
+            HAVING COUNT(r.id) >= 1  # Al menos una reseña
+            ORDER BY avg_rating DESC, total_reviews DESC
             LIMIT 10
-        """).fetchall()
-        conn.close()
+        """)
+        best = cursor.fetchall()
         
-        return jsonify([{
-            'id': h[0],
-            'name': h[1],
-            'city': h[2],
-            'score': round(h[5], 2),
-            'avg_rating': round(h[3], 2),
-            'reviews': h[4]
-        } for h in best])
+        # Formatear la respuesta como una lista de diccionarios
+        resultados = []
+        for row in best:
+            resultados.append({
+                'id': row[0],
+                'name': row[1],
+                'city': row[2],
+                'score': round(row[3], 2),  # avg_rating
+                'reviews': row[4]
+            })
+        return jsonify(resultados)
+        
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        print(f"Error en /api/rankings/global/best: {e}")  # Log para depurar
+        return jsonify({"error": "Error interno del servidor"}), 500
+    finally:
+        if conn:
+            conn.close()
 
 @app.route('/api/rankings/global/worst')
 def get_global_worst():
     """Top 10 hoteles peor valorados del mundo"""
+    conn = None
     try:
         conn = get_db()
-        worst = conn.execute("""
+        cursor = conn.cursor()
+        cursor.execute("""
             SELECT 
                 h.id,
                 h.name,
                 h.city,
-                AVG(r.puntuacion) as avg_rating,
-                COUNT(r.id) as total_reviews,
-                (AVG(r.puntuacion) - (COUNT(r.id) * 0.005)) as score_ia
+                COALESCE(AVG(r.puntuacion), 0) as avg_rating,
+                COUNT(r.id) as total_reviews
             FROM hotels h
-            JOIN resenas r ON h.id = r.hotel_id
-            WHERE r.source = 'google'
+            LEFT JOIN resenas r ON h.id = r.hotel_id AND r.source = 'google'
             GROUP BY h.id
-            HAVING COUNT(r.id) >= 5
-            ORDER BY score_ia ASC, avg_rating ASC
+            HAVING COUNT(r.id) >= 1  # Al menos una reseña
+            ORDER BY avg_rating ASC, total_reviews DESC
             LIMIT 10
-        """).fetchall()
-        conn.close()
+        """)
+        worst = cursor.fetchall()
         
-        return jsonify([{
-            'id': h[0],
-            'name': h[1],
-            'city': h[2],
-            'score': round(h[5], 2),
-            'avg_rating': round(h[3], 2),
-            'reviews': h[4]
-        } for h in worst])
+        resultados = []
+        for row in worst:
+            resultados.append({
+                'id': row[0],
+                'name': row[1],
+                'city': row[2],
+                'score': round(row[3], 2),
+                'reviews': row[4]
+            })
+        return jsonify(resultados)
+        
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        print(f"Error en /api/rankings/global/worst: {e}")
+        return jsonify({"error": "Error interno del servidor"}), 500
+    finally:
+        if conn:
+            conn.close()
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
