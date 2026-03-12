@@ -922,7 +922,7 @@
         });
     }
 
-    // ========== FUNCIÓN PARA MOSTRAR RESULTADOS DE BÚSQUEDA ==========
+    // ========== FUNCIÓN PARA MOSTRAR RESULTADOS ==========
     window.mostrarResultadosGoogle = function(hoteles, query) {
         const existente = document.getElementById('resultados-busqueda');
         if (existente) existente.remove();
@@ -971,94 +971,60 @@
         document.body.appendChild(contenedor);
     };
 
-   // ========== CARGA DE DATOS GLOBALES (Rankings y Semáforo) ==========
-async function loadRealData() {
-    try {
-        // ========== RANKINGS GLOBALES ==========
-        const [bestRes, worstRes] = await Promise.all([
-            fetch('/api/rankings/global/best'),
-            fetch('/api/rankings/global/worst')
-        ]);
+    // ========== CARGA DE DATOS (CORREGIDO) ==========
+    async function loadRealData() {
+        try {
+            const [bestRes, worstRes, semRes] = await Promise.all([
+                fetch('/api/rankings/global/best'),
+                fetch('/api/rankings/global/worst'),
+                fetch('/api/semaphore/stats')
+            ]);
 
-        // Mejores hoteles del mundo
-        const bestHotels = await bestRes.json();
-        const bestList = document.getElementById('bestList');
-        if (bestList && bestHotels.length) {
-            bestList.innerHTML = bestHotels.map((hotel, i) => `
-                <div class="ranking-item" onclick="autoSearch('${hotel.name}')">
-                    <div class="hotel-info">
-                        <span class="hotel-rank-badge">${String(i+1).padStart(2, '0')}</span>
-                        <div>
-                            <div class="hotel-name">${hotel.name}</div>
-                            <div class="hotel-city">${hotel.city}${hotel.country ? ', ' + hotel.country : ''}</div>
+            const bestHotels = await bestRes.json();
+            const bestList = document.getElementById('bestList');
+            if (bestList && bestHotels.length) {
+                bestList.innerHTML = bestHotels.map((hotel, i) => `
+                    <div class="ranking-item" onclick="autoSearch('${hotel.name}')">
+                        <div class="hotel-info">
+                            <span class="hotel-rank-badge">${String(i+1).padStart(2, '0')}</span>
+                            <div>
+                                <div class="hotel-name">${hotel.name}</div>
+                                <div class="hotel-city">${hotel.city}</div>
+                            </div>
                         </div>
+                        <span class="hotel-score">${hotel.score} ⭐</span>
                     </div>
-                    <span class="hotel-score">${hotel.score} ⭐</span>
-                </div>
-            `).join('');
-        }
+                `).join('');
+            }
 
-        // Peores hoteles del mundo
-        const worstHotels = await worstRes.json();
-        const worstList = document.getElementById('worstList');
-        if (worstList && worstHotels.length) {
-            worstList.innerHTML = worstHotels.map((hotel, i) => `
-                <div class="ranking-item" onclick="autoSearch('${hotel.name}')">
-                    <div class="hotel-info">
-                        <span class="hotel-rank-badge">${String(i+1).padStart(2, '0')}</span>
-                        <div>
-                            <div class="hotel-name" style="color: #ff6b6b;">${hotel.name}</div>
-                            <div class="hotel-city">${hotel.city}${hotel.country ? ', ' + hotel.country : ''}</div>
+            const worstHotels = await worstRes.json();
+            const worstList = document.getElementById('worstList');
+            if (worstList && worstHotels.length) {
+                worstList.innerHTML = worstHotels.map((hotel, i) => `
+                    <div class="ranking-item" onclick="autoSearch('${hotel.name}')">
+                        <div class="hotel-info">
+                            <span class="hotel-rank-badge">${String(i+1).padStart(2, '0')}</span>
+                            <div>
+                                <div class="hotel-name" style="color: #ff6b6b;">${hotel.name}</div>
+                                <div class="hotel-city">${hotel.city}</div>
+                            </div>
                         </div>
+                        <span class="hotel-score" style="color: #ff6b6b;">${hotel.score} ⭐</span>
                     </div>
-                    <span class="hotel-score" style="color: #ff6b6b;">${hotel.score} ⭐</span>
-                </div>
-            `).join('');
-        }
+                `).join('');
+            }
 
-        // ========== SEMÁFORO INTELIGENTE ==========
-        const semRes = await fetch('/api/semaphore/global/stats');
-        const semData = await semRes.json();
+            const semData = await semRes.json();
+            document.getElementById('yellowCount').innerText = semData.yellow || 0;
+            document.getElementById('orangeCount').innerText = semData.orange || 0;
+            document.getElementById('redCount').innerText = semData.red || 0;
 
-        // Actualizar contadores (si los IDs existen en tu HTML)
-        if (document.getElementById('excelenteCount')) {
-            document.getElementById('excelenteCount').innerText = semData.excelente || 0;
+        } catch (e) {
+            console.error("Error cargando datos:", e);
         }
-        if (document.getElementById('buenoCount')) {
-            document.getElementById('buenoCount').innerText = semData.bueno || 0;
-        }
-        if (document.getElementById('regularCount')) {
-            document.getElementById('regularCount').innerText = semData.regular || 0;
-        }
-        if (document.getElementById('maloCount')) {
-            document.getElementById('maloCount').innerText = semData.malo || 0;
-        }
-        if (document.getElementById('pesimoCount')) {
-            document.getElementById('pesimoCount').innerText = semData.pesimo || 0;
-        }
-
-    } catch (e) {
-        console.error("Error cargando datos globales:", e);
     }
-}
 
-        // ========== CORREGIR SEMÁFORO ==========
-        const semRes = await fetch('/api/semaphore/stats');
-        const semData = await semRes.json();
-        
-        // Actualizar contadores
-        document.getElementById('yellowCount').innerText = semData.yellow || 0;
-        document.getElementById('orangeCount').innerText = semData.orange || 0;
-        document.getElementById('redCount').innerText = semData.red || 0;
-        
-        // Actualizar listas de hoteles (opcional - si el endpoint devuelve detalles)
-        // Si tienes endpoints como /api/alerts/yellow, puedes llenar las listas aquí
-        
-    } catch (e) {
-        console.error("Error cargando datos:", e);
-    }
-}
-    // ========== FUNCIÓN DE BÚSQUEDA GLOBAL ==========
+    // ========== FUNCIÓN DE BÚSQUEDA ==========
     window.buscarEnGoogle = async function() {
         const query = document.getElementById('hotelSearch').value.trim();
         if (!query) return alert("🔍 Please enter a hotel name or city");
@@ -1084,7 +1050,6 @@ async function loadRealData() {
         }
     };
 
-    // ========== FUNCIÓN AUXILIAR ==========
     window.autoSearch = function(name) {
         document.getElementById('hotelSearch').value = name;
         window.buscarEnGoogle();
@@ -1096,7 +1061,8 @@ async function loadRealData() {
         const titles = { basic: 'Subscribe to Basic Plan - $49/month', premium: 'Subscribe to Premium Plan - $199/month', enterprise: 'Contact Sales - Enterprise Plan' };
         document.getElementById('modalTitle').textContent = titles[plan] || 'Subscribe';
         document.getElementById('paymentModal').style.display = 'block';
-        const card = stripe.elements().create('card', { style: { base: { color: '#ffffff', backgroundColor: '#2a2a2a', '::placeholder': { color: '#666' } } } });
+        const elements = stripe.elements();
+        const card = elements.create('card', { style: { base: { color: '#ffffff', backgroundColor: '#2a2a2a', '::placeholder': { color: '#666' } } } });
         card.mount('#card-element');
         document.getElementById('paymentForm').onsubmit = async (e) => {
             e.preventDefault();
@@ -1105,97 +1071,39 @@ async function loadRealData() {
             setTimeout(() => { alert(`✅ Payment successful! Welcome to the ${currentPlan} plan.`); closeModal(); btn.disabled = false; btn.textContent = 'Pay with Stripe'; }, 2000);
         };
     }
+
     function closeModal() { document.getElementById('paymentModal').style.display = 'none'; }
 
-    // ========== INICIALIZACIÓN DE LA PÁGINA ==========
+    // ========== INICIALIZACIÓN ==========
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('currentDate').innerText = new Date().toISOString().split('T')[0];
         initGaugeChart();
         loadRealData();
 
-        // Mostrar nuevos hoteles (estáticos)
-        const nuevosHoteles = [ /* ... tus hoteles ... */ ];
-        const container = document.getElementById('newHotelsList');
-        if (container) {
-            container.innerHTML = nuevosHoteles.map(h => `
-                <div class="ranking-item" style="border: 1px solid #00ff8822; padding: 1rem; border-radius: 8px;">
-                    <div class="hotel-info">
-                        <span class="hotel-rank-badge">🆕</span>
-                        <div>
-                            <div class="hotel-name">${h.nombre}</div>
-                            <div class="hotel-city">${h.ciudad}</div>
-                        </div>
-                    </div>
-                    <span class="hotel-score">${h.puntuacion} APS</span>
-                </div>
-            `).join('');
-        }
-
-        // Conectar botón de búsqueda
         const searchBtn = document.querySelector('.search-btn');
         if (searchBtn) {
-            searchBtn.onclick = (e) => { e.preventDefault(); window.buscarEnGoogle(); };
+            searchBtn.onclick = function(e) {
+                e.preventDefault();
+                window.buscarEnGoogle();
+            };
         }
 
-        // Conectar tecla Enter
         const searchInput = document.getElementById('hotelSearch');
         if (searchInput) {
-            searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); window.buscarEnGoogle(); } });
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    window.buscarEnGoogle();
+                }
+            });
         }
 
         console.log("✅ Página inicializada. Buscador listo.");
     });
-    // ========== FUNCIÓN PARA MOSTRAR RESULTADOS DE GOOGLE ==========
-window.mostrarResultadosGoogle = function(hoteles, query) {
-    const existente = document.getElementById('resultados-busqueda');
-    if (existente) existente.remove();
-
-    const contenedor = document.createElement('div');
-    contenedor.id = 'resultados-busqueda';
-    contenedor.style.cssText = `
-        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-        width: 90%; max-width: 900px; max-height: 80vh; overflow-y: auto;
-        background: #0a0a0a; border: 2px solid #00ff88; border-radius: 15px;
-        padding: 25px; z-index: 10000; box-shadow: 0 0 40px rgba(0,255,136,0.5);
-        font-family: 'Montserrat', sans-serif;
-    `;
-
-    let html = `
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px;">
-            <h2 style="color: #00ff88; margin: 0; font-size: 1.8rem;">🌍 Hoteles en ${query}</h2>
-            <span style="color: #888; background: #1a1a1a; padding: 5px 15px; border-radius: 20px;">${hoteles.length} resultados</span>
-        </div>
-    `;
-
-    hoteles.forEach(hotel => {
-        html += `
-            <div style="margin-bottom: 15px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 3px solid #00ff88;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <div style="flex: 1;">
-                        <div style="color: #fff; font-size: 1.3rem; font-weight: bold; margin-bottom: 5px;">${hotel.nombre}</div>
-                        <div style="color: #aaa; font-size: 0.95rem; margin-bottom: 8px;">📍 ${hotel.direccion || hotel.ciudad}</div>
-                    </div>
-                    <div style="text-align: right; background: #1a1a1a; padding: 10px; border-radius: 8px; min-width: 120px;">
-                        <div style="color: #00ff88; font-size: 2rem; font-weight: bold; line-height: 1;">${hotel.puntuacion || 'N/A'}</div>
-                        <div style="color: #666; font-size: 0.9rem;">📊 ${hotel.total_resenas || 0} reseñas</div>
-                    </div>
-                </div>
-            </div>
-        `;
-    });
-
-    html += `<button onclick="this.parentElement.remove()" style="
-        background: #00ff88; color: #050505; border: none; padding: 15px;
-        border-radius: 8px; margin-top: 20px; cursor: pointer; width: 100%;
-        font-weight: bold; font-size: 1.1rem;
-    ">CERRAR</button>`;
-
-    contenedor.innerHTML = html;
-    document.body.appendChild(contenedor);
-};
 </script>
 </body>
 </html>
+
 
 
 
