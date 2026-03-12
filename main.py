@@ -1,6 +1,3 @@
-from flask import Flask, jsonify
-import os
-
 app = Flask(__name__)
 
 @app.route('/')
@@ -92,7 +89,7 @@ def get_alerts_by_color(color):
     except Exception as e:
         return jsonify([])
 
-# --- RUTAS DE RANKINGS LOCALES ---
+# --- RUTAS DE RANKINGS ---
 @app.route('/api/rankings/best')
 def get_best():
     try:
@@ -217,15 +214,6 @@ def init_sample_data():
             week_date DATE
         )
     ''')
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS resenas (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            hotel_id INTEGER,
-            puntuacion REAL,
-            source TEXT,
-            fecha TEXT
-        )
-    ''')
     
     # Verificar si ya hay hoteles
     cursor.execute('SELECT COUNT(*) FROM hotels')
@@ -281,15 +269,6 @@ def init_sample_data():
                 VALUES (?, ?, ?, ?, ?, ?)
             ''', (hotel_id, level, color, reason, count, week_date))
         
-        # Insertar reseñas de ejemplo
-        import random
-        for hotel_id in range(1, 13):
-            for _ in range(random.randint(5, 20)):
-                cursor.execute('''
-                    INSERT INTO resenas (hotel_id, puntuacion, source, fecha)
-                    VALUES (?, ?, 'google', ?)
-                ''', (hotel_id, random.uniform(3.0, 5.0), week))
-        
         conn.commit()
         print("✅ Datos de ejemplo insertados correctamente")
     
@@ -310,10 +289,10 @@ if GOOGLE_PLACES_API_KEY:
 else:
     print("⚠️ Google Maps API no configurada")
 
-# ========== FUNCIÓN: BUSCAR HOTELES EN GOOGLE PLACES ==========
+# ========== NUEVA FUNCIÓN: BUSCAR HOTELES EN GOOGLE PLACES (API 2025) ==========
 @app.route('/api/google/places')
 def buscar_google_places():
-    """Busca hoteles en Google Places usando la NUEVA API (POST)"""
+    """Busca hoteles en Google Places usando la NUEVA API (POST) - Actualizada Marzo 2025"""
     query = request.args.get('q', '')
     
     if not query:
@@ -323,17 +302,24 @@ def buscar_google_places():
         return jsonify({"error": "Google Maps no configurado"}), 500
     
     try:
+        # NUEVA URL de la API (v1)
         url = "https://places.googleapis.com/v1/places:searchText"
+        
+        # Headers requeridos por la nueva API
         headers = {
             'Content-Type': 'application/json',
             'X-Goog-Api-Key': GOOGLE_PLACES_API_KEY,
+            # FieldMask para pedir SOLO los campos que necesitas
             'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.rating,places.userRatingCount,places.priceLevel'
         }
+        
+        # Body de la petición (es POST, no GET)
         body = {
             "textQuery": f"hotels in {query}",
             "pageSize": 15
         }
         
+        # Hacer la petición POST
         response = requests.post(url, json=body, headers=headers)
         
         if response.status_code != 200:
@@ -363,7 +349,7 @@ def buscar_google_places():
 
 @app.route('/api/google/review-summary')
 def review_summary():
-    """Obtiene el resumen de reseñas de un hotel usando la API oficial de Google"""
+    """Obtiene el resumen de reseñas de un hotel usando la API oficial de Google (legal)"""
     place_id = request.args.get('place_id', '')
     
     if not place_id:
@@ -373,6 +359,7 @@ def review_summary():
         return jsonify({"error": "Google Maps no configurado"}), 500
     
     try:
+        # Usar la nueva API de Places con field mask para reviewSummary
         url = f"https://places.googleapis.com/v1/places/{place_id}"
         headers = {
             'Content-Type': 'application/json',
@@ -410,6 +397,7 @@ def review_summary():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# ========== NUEVA FUNCIÓN: DETALLES DE HOTEL (API 2025) ==========
 @app.route('/api/google/place/<place_id>')
 def detalle_google_place(place_id):
     """Obtiene detalles COMPLETOS de un hotel usando la NUEVA API"""
@@ -417,7 +405,9 @@ def detalle_google_place(place_id):
         return jsonify({"error": "Google Maps no configurado"}), 500
     
     try:
+        # NUEVA URL para obtener detalles
         url = f"https://places.googleapis.com/v1/places/{place_id}"
+        
         headers = {
             'Content-Type': 'application/json',
             'X-Goog-Api-Key': GOOGLE_PLACES_API_KEY,
@@ -431,6 +421,7 @@ def detalle_google_place(place_id):
         
         data = response.json()
         
+        # Transformar al formato que espera tu frontend
         resultado = {
             'place_id': data.get('id', ''),
             'nombre': data.get('displayName', {}).get('text', ''),
@@ -474,171 +465,9 @@ def buscar_hoteles_locales(query):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# ========== RANKINGS GLOBALES ==========
-@app.route('/api/rankings/global/best')
-def get_global_best():
-    """Top 10 hoteles mejor valorados del mundo"""
-    conn = None
-    try:
-        conn = get_db()
-        cursor = conn.cursor()
-        cursor.execute("""
-            SELECT 
-                h.id,
-                h.name,
-                h.city,
-                COALESCE(AVG(r.puntuacion), 0) as avg_rating,
-                COUNT(r.id) as total_reviews
-            FROM hotels h
-            LEFT JOIN resenas r ON h.id = r.hotel_id AND r.source = 'google'
-            GROUP BY h.id
-            HAVING COUNT(r.id) >= 1
-            ORDER BY avg_rating DESC, total_reviews DESC
-            LIMIT 10
-        """)
-        best = cursor.fetchall()
-        
-        resultados = []
-        for row in best:
-            resultados.append({
-                'id': row[0],
-                'name': row[1],
-                'city': row[2],
-                'score': round(row[3], 2),
-                'reviews': row[4]
-            })
-        return jsonify(resultados)
-        
-    except Exception as e:
-        print(f"Error en /api/rankings/global/best: {e}")
-        return jsonify({"error": "Error interno del servidor"}), 500
-    finally:
-        if conn:
-            conn.close()
-
-@app.route('/api/rankings/global/worst')
-def get_global_worst():
-    """Top 10 hoteles peor valorados del mundo"""
-    conn = None
-    try:
-        conn = get_db()
-        cursor = conn.cursor()
-        cursor.execute("""
-            SELECT 
-                h.id,
-                h.name,
-                h.city,
-                COALESCE(AVG(r.puntuacion), 0) as avg_rating,
-                COUNT(r.id) as total_reviews
-            FROM hotels h
-            LEFT JOIN resenas r ON h.id = r.hotel_id AND r.source = 'google'
-            GROUP BY h.id
-            HAVING COUNT(r.id) >= 1
-            ORDER BY avg_rating ASC, total_reviews DESC
-            LIMIT 10
-        """)
-        worst = cursor.fetchall()
-        
-        resultados = []
-        for row in worst:
-            resultados.append({
-                'id': row[0],
-                'name': row[1],
-                'city': row[2],
-                'score': round(row[3], 2),
-                'reviews': row[4]
-            })
-        return jsonify(resultados)
-        
-    except Exception as e:
-        print(f"Error en /api/rankings/global/worst: {e}")
-        return jsonify({"error": "Error interno del servidor"}), 500
-    finally:
-        if conn:
-            conn.close()
-
-# ========== SEMÁFORO INTELIGENTE GLOBAL ==========
-@app.route('/api/semaphore/global/stats')
-def get_global_semaphore_stats():
-    """Estadísticas globales del semáforo basadas en puntuaciones de reseñas"""
-    try:
-        conn = get_db()
-        cursor = conn.cursor()
-        cursor.execute("""
-            SELECT 
-                COUNT(CASE WHEN AVG(r.puntuacion) >= 4.5 THEN 1 END) as excelente,
-                COUNT(CASE WHEN AVG(r.puntuacion) BETWEEN 4.0 AND 4.4 THEN 1 END) as bueno,
-                COUNT(CASE WHEN AVG(r.puntuacion) BETWEEN 3.5 AND 3.9 THEN 1 END) as regular,
-                COUNT(CASE WHEN AVG(r.puntuacion) BETWEEN 3.0 AND 3.4 THEN 1 END) as malo,
-                COUNT(CASE WHEN AVG(r.puntuacion) < 3.0 THEN 1 END) as pesimo
-            FROM hotels h
-            JOIN resenas r ON h.id = r.hotel_id
-            WHERE r.source = 'google'
-            GROUP BY h.id
-        """)
-        stats = cursor.fetchone()
-        conn.close()
-        
-        return jsonify({
-            'excelente': stats[0] if stats else 0,
-            'bueno': stats[1] if stats else 0,
-            'regular': stats[2] if stats else 0,
-            'malo': stats[3] if stats else 0,
-            'pesimo': stats[4] if stats else 0
-        })
-    except Exception as e:
-        print(f"Error en /api/semaphore/global/stats: {e}")
-        return jsonify({"error": "Error interno"}), 500
-
-@app.route('/api/semaphore/global/alerts/<category>')
-def get_global_alerts(category):
-    """Lista de hoteles por categoría de puntuación"""
-    categories = {
-        'excelente': (4.5, 5.1),
-        'bueno': (4.0, 4.5),
-        'regular': (3.5, 4.0),
-        'malo': (3.0, 3.5),
-        'pesimo': (0, 3.0)
-    }
-    
-    min_score, max_score = categories.get(category, (0, 5))
-    
-    try:
-        conn = get_db()
-        cursor = conn.cursor()
-        cursor.execute("""
-            SELECT 
-                h.id,
-                h.name,
-                h.city,
-                AVG(r.puntuacion) as avg_score,
-                COUNT(r.id) as total_reviews
-            FROM hotels h
-            JOIN resenas r ON h.id = r.hotel_id
-            WHERE r.source = 'google'
-            GROUP BY h.id
-            HAVING AVG(r.puntuacion) BETWEEN ? AND ?
-            ORDER BY avg_score DESC
-            LIMIT 10
-        """, (min_score, max_score))
-        alerts = cursor.fetchall()
-        conn.close()
-        
-        return jsonify([{
-            'id': a[0],
-            'name': a[1],
-            'city': a[2],
-            'avg_score': round(a[3], 2),
-            'total_reviews': a[4]
-        } for a in alerts])
-    except Exception as e:
-        print(f"Error en /api/semaphore/global/alerts: {e}")
-        return jsonify([]), 500
-
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
-
 
 
 
