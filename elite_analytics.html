@@ -922,55 +922,222 @@
         });
     }
 
-    // ========== FUNCIÓN PARA MOSTRAR RESULTADOS ==========
-    window.mostrarResultadosGoogle = function(hoteles, query) {
-        const existente = document.getElementById('resultados-busqueda');
-        if (existente) existente.remove();
+    // ========== FUNCIÓN PARA MOSTRAR RESULTADOS CON HOTELES CLICKABLES ==========
+window.mostrarResultadosGoogle = function(hoteles, query) {
+    const existente = document.getElementById('resultados-busqueda');
+    if (existente) existente.remove();
 
-        const contenedor = document.createElement('div');
-        contenedor.id = 'resultados-busqueda';
-        contenedor.style.cssText = `
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 90%; max-width: 900px; max-height: 80vh; overflow-y: auto;
-            background: #0a0a0a; border: 2px solid #00ff88; border-radius: 15px;
-            padding: 25px; z-index: 10000; box-shadow: 0 0 40px rgba(0,255,136,0.5);
-            font-family: 'Montserrat', sans-serif;
-        `;
+    const contenedor = document.createElement('div');
+    contenedor.id = 'resultados-busqueda';
+    contenedor.style.cssText = `
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        width: 90%; max-width: 1000px; max-height: 80vh; overflow-y: auto;
+        background: #0a0a0a; border: 2px solid #00ff88; border-radius: 15px;
+        padding: 25px; z-index: 10000; box-shadow: 0 0 40px rgba(0,255,136,0.5);
+        font-family: 'Montserrat', sans-serif;
+    `;
 
-        let html = `
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px;">
-                <h2 style="color: #00ff88; margin: 0; font-size: 1.8rem;">🌍 Hoteles en ${query}</h2>
-                <span style="color: #888; background: #1a1a1a; padding: 5px 15px; border-radius: 20px;">${hoteles.length} resultados</span>
-            </div>
-        `;
+    let html = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px;">
+            <h2 style="color: #00ff88; margin: 0; font-size: 1.8rem;">🌍 Hoteles en ${query}</h2>
+            <span style="color: #888; background: #1a1a1a; padding: 5px 15px; border-radius: 20px;">${hoteles.length} resultados</span>
+        </div>
+        <p style="color: #aaa; margin-bottom: 15px; font-size: 0.9rem;">👆 Haz clic en cualquier hotel para ver sus reseñas completas</p>
+    `;
 
-        hoteles.forEach(hotel => {
-            html += `
-                <div style="margin-bottom: 15px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 3px solid #00ff88;">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                        <div style="flex: 1;">
-                            <div style="color: #fff; font-size: 1.3rem; font-weight: bold; margin-bottom: 5px;">${hotel.nombre}</div>
-                            <div style="color: #aaa; font-size: 0.95rem; margin-bottom: 8px;">📍 ${hotel.direccion || hotel.ciudad}</div>
+    hoteles.forEach(hotel => {
+        // Determinar color según puntuación
+        const colorAlerta = hotel.puntuacion >= 4.5 ? '#00ff88' :
+                           hotel.puntuacion >= 4.0 ? '#00cc66' :
+                           hotel.puntuacion >= 3.5 ? '#ffd700' :
+                           hotel.puntuacion >= 3.0 ? '#ff8c00' : '#ff4444';
+
+        html += `
+            <div style="margin-bottom: 15px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 4px solid ${colorAlerta}; cursor: pointer; transition: transform 0.2s;" 
+                 onclick="verResenasHotel('${hotel.id}', '${hotel.nombre}')"
+                 onmouseover="this.style.transform='scale(1.02)'; this.style.background='rgba(0,255,136,0.1)';"
+                 onmouseout="this.style.transform='scale(1)'; this.style.background='rgba(255,255,255,0.03)';">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="flex: 1;">
+                        <div style="color: #fff; font-size: 1.3rem; font-weight: bold; margin-bottom: 5px;">
+                            ${hotel.nombre}
+                            <span style="margin-left: 10px; font-size: 0.9rem; color: ${colorAlerta};">
+                                ${hotel.puntuacion >= 4.5 ? '✅' : 
+                                  hotel.puntuacion >= 4.0 ? '🟢' :
+                                  hotel.puntuacion >= 3.5 ? '🟡' :
+                                  hotel.puntuacion >= 3.0 ? '🟠' : '🔴'}
+                            </span>
                         </div>
-                        <div style="text-align: right; background: #1a1a1a; padding: 10px; border-radius: 8px; min-width: 120px;">
-                            <div style="color: #00ff88; font-size: 2rem; font-weight: bold; line-height: 1;">${hotel.puntuacion || 'N/A'}</div>
-                            <div style="color: #666; font-size: 0.9rem;">📊 ${hotel.total_resenas || 0} reseñas</div>
+                        <div style="color: #aaa; font-size: 0.95rem; margin-bottom: 8px;">📍 ${hotel.direccion || hotel.ciudad}</div>
+                        <div style="color: ${colorAlerta}; font-size: 0.9rem;">
+                            ⚠️ ${hotel.puntuacion >= 4.5 ? 'Excelente, sin problemas' :
+                                hotel.puntuacion >= 4.0 ? 'Bueno, quejas menores' :
+                                hotel.puntuacion >= 3.5 ? 'Regular, hay problemas' :
+                                hotel.puntuacion >= 3.0 ? 'Malo, múltiples quejas' : 'Crítico, evitar'}
                         </div>
                     </div>
+                    <div style="text-align: right; background: #1a1a1a; padding: 10px; border-radius: 8px; min-width: 120px;">
+                        <div style="color: #00ff88; font-size: 2rem; font-weight: bold; line-height: 1;">${hotel.puntuacion || 'N/A'}</div>
+                        <div style="color: #666; font-size: 0.9rem;">📊 ${hotel.total_resenas || 0} reseñas</div>
+                        <div style="color: #00ff88; font-size: 0.8rem; margin-top: 5px;">👆 Click para reseñas</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    html += `<button onclick="this.parentElement.remove()" style="
+        background: #00ff88; color: #050505; border: none; padding: 15px;
+        border-radius: 8px; margin-top: 20px; cursor: pointer; width: 100%;
+        font-weight: bold; font-size: 1.1rem;
+    ">CERRAR RESULTADOS</button>`;
+
+    contenedor.innerHTML = html;
+    document.body.appendChild(contenedor);
+};
+
+// ========== FUNCIÓN PARA VER RESEÑAS DE UN HOTEL (NUEVA) ==========
+window.verResenasHotel = async function(placeId, nombreHotel) {
+    try {
+        // Mostrar indicador de carga
+        const loadingMsg = document.createElement('div');
+        loadingMsg.id = 'loading-resenas';
+        loadingMsg.style.cssText = `
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: #0a0a0a; border: 2px solid #00ff88; border-radius: 15px;
+            padding: 25px; z-index: 10001; color: white; font-family: 'Montserrat', sans-serif;
+            box-shadow: 0 0 40px rgba(0,255,136,0.5);
+        `;
+        loadingMsg.innerHTML = '⏳ Cargando reseñas del hotel...';
+        document.body.appendChild(loadingMsg);
+
+        // Llamar a la API para obtener detalles
+        const response = await fetch(`/api/google/place/${placeId}`);
+        const data = await response.json();
+        
+        // Eliminar indicador de carga
+        document.getElementById('loading-resenas')?.remove();
+
+        // Mostrar ventana con reseñas
+        mostrarVentanaResenas(data, nombreHotel);
+        
+    } catch (error) {
+        console.error('Error cargando reseñas:', error);
+        alert('Error al cargar las reseñas del hotel');
+        document.getElementById('loading-resenas')?.remove();
+    }
+};
+
+// ========== FUNCIÓN PARA MOSTRAR VENTANA DE RESEÑAS (NUEVA) ==========
+function mostrarVentanaResenas(data, nombreHotel) {
+    // Eliminar ventana anterior si existe
+    const existente = document.getElementById('ventana-resenas');
+    if (existente) existente.remove();
+
+    const contenedor = document.createElement('div');
+    contenedor.id = 'ventana-resenas';
+    contenedor.style.cssText = `
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        width: 90%; max-width: 800px; max-height: 80vh; overflow-y: auto;
+        background: #0a0a0a; border: 2px solid #00ff88; border-radius: 15px;
+        padding: 25px; z-index: 10002; box-shadow: 0 0 40px rgba(0,255,136,0.5);
+        font-family: 'Montserrat', sans-serif;
+    `;
+
+    // Extraer datos
+    const puntuacion = data.puntuacion || 'N/A';
+    const totalResenas = data.total_resenas || 0;
+    const direccion = data.direccion || 'Dirección no disponible';
+    const telefono = data.telefono || 'Teléfono no disponible';
+    const website = data.website || '#';
+    
+    // Separar reseñas
+    const todasResenas = data.reviews || [];
+    const resenasNegativas = todasResenas.filter(r => r.rating <= 2);
+    const resenasPositivas = todasResenas.filter(r => r.rating >= 4);
+    const resenasNeutrales = todasResenas.filter(r => r.rating === 3);
+
+    let html = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="color: #00ff88; margin: 0;">🏨 ${nombreHotel}</h2>
+            <button onclick="this.parentElement.parentElement.remove()" style="
+                background: transparent; color: #ff6b6b; border: 1px solid #ff6b6b;
+                border-radius: 5px; padding: 5px 10px; cursor: pointer; font-weight: bold;
+            ">✕ CERRAR</button>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 15px; margin-bottom: 20px;">
+            <div style="background: #1a1a1a; padding: 15px; border-radius: 10px; text-align: center;">
+                <div style="color: #00ff88; font-size: 3rem; font-weight: bold;">${puntuacion}</div>
+                <div style="color: #00ff88; font-size: 1.5rem;">⭐</div>
+                <div style="color: #888; margin-top: 5px;">${totalResenas} reseñas</div>
+            </div>
+            <div style="background: #1a1a1a; padding: 15px; border-radius: 10px;">
+                <div style="margin-bottom: 8px;"><span style="color: #888;">📍</span> ${direccion}</div>
+                <div style="margin-bottom: 8px;"><span style="color: #888;">📞</span> ${telefono}</div>
+                <div><span style="color: #888;">🌐</span> <a href="${website}" target="_blank" style="color: #00ff88;">Sitio web</a></div>
+            </div>
+        </div>
+    `;
+
+    // Reseñas negativas (destacadas)
+    if (resenasNegativas.length > 0) {
+        html += `
+            <div style="margin-bottom: 20px;">
+                <h3 style="color: #ff6b6b; border-bottom: 1px solid #ff6b6b; padding-bottom: 10px;">
+                    ⚠️ Problemas reportados (${resenasNegativas.length})
+                </h3>
+                <div style="max-height: 300px; overflow-y: auto;">
+        `;
+        
+        resenasNegativas.slice(0, 5).forEach(r => {
+            html += `
+                <div style="background: rgba(255,107,107,0.1); margin: 10px 0; padding: 15px; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span style="color: #ff6b6b; font-weight: bold;">${r.author_name || 'Anónimo'}</span>
+                        <span style="color: #ff6b6b;">${r.rating} ⭐</span>
+                    </div>
+                    <p style="color: #fff; margin: 5px 0; font-style: italic;">"${r.text || 'No hay texto disponible'}"</p>
+                    <div style="color: #888; font-size: 0.8rem;">${new Date(r.time * 1000).toLocaleDateString()}</div>
                 </div>
             `;
         });
+        
+        html += `</div></div>`;
+    }
 
-        html += `<button onclick="this.parentElement.remove()" style="
-            background: #00ff88; color: #050505; border: none; padding: 15px;
-            border-radius: 8px; margin-top: 20px; cursor: pointer; width: 100%;
-            font-weight: bold; font-size: 1.1rem;
-        ">CERRAR</button>`;
+    // Reseñas positivas
+    if (resenasPositivas.length > 0) {
+        html += `
+            <div style="margin-bottom: 20px;">
+                <h3 style="color: #00ff88; border-bottom: 1px solid #00ff88; padding-bottom: 10px;">
+                    ✅ Experiencias positivas (${resenasPositivas.length})
+                </h3>
+                <div style="max-height: 200px; overflow-y: auto;">
+        `;
+        
+        resenasPositivas.slice(0, 3).forEach(r => {
+            html += `
+                <div style="background: rgba(0,255,136,0.05); margin: 10px 0; padding: 10px; border-radius: 5px;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #00ff88;">${r.author_name || 'Anónimo'}</span>
+                        <span style="color: #00ff88;">${r.rating} ⭐</span>
+                    </div>
+                    <p style="color: #aaa; margin-top: 5px;">"${r.text ? r.text.substring(0, 100) + '...' : ''}"</p>
+                </div>
+            `;
+        });
+        
+        html += `</div></div>`;
+    }
 
-        contenedor.innerHTML = html;
-        document.body.appendChild(contenedor);
-    };
+    if (resenasNegativas.length === 0 && resenasPositivas.length === 0) {
+        html += `<p style="color: #888; text-align: center;">No hay reseñas disponibles para este hotel.</p>`;
+    }
 
+    contenedor.innerHTML = html;
+    document.body.appendChild(contenedor);
+}
     // ========== CARGA DE DATOS (CORREGIDO) ==========
     async function loadRealData() {
         try {
@@ -1103,6 +1270,7 @@
 </script>
 </body>
 </html>
+
 
 
 
