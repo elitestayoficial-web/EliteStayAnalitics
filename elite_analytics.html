@@ -996,9 +996,11 @@ window.mostrarResultadosGoogle = function(hoteles, query) {
     document.body.appendChild(contenedor);
 };
 
-// ========== FUNCIÓN PARA VER RESEÑAS DE UN HOTEL (NUEVA) ==========
+// ========== FUNCIÓN PARA VER RESEÑAS DE UN HOTEL (VERSIÓN CORREGIDA) ==========
 window.verResenasHotel = async function(placeId, nombreHotel) {
     try {
+        console.log('🔍 Intentando cargar reseñas para:', placeId, nombreHotel);
+        
         // Mostrar indicador de carga
         const loadingMsg = document.createElement('div');
         loadingMsg.id = 'loading-resenas';
@@ -1012,18 +1014,33 @@ window.verResenasHotel = async function(placeId, nombreHotel) {
         document.body.appendChild(loadingMsg);
 
         // Llamar a la API para obtener detalles
+        console.log('📡 Haciendo fetch a:', `/api/google/place/${placeId}`);
         const response = await fetch(`/api/google/place/${placeId}`);
+        console.log('📡 Status de respuesta:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
+        console.log('✅ Datos recibidos:', data);
         
         // Eliminar indicador de carga
         document.getElementById('loading-resenas')?.remove();
+
+        // Verificar si la API devolvió un error
+        if (data.error) {
+            console.error('❌ Error en API:', data.error);
+            alert(`Error de la API: ${data.error}`);
+            return;
+        }
 
         // Mostrar ventana con reseñas
         mostrarVentanaResenas(data, nombreHotel);
         
     } catch (error) {
-        console.error('Error cargando reseñas:', error);
-        alert('Error al cargar las reseñas del hotel');
+        console.error('❌ Error cargando reseñas:', error);
+        alert(`Error al cargar las reseñas del hotel: ${error.message}`);
         document.getElementById('loading-resenas')?.remove();
     }
 };
@@ -1270,6 +1287,7 @@ function mostrarVentanaResenas(data, nombreHotel) {
 </script>
 </body>
 </html>
+
 
 
 
