@@ -410,44 +410,6 @@ def review_summary():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/api/google/place/<place_id>')
-def detalle_google_place(place_id):
-    """Obtiene detalles COMPLETOS de un hotel usando la NUEVA API"""
-    if not GOOGLE_PLACES_API_KEY:
-        return jsonify({"error": "Google Maps no configurado"}), 500
-    
-    try:
-        url = f"https://places.googleapis.com/v1/places/{place_id}"
-        headers = {
-            'Content-Type': 'application/json',
-            'X-Goog-Api-Key': GOOGLE_PLACES_API_KEY,
-            'X-Goog-FieldMask': 'id,displayName,formattedAddress,rating,userRatingCount,priceLevel,reviews,websiteUri,nationalPhoneNumber'
-        }
-        
-        response = requests.get(url, headers=headers)
-        
-        if response.status_code != 200:
-            return jsonify({"error": f"Error Google API: {response.status_code}"}), response.status_code
-        
-        data = response.json()
-        
-        resultado = {
-            'place_id': data.get('id', ''),
-            'nombre': data.get('displayName', {}).get('text', ''),
-            'direccion': data.get('formattedAddress', ''),
-            'puntuacion': data.get('rating', 0),
-            'total_resenas': data.get('userRatingCount', 0),
-            'precio': data.get('priceLevel', 'N/A'),
-            'website': data.get('websiteUri', ''),
-            'telefono': data.get('nationalPhoneNumber', ''),
-            'reviews': data.get('reviews', [])
-        }
-        
-        return jsonify(resultado)
-        
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
 def buscar_hoteles_locales(query):
     """Función de respaldo que busca en tu BD local"""
     try:
@@ -634,21 +596,23 @@ def get_global_alerts(category):
     except Exception as e:
         print(f"Error en /api/semaphore/global/alerts: {e}")
         return jsonify([]), 500
-# ========== DETALLES DE HOTEL POR PLACE ID ==========
+
+# ========== DETALLES DE HOTEL POR PLACE ID (VERSIÓN ÚNICA Y MEJORADA) ==========
 @app.route('/api/google/place/<place_id>')
 def detalle_google_place(place_id):
-    """Obtiene detalles completos de un hotel por su place_id"""
+    """Obtiene detalles completos de un hotel incluyendo reseñas"""
     if not GOOGLE_PLACES_API_KEY:
         return jsonify({"error": "Google Maps no configurado"}), 500
     
     try:
-        # URL de la API de Places (detalles)
+        # URL de la API de Places (detalles) con fieldmask COMPLETO
         url = f"https://places.googleapis.com/v1/places/{place_id}"
         
         headers = {
             'Content-Type': 'application/json',
             'X-Goog-Api-Key': GOOGLE_PLACES_API_KEY,
-            'X-Goog-FieldMask': 'id,displayName,formattedAddress,rating,userRatingCount,priceLevel,reviews,websiteUri,nationalPhoneNumber'
+            # Incluir reviewSummary para obtener resumen IA
+            'X-Goog-FieldMask': 'id,displayName,formattedAddress,rating,userRatingCount,priceLevel,reviews,websiteUri,nationalPhoneNumber,reviewSummary,googleMapsLinks.reviewsUri'
         }
         
         response = requests.get(url, headers=headers)
@@ -657,6 +621,15 @@ def detalle_google_place(place_id):
             return jsonify({"error": f"Error Google API: {response.status_code}"}), response.status_code
         
         data = response.json()
+        
+        # Procesar el resumen de reseñas si existe
+        review_summary = None
+        if 'reviewSummary' in data:
+            review_summary = {
+                'text': data['reviewSummary'].get('text', {}).get('text', ''),
+                'disclosureText': data['reviewSummary'].get('disclosureText', {}).get('text', 'Resumido con Gemini'),
+                'reviewsUri': data.get('googleMapsLinks', {}).get('reviewsUri', '')
+            }
         
         # Transformar al formato que espera tu frontend
         resultado = {
@@ -668,13 +641,16 @@ def detalle_google_place(place_id):
             'precio': data.get('priceLevel', 'N/A'),
             'website': data.get('websiteUri', ''),
             'telefono': data.get('nationalPhoneNumber', ''),
-            'reviews': data.get('reviews', [])
+            'reviews': data.get('reviews', []),
+            'reviewSummary': review_summary  # NUEVO: resumen IA de reseñas
         }
         
         return jsonify(resultado)
         
     except Exception as e:
+        print(f"Error en detalle_google_place: {e}")
         return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
