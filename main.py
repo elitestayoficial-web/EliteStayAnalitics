@@ -474,7 +474,7 @@ def buscar_hoteles_locales(query):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# ========== RANKINGS GLOBALES (UNA SOLA VEZ) ==========
+# ========== RANKINGS GLOBALES ==========
 @app.route('/api/rankings/global/best')
 def get_global_best():
     """Top 10 hoteles mejor valorados del mundo"""
