@@ -1044,7 +1044,7 @@ window.verResenasHotel = async function(placeId, nombreHotel) {
         document.getElementById('loading-resenas')?.remove();
     }
 };
-// ========== FUNCIÓN PARA MOSTRAR VENTANA DE RESEÑAS (NUEVA) ==========
+// ========== FUNCIÓN PARA MOSTRAR VENTANA DE RESEÑAS (VERSIÓN CORREGIDA) ==========
 function mostrarVentanaResenas(data, nombreHotel) {
     // Eliminar ventana anterior si existe
     const existente = document.getElementById('ventana-resenas');
@@ -1061,17 +1061,16 @@ function mostrarVentanaResenas(data, nombreHotel) {
     `;
 
     // Extraer datos
-    const puntuacion = data.puntuacion || 'N/A';
-    const totalResenas = data.total_resenas || 0;
-    const direccion = data.direccion || 'Dirección no disponible';
-    const telefono = data.telefono || 'Teléfono no disponible';
-    const website = data.website || '#';
+    const puntuacion = data.puntuacion || data.rating || 'N/A';
+    const totalResenas = data.total_resenas || data.userRatingCount || 0;
+    const direccion = data.direccion || data.formattedAddress || 'Dirección no disponible';
+    const telefono = data.telefono || data.nationalPhoneNumber || 'Teléfono no disponible';
+    const website = data.website || data.websiteUri || '#';
     
-    // Separar reseñas
+    // Separar reseñas (verificar que existan)
     const todasResenas = data.reviews || [];
     const resenasNegativas = todasResenas.filter(r => r.rating <= 2);
     const resenasPositivas = todasResenas.filter(r => r.rating >= 4);
-    const resenasNeutrales = todasResenas.filter(r => r.rating === 3);
 
     let html = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -1107,14 +1106,15 @@ function mostrarVentanaResenas(data, nombreHotel) {
         `;
         
         resenasNegativas.slice(0, 5).forEach(r => {
+            const textoResena = r.text || 'No hay texto disponible';
             html += `
                 <div style="background: rgba(255,107,107,0.1); margin: 10px 0; padding: 15px; border-radius: 8px;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
                         <span style="color: #ff6b6b; font-weight: bold;">${r.author_name || 'Anónimo'}</span>
                         <span style="color: #ff6b6b;">${r.rating} ⭐</span>
                     </div>
-                    <p style="color: #fff; margin: 5px 0; font-style: italic;">"${r.text || 'No hay texto disponible'}"</p>
-                    <div style="color: #888; font-size: 0.8rem;">${new Date(r.time * 1000).toLocaleDateString()}</div>
+                    <p style="color: #fff; margin: 5px 0; font-style: italic;">"${textoResena}"</p>
+                    <div style="color: #888; font-size: 0.8rem;">${r.time ? new Date(r.time * 1000).toLocaleDateString() : ''}</div>
                 </div>
             `;
         });
@@ -1133,13 +1133,15 @@ function mostrarVentanaResenas(data, nombreHotel) {
         `;
         
         resenasPositivas.slice(0, 3).forEach(r => {
+            const textoResena = r.text || '';
+            const textoCorto = textoResena.length > 100 ? textoResena.substring(0, 100) + '...' : textoResena;
             html += `
                 <div style="background: rgba(0,255,136,0.05); margin: 10px 0; padding: 10px; border-radius: 5px;">
                     <div style="display: flex; justify-content: space-between;">
                         <span style="color: #00ff88;">${r.author_name || 'Anónimo'}</span>
                         <span style="color: #00ff88;">${r.rating} ⭐</span>
                     </div>
-                    <p style="color: #aaa; margin-top: 5px;">"${r.text ? r.text.substring(0, 100) + '...' : ''}"</p>
+                    <p style="color: #aaa; margin-top: 5px;">"${textoCorto}"</p>
                 </div>
             `;
         });
@@ -1286,6 +1288,7 @@ function mostrarVentanaResenas(data, nombreHotel) {
 </script>
 </body>
 </html>
+
 
 
 
