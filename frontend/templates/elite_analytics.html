@@ -972,63 +972,62 @@
     };
 
     // ========== CARGA DE DATOS INICIALES (Rankings) ==========
-    async function loadRealData() {
-        try {
-            const [bestRes, worstRes, semRes] = await Promise.all([
-                fetch('/api/rankings/best').catch(e => ({ ok: false, json: () => ({}) })),
-                fetch('/api/rankings/worst').catch(e => ({ ok: false, json: () => ({}) })),
-                fetch('/api/semaphore/stats').catch(e => ({ ok: false, json: () => ({}) }))
-            ]);
-
-            if (bestRes.ok) {
-                const bestHotels = await bestRes.json();
-                const bestList = document.getElementById('bestList');
-                if (bestList && bestHotels.length) {
-                    bestList.innerHTML = bestHotels.map((hotel, i) => `
-                        <div class="ranking-item" onclick="autoSearch('${hotel.name}')">
-                            <div class="hotel-info">
-                                <span class="hotel-rank-badge">${String(i+1).padStart(2, '0')}</span>
-                                <div>
-                                    <div class="hotel-name">${hotel.name}</div>
-                                    <div class="hotel-city">${hotel.city}</div>
-                                </div>
-                            </div>
-                            <span class="hotel-score">${hotel.score.toFixed(2)} APS</span>
+   async function loadRealData() {
+    try {
+        // Cargar TOP 10 mejores hoteles
+        const bestRes = await fetch('/api/rankings/best');
+        const bestHotels = await bestRes.json();
+        const bestList = document.getElementById('bestList');
+        if (bestList && bestHotels.length) {
+            bestList.innerHTML = bestHotels.map((hotel, i) => `
+                <div class="ranking-item" onclick="autoSearch('${hotel.name}')">
+                    <div class="hotel-info">
+                        <span class="hotel-rank-badge">${String(i+1).padStart(2, '0')}</span>
+                        <div>
+                            <div class="hotel-name">${hotel.name}</div>
+                            <div class="hotel-city">${hotel.city}</div>
                         </div>
-                    `).join('');
-                }
-            }
-
-            if (worstRes.ok) {
-                const worstHotels = await worstRes.json();
-                const worstList = document.getElementById('worstList');
-                if (worstList && worstHotels.length) {
-                    worstList.innerHTML = worstHotels.map((hotel, i) => `
-                        <div class="ranking-item" onclick="autoSearch('${hotel.name}')">
-                            <div class="hotel-info">
-                                <span class="hotel-rank-badge">${String(i+1).padStart(2, '0')}</span>
-                                <div>
-                                    <div class="hotel-name" style="color: #ff6b6b;">${hotel.name}</div>
-                                    <div class="hotel-city">${hotel.city}</div>
-                                </div>
-                            </div>
-                            <span class="hotel-score" style="color: #ff6b6b;">${hotel.score.toFixed(2)} APS</span>
-                        </div>
-                    `).join('');
-                }
-            }
-
-            if (semRes.ok) {
-                const semData = await semRes.json();
-                document.getElementById('yellowCount').innerText = semData.yellow || 0;
-                document.getElementById('orangeCount').innerText = semData.orange || 0;
-                document.getElementById('redCount').innerText = semData.red || 0;
-            }
-        } catch (e) {
-            console.error("Error cargando datos:", e);
+                    </div>
+                    <span class="hotel-score">${hotel.score.toFixed(2)} APS</span>
+                </div>
+            `).join('');
         }
-    }
 
+        // Cargar TOP 10 peores hoteles
+        const worstRes = await fetch('/api/rankings/worst');
+        const worstHotels = await worstRes.json();
+        const worstList = document.getElementById('worstList');
+        if (worstList && worstHotels.length) {
+            worstList.innerHTML = worstHotels.map((hotel, i) => `
+                <div class="ranking-item" onclick="autoSearch('${hotel.name}')">
+                    <div class="hotel-info">
+                        <span class="hotel-rank-badge">${String(i+1).padStart(2, '0')}</span>
+                        <div>
+                            <div class="hotel-name" style="color: #ff6b6b;">${hotel.name}</div>
+                            <div class="hotel-city">${hotel.city}</div>
+                        </div>
+                    </div>
+                    <span class="hotel-score" style="color: #ff6b6b;">${hotel.score.toFixed(2)} APS</span>
+                </div>
+            `).join('');
+        }
+
+        // ========== CORREGIR SEMÁFORO ==========
+        const semRes = await fetch('/api/semaphore/stats');
+        const semData = await semRes.json();
+        
+        // Actualizar contadores
+        document.getElementById('yellowCount').innerText = semData.yellow || 0;
+        document.getElementById('orangeCount').innerText = semData.orange || 0;
+        document.getElementById('redCount').innerText = semData.red || 0;
+        
+        // Actualizar listas de hoteles (opcional - si el endpoint devuelve detalles)
+        // Si tienes endpoints como /api/alerts/yellow, puedes llenar las listas aquí
+        
+    } catch (e) {
+        console.error("Error cargando datos:", e);
+    }
+}
     // ========== FUNCIÓN DE BÚSQUEDA GLOBAL ==========
     window.buscarEnGoogle = async function() {
         const query = document.getElementById('hotelSearch').value.trim();
