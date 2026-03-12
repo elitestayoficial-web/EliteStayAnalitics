@@ -971,11 +971,16 @@
         document.body.appendChild(contenedor);
     };
 
-    // ========== CARGA DE DATOS INICIALES (Rankings) ==========
-   async function loadRealData() {
+   // ========== CARGA DE DATOS GLOBALES (Rankings y Semáforo) ==========
+async function loadRealData() {
     try {
-        // Cargar TOP 10 mejores hoteles
-        const bestRes = await fetch('/api/rankings/best');
+        // ========== RANKINGS GLOBALES ==========
+        const [bestRes, worstRes] = await Promise.all([
+            fetch('/api/rankings/global/best'),
+            fetch('/api/rankings/global/worst')
+        ]);
+
+        // Mejores hoteles del mundo
         const bestHotels = await bestRes.json();
         const bestList = document.getElementById('bestList');
         if (bestList && bestHotels.length) {
@@ -985,16 +990,15 @@
                         <span class="hotel-rank-badge">${String(i+1).padStart(2, '0')}</span>
                         <div>
                             <div class="hotel-name">${hotel.name}</div>
-                            <div class="hotel-city">${hotel.city}</div>
+                            <div class="hotel-city">${hotel.city}${hotel.country ? ', ' + hotel.country : ''}</div>
                         </div>
                     </div>
-                    <span class="hotel-score">${hotel.score.toFixed(2)} APS</span>
+                    <span class="hotel-score">${hotel.score} ⭐</span>
                 </div>
             `).join('');
         }
 
-        // Cargar TOP 10 peores hoteles
-        const worstRes = await fetch('/api/rankings/worst');
+        // Peores hoteles del mundo
         const worstHotels = await worstRes.json();
         const worstList = document.getElementById('worstList');
         if (worstList && worstHotels.length) {
@@ -1004,13 +1008,39 @@
                         <span class="hotel-rank-badge">${String(i+1).padStart(2, '0')}</span>
                         <div>
                             <div class="hotel-name" style="color: #ff6b6b;">${hotel.name}</div>
-                            <div class="hotel-city">${hotel.city}</div>
+                            <div class="hotel-city">${hotel.city}${hotel.country ? ', ' + hotel.country : ''}</div>
                         </div>
                     </div>
-                    <span class="hotel-score" style="color: #ff6b6b;">${hotel.score.toFixed(2)} APS</span>
+                    <span class="hotel-score" style="color: #ff6b6b;">${hotel.score} ⭐</span>
                 </div>
             `).join('');
         }
+
+        // ========== SEMÁFORO INTELIGENTE ==========
+        const semRes = await fetch('/api/semaphore/global/stats');
+        const semData = await semRes.json();
+
+        // Actualizar contadores (si los IDs existen en tu HTML)
+        if (document.getElementById('excelenteCount')) {
+            document.getElementById('excelenteCount').innerText = semData.excelente || 0;
+        }
+        if (document.getElementById('buenoCount')) {
+            document.getElementById('buenoCount').innerText = semData.bueno || 0;
+        }
+        if (document.getElementById('regularCount')) {
+            document.getElementById('regularCount').innerText = semData.regular || 0;
+        }
+        if (document.getElementById('maloCount')) {
+            document.getElementById('maloCount').innerText = semData.malo || 0;
+        }
+        if (document.getElementById('pesimoCount')) {
+            document.getElementById('pesimoCount').innerText = semData.pesimo || 0;
+        }
+
+    } catch (e) {
+        console.error("Error cargando datos globales:", e);
+    }
+}
 
         // ========== CORREGIR SEMÁFORO ==========
         const semRes = await fetch('/api/semaphore/stats');
@@ -1118,4 +1148,5 @@
 </script>
 </body>
 </html>
+
 
