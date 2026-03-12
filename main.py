@@ -467,10 +467,147 @@ def buscar_hoteles_locales(query):
         } for r in results])
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+# ========== RANKINGS GLOBALES CON IA ==========
+@app.route('/api/rankings/global/best')
+def get_global_best():
+    """Top 10 hoteles mejor valorados del mundo (basado en reseñas reales)"""
+    conn = get_db()
+    
+    best = conn.execute("""
+        SELECT 
+            h.id,
+            h.name,
+            h.city,
+            '' as country,
+            AVG(r.puntuacion) as avg_rating,
+            COUNT(r.id) as total_reviews,
+            (AVG(r.puntuacion) + (COUNT(r.id) * 0.005)) as score_ia
+        FROM hotels h
+        JOIN resenas r ON h.id = r.hotel_id
+        WHERE r.source = 'google'
+        GROUP BY h.id
+        HAVING COUNT(r.id) >= 5
+        ORDER BY score_ia DESC, avg_rating DESC
+        LIMIT 10
+    """).fetchall()
+    
+    conn.close()
+    return jsonify([{
+        'id': h[0],
+        'name': h[1],
+        'city': h[2],
+        'country': h[3],
+        'score': round(h[6], 2),
+        'avg_rating': round(h[4], 2),
+        'reviews': h[5]
+    } for h in best])
 
+@app.route('/api/rankings/global/worst')
+def get_global_worst():
+    """Top 10 hoteles peor valorados del mundo (basado en reseñas reales)"""
+    conn = get_db()
+    
+    worst = conn.execute("""
+        SELECT 
+            h.id,
+            h.name,
+            h.city,
+            '' as country,
+            AVG(r.puntuacion) as avg_rating,
+            COUNT(r.id) as total_reviews,
+            (AVG(r.puntuacion) - (COUNT(r.id) * 0.005)) as score_ia
+        FROM hotels h
+        JOIN resenas r ON h.id = r.hotel_id
+        WHERE r.source = 'google'
+        GROUP BY h.id
+        HAVING COUNT(r.id) >= 5
+        ORDER BY score_ia ASC, avg_rating ASC
+        LIMIT 10
+    """).fetchall()
+    
+    conn.close()
+    return jsonify([{
+        'id': h[0],
+        'name': h[1],
+        'city': h[2],
+        'country': h[3],
+        'score': round(h[6], 2),
+        'avg_rating': round(h[4], 2),
+        'reviews': h[5]
+    } for h in worst])
+
+# ========== SEMÁFORO INTELIGENTE GLOBAL ==========
+@app.route('/api/semaphore/global/stats')
+def get_global_semaphore_stats():
+    """Estadísticas globales del semáforo basadas en puntuaciones de reseñas"""
+    conn = get_db()
+    
+    stats = conn.execute("""
+        SELECT 
+            COUNT(CASE WHEN AVG(r.puntuacion) >= 4.5 THEN 1 END) as excelente,
+            COUNT(CASE WHEN AVG(r.puntuacion) BETWEEN 4.0 AND 4.4 THEN 1 END) as bueno,
+            COUNT(CASE WHEN AVG(r.puntuacion) BETWEEN 3.5 AND 3.9 THEN 1 END) as regular,
+            COUNT(CASE WHEN AVG(r.puntuacion) BETWEEN 3.0 AND 3.4 THEN 1 END) as malo,
+            COUNT(CASE WHEN AVG(r.puntuacion) < 3.0 THEN 1 END) as pesimo
+        FROM hotels h
+        JOIN resenas r ON h.id = r.hotel_id
+        WHERE r.source = 'google'
+        GROUP BY h.id
+    """).fetchone()
+    
+    conn.close()
+    
+    return jsonify({
+        'excelente': stats[0] if stats else 0,
+        'bueno': stats[1] if stats else 0,
+        'regular': stats[2] if stats else 0,
+        'malo': stats[3] if stats else 0,
+        'pesimo': stats[4] if stats else 0
+    })
+
+@app.route('/api/semaphore/global/alerts/<category>')
+def get_global_alerts(category):
+    """Lista de hoteles por categoría de puntuación"""
+    categories = {
+        'excelente': (4.5, 5.1),
+        'bueno': (4.0, 4.5),
+        'regular': (3.5, 4.0),
+        'malo': (3.0, 3.5),
+        'pesimo': (0, 3.0)
+    }
+    
+    min_score, max_score = categories.get(category, (0, 5))
+    
+    conn = get_db()
+    alerts = conn.execute("""
+        SELECT 
+            h.id,
+            h.name,
+            h.city,
+            AVG(r.puntuacion) as avg_score,
+            COUNT(r.id) as total_reviews
+        FROM hotels h
+        JOIN resenas r ON h.id = r.hotel_id
+        WHERE r.source = 'google'
+        GROUP BY h.id
+        HAVING AVG(r.puntuacion) BETWEEN ? AND ?
+        ORDER BY avg_score DESC
+        LIMIT 10
+    """, (min_score, max_score)).fetchall()
+    
+    conn.close()
+    
+    return jsonify([{
+        'id': a[0],
+        'name': a[1],
+        'city': a[2],
+        'avg_score': round(a[3], 2),
+        'total_reviews': a[4]
+    } for a in alerts])
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
