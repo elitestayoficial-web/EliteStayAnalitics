@@ -637,10 +637,37 @@ def detalle_google_place(place_id):
     except Exception as e:
         print(f"❌ Error en detalle_google_place: {e}")
         return jsonify({"error": str(e)}), 500
-
+# ========== DETALLES DE HOTEL (VERSIÓN BACKUP) ==========
+@app.route('/api/google/place/<place_id>')
+def detalle_google_place_backup(place_id):
+    """Versión backup para asegurar que la ruta existe"""
+    print(f"🚀 BACKUP: Buscando detalles para {place_id}")
+    
+    if not GOOGLE_PLACES_API_KEY:
+        return jsonify({"error": "Google Maps no configurado"}), 500
+    
+    try:
+        url = f"https://places.googleapis.com/v1/places/{place_id}"
+        headers = {
+            'Content-Type': 'application/json',
+            'X-Goog-Api-Key': GOOGLE_PLACES_API_KEY,
+            'X-Goog-FieldMask': 'id,displayName,formattedAddress,rating,userRatingCount,reviews,websiteUri,nationalPhoneNumber'
+        }
+        
+        response = requests.get(url, headers=headers)
+        
+        if response.status_code != 200:
+            return jsonify({"error": f"Error Google API: {response.status_code}"}), response.status_code
+        
+        return jsonify(response.json())
+        
+    except Exception as e:
+        print(f"❌ Error en backup: {e}")
+        return jsonify({"error": str(e)}), 500
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
