@@ -604,9 +604,78 @@ def get_global_alerts(category):
         'avg_score': round(a[3], 2),
         'total_reviews': a[4]
     } for a in alerts])
+    # ========== RANKINGS GLOBALES (NUEVAS RUTAS) ==========
+@app.route('/api/rankings/global/best')
+def get_global_best():
+    """Top 10 hoteles mejor valorados del mundo"""
+    try:
+        conn = get_db()
+        best = conn.execute("""
+            SELECT 
+                h.id,
+                h.name,
+                h.city,
+                AVG(r.puntuacion) as avg_rating,
+                COUNT(r.id) as total_reviews,
+                (AVG(r.puntuacion) + (COUNT(r.id) * 0.005)) as score_ia
+            FROM hotels h
+            JOIN resenas r ON h.id = r.hotel_id
+            WHERE r.source = 'google'
+            GROUP BY h.id
+            HAVING COUNT(r.id) >= 5
+            ORDER BY score_ia DESC, avg_rating DESC
+            LIMIT 10
+        """).fetchall()
+        conn.close()
+        
+        return jsonify([{
+            'id': h[0],
+            'name': h[1],
+            'city': h[2],
+            'score': round(h[5], 2),
+            'avg_rating': round(h[3], 2),
+            'reviews': h[4]
+        } for h in best])
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/rankings/global/worst')
+def get_global_worst():
+    """Top 10 hoteles peor valorados del mundo"""
+    try:
+        conn = get_db()
+        worst = conn.execute("""
+            SELECT 
+                h.id,
+                h.name,
+                h.city,
+                AVG(r.puntuacion) as avg_rating,
+                COUNT(r.id) as total_reviews,
+                (AVG(r.puntuacion) - (COUNT(r.id) * 0.005)) as score_ia
+            FROM hotels h
+            JOIN resenas r ON h.id = r.hotel_id
+            WHERE r.source = 'google'
+            GROUP BY h.id
+            HAVING COUNT(r.id) >= 5
+            ORDER BY score_ia ASC, avg_rating ASC
+            LIMIT 10
+        """).fetchall()
+        conn.close()
+        
+        return jsonify([{
+            'id': h[0],
+            'name': h[1],
+            'city': h[2],
+            'score': round(h[5], 2),
+            'avg_rating': round(h[3], 2),
+            'reviews': h[4]
+        } for h in worst])
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
