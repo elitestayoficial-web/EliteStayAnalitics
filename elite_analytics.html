@@ -1389,70 +1389,116 @@ function mostrarVentanaResenas(data, nombreHotel) {
     });
 </script>
 <script>
-// ===== FUNCIONES PARA LA CALCULADORA DE PRESUPUESTO =====
-function calculateTravelBudget() {
-    // Obtener valores
-    const origin = document.getElementById('calc-origin').value.toUpperCase();
-    const dest = document.getElementById('calc-dest').value.toUpperCase();
-    const date = document.getElementById('calc-date').value;
+// ===== ÚNICO SCRIPT PARA LA CALCULADORA (MULTI-IDIOMA) =====
+
+// Sistema de idiomas
+function actualizarIdiomaCalculadora(idioma) {
+    document.querySelectorAll('.i18n').forEach(el => {
+        const texto = el.getAttribute(`data-${idioma}`);
+        if (texto) el.innerText = texto;
+    });
     
-    // Validar que todos los campos estén llenos
+    document.querySelectorAll('.i18n-placeholder').forEach(el => {
+        const placeholder = el.getAttribute(`data-${idioma}-placeholder`);
+        if (placeholder) el.placeholder = placeholder;
+    });
+}
+
+// Interceptar cambio de idioma
+const originalSetLanguage = window.setLanguage;
+window.setLanguage = function(lang) {
+    if (originalSetLanguage) originalSetLanguage(lang);
+    actualizarIdiomaCalculadora(lang);
+};
+
+// Inicializar en inglés
+document.addEventListener('DOMContentLoaded', function() {
+    actualizarIdiomaCalculadora('en');
+    
+    const langGuardado = localStorage.getItem('preferred-language');
+    if (langGuardado && langGuardado !== 'en') {
+        setTimeout(() => {
+            actualizarIdiomaCalculadora(langGuardado);
+        }, 100);
+    }
+});
+
+// Función principal del botón
+window.calculateTravelBudget = function() {
+    console.log('Botón clickeado'); // Para depurar
+    
+    const origin = document.getElementById('calc-origin')?.value.trim();
+    const dest = document.getElementById('calc-dest')?.value.trim();
+    const date = document.getElementById('calc-date')?.value;
+    
+    // Validar
     if (!origin || !dest || !date) {
-        alert('❌ Por favor, completa origen, destino y fecha');
+        const lang = document.querySelector('.lang-btn.active')?.textContent.includes('ES') ? 'es' : 
+                    document.querySelector('.lang-btn.active')?.textContent.includes('FR') ? 'fr' : 'en';
+        const mensajes = {
+            en: 'Please fill in all fields',
+            es: 'Por favor completa todos los campos',
+            fr: 'Veuillez remplir tous les champs'
+        };
+        alert(mensajes[lang]);
         return;
     }
 
-    // Validar formato de códigos IATA (3 letras)
-    if (origin.length !== 3 || dest.length !== 3) {
-        alert('❌ Los códigos de aeropuerto deben tener 3 letras (ej: MAD, LON, BUE)');
-        return;
-    }
-
-    // SIMULACIÓN: Aquí irá tu lógica real con API de vuelos
-    // Por ahora genera un número aleatorio entre 400 y 900
+    // Calcular
     const randomBudget = Math.floor(Math.random() * 500) + 400;
-    
-    // Mostrar el presupuesto calculado
     document.getElementById('budget-amount').innerText = randomBudget + ' €';
 
-    // Construir link hacia Travel con los datos
-    const travelUrl = `https://elitestaytravel.com/search?origin=${origin}&dest=${dest}&date=${date}&budget=${randomBudget}`;
+    // Construir link
+    const travelUrl = `https://elitestaytravel.com/search.html?origin=${encodeURIComponent(origin)}&dest=${encodeURIComponent(dest)}&date=${date}&budget=${randomBudget}`;
     document.getElementById('travel-link').href = travelUrl;
 
-    // Mostrar el área de resultados
+    // Mostrar resultados
     document.getElementById('budget-result').style.display = 'block';
-    
-    // Scroll suave hacia los resultados
     document.getElementById('budget-result').scrollIntoView({ behavior: 'smooth' });
-}
+};
 
-function saveBudgetAlert() {
-    const email = document.getElementById('alert-email').value;
-    const dest = document.getElementById('calc-dest').value.toUpperCase();
+// Función para alertas
+window.saveBudgetAlert = function() {
+    const email = document.getElementById('alert-email')?.value.trim();
+    const dest = document.getElementById('calc-dest')?.value.trim();
     
-    // Validar email
-    if (!email || !email.includes('@') || !email.includes('.')) {
-        alert('❌ Por favor, introduce un email válido');
+    const lang = document.querySelector('.lang-btn.active')?.textContent.includes('ES') ? 'es' : 
+                document.querySelector('.lang-btn.active')?.textContent.includes('FR') ? 'fr' : 'en';
+    
+    const mensajes = {
+        en: {
+            invalid: 'Please enter a valid email',
+            noDest: 'Please calculate a budget first',
+            success: (email, dest) => `✅ Alert activated! We'll notify you at ${email} about ${dest}`
+        },
+        es: {
+            invalid: 'Por favor ingresa un email válido',
+            noDest: 'Por favor calcula un presupuesto primero',
+            success: (email, dest) => `✅ ¡Alerta activada! Te avisaremos a ${email} sobre ${dest}`
+        },
+        fr: {
+            invalid: 'Veuillez entrer un email valide',
+            noDest: 'Veuillez d\'abord calculer un budget',
+            success: (email, dest) => `✅ Alerte activée ! Nous vous avertirons à ${email} pour ${dest}`
+        }
+    };
+    
+    if (!email || !email.includes('@')) {
+        alert(mensajes[lang].invalid);
         return;
     }
 
-    // Validar que haya un destino
     if (!dest) {
-        alert('❌ Primero calcula un presupuesto para activar la alerta');
+        alert(mensajes[lang].noDest);
         return;
     }
 
-    // AQUÍ: Conectarás con tu backend para guardar la alerta
-    console.log('📝 Alerta guardada:', { email, dest });
-    
-    // Feedback al usuario
-    alert(`✅ ¡Alerta activada! Te avisaremos a ${email} si los precios a ${dest} bajan.`);
-    
-    // Limpiar el campo de email
+    console.log('Alert saved:', { email, dest });
+    alert(mensajes[lang].success(email, dest));
     document.getElementById('alert-email').value = '';
-}
+};
 
-// Opcional: Permitir calcular con Enter en los inputs
+// Permitir Enter
 document.addEventListener('DOMContentLoaded', function() {
     const inputs = ['calc-origin', 'calc-dest', 'calc-date'];
     inputs.forEach(id => {
@@ -1460,13 +1506,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (input) {
             input.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
-                    calculateTravelBudget();
+                    window.calculateTravelBudget();
                 }
             });
         }
     });
 });
 </script>
+
 </body>
 </html>
 
