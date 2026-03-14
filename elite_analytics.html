@@ -796,7 +796,59 @@
             <p style="color: #666; margin-top: 1rem;">87% alignment with brand standards</p>
         </div>
     </section>
+<!-- ===== INICIO: NUEVA SECCIÓN - CALCULADORA DE PRESUPUESTO (PASO 1) ===== -->
+<section class="rankings-section" style="padding-top: 2rem; padding-bottom: 2rem;">
+    <div class="section-header">
+        <h2>Budget <span class="italic-sophistication">Calculator</span></h2>
+        <p>Estima el costo total de tu viaje con datos en tiempo real</p>
+    </div>
 
+    <div style="max-width: 800px; margin: 0 auto; background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 2rem;">
+        <!-- Formulario de 3 columnas -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+            <div>
+                <label style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Origen</label>
+                <input type="text" id="calc-origin" placeholder="MAD" maxlength="3" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #333; color: var(--text-main); padding: 0.8rem; border-radius: 4px; font-family: 'Montserrat', sans-serif;">
+            </div>
+            <div>
+                <label style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Destino</label>
+                <input type="text" id="calc-dest" placeholder="LON" maxlength="3" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #333; color: var(--text-main); padding: 0.8rem; border-radius: 4px; font-family: 'Montserrat', sans-serif;">
+            </div>
+            <div>
+                <label style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Fecha Ida</label>
+                <input type="date" id="calc-date" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #333; color: var(--text-main); padding: 0.8rem; border-radius: 4px; font-family: 'Montserrat', sans-serif;">
+            </div>
+        </div>
+
+        <!-- Botón Calcular (Color Analytics: Verde neón) -->
+        <button onclick="calculateTravelBudget()" style="background: var(--primary-glow); color: #050505; border: none; padding: 1rem 2rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-radius: 4px; cursor: pointer; width: 100%; margin-bottom: 1.5rem; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+            📊 CALCULAR PRESUPUESTO
+        </button>
+
+        <!-- Área de Resultados (oculta inicialmente) -->
+        <div id="budget-result" style="display: none; border-top: 1px solid #333; padding-top: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <span style="color: var(--text-muted);">Presupuesto estimado:</span>
+                <span style="font-size: 2rem; font-weight: 900; color: var(--primary-glow);" id="budget-amount">0 €</span>
+            </div>
+            
+            <!-- Botón hacia Travel (Color Travel: Dorado) -->
+            <a href="#" id="travel-link" target="_blank" style="background: #D4AF37; color: #050505; text-decoration: none; padding: 1rem; font-weight: 700; border-radius: 4px; display: block; text-align: center; margin-bottom: 1rem; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                ✈️ VER OFERTAS EN ELITE STAY TRAVEL
+            </a>
+
+            <!-- Mini registro para alertas de precio -->
+            <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 4px;">
+                <p style="color: var(--text-muted); margin-bottom: 0.5rem;">📩 ¿Quieres que te avisemos si el precio baja?</p>
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="email" id="alert-email" placeholder="tu@email.com" style="flex: 1; background: rgba(0,0,0,0.3); border: 1px solid #333; color: var(--text-main); padding: 0.8rem; border-radius: 4px;">
+                    <button onclick="saveBudgetAlert()" style="background: #4895EF; color: white; border: none; padding: 0 1.5rem; border-radius: 4px; font-weight: 600; cursor: pointer;">Activar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- ===== FIN: NUEVA SECCIÓN - CALCULADORA DE PRESUPUESTO ===== -->
     <section class="rankings-section" id="rankings">
         <div class="section-header">
             <h2>Global <span class="italic-sophistication">Performance</span> Index</h2>
@@ -1336,6 +1388,7 @@ function mostrarVentanaResenas(data, nombreHotel) {
 </script>
 </body>
 </html>
+
 
 
 
