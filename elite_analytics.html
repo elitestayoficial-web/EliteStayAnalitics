@@ -1386,8 +1386,88 @@ function mostrarVentanaResenas(data, nombreHotel) {
         console.log("✅ Página inicializada. Buscador listo.");
     });
 </script>
+<script>
+// ===== FUNCIONES PARA LA CALCULADORA DE PRESUPUESTO =====
+function calculateTravelBudget() {
+    // Obtener valores
+    const origin = document.getElementById('calc-origin').value.toUpperCase();
+    const dest = document.getElementById('calc-dest').value.toUpperCase();
+    const date = document.getElementById('calc-date').value;
+    
+    // Validar que todos los campos estén llenos
+    if (!origin || !dest || !date) {
+        alert('❌ Por favor, completa origen, destino y fecha');
+        return;
+    }
+
+    // Validar formato de códigos IATA (3 letras)
+    if (origin.length !== 3 || dest.length !== 3) {
+        alert('❌ Los códigos de aeropuerto deben tener 3 letras (ej: MAD, LON, BUE)');
+        return;
+    }
+
+    // SIMULACIÓN: Aquí irá tu lógica real con API de vuelos
+    // Por ahora genera un número aleatorio entre 400 y 900
+    const randomBudget = Math.floor(Math.random() * 500) + 400;
+    
+    // Mostrar el presupuesto calculado
+    document.getElementById('budget-amount').innerText = randomBudget + ' €';
+
+    // Construir link hacia Travel con los datos
+    const travelUrl = `https://elitestaytravel.com/search?origin=${origin}&dest=${dest}&date=${date}&budget=${randomBudget}`;
+    document.getElementById('travel-link').href = travelUrl;
+
+    // Mostrar el área de resultados
+    document.getElementById('budget-result').style.display = 'block';
+    
+    // Scroll suave hacia los resultados
+    document.getElementById('budget-result').scrollIntoView({ behavior: 'smooth' });
+}
+
+function saveBudgetAlert() {
+    const email = document.getElementById('alert-email').value;
+    const dest = document.getElementById('calc-dest').value.toUpperCase();
+    
+    // Validar email
+    if (!email || !email.includes('@') || !email.includes('.')) {
+        alert('❌ Por favor, introduce un email válido');
+        return;
+    }
+
+    // Validar que haya un destino
+    if (!dest) {
+        alert('❌ Primero calcula un presupuesto para activar la alerta');
+        return;
+    }
+
+    // AQUÍ: Conectarás con tu backend para guardar la alerta
+    console.log('📝 Alerta guardada:', { email, dest });
+    
+    // Feedback al usuario
+    alert(`✅ ¡Alerta activada! Te avisaremos a ${email} si los precios a ${dest} bajan.`);
+    
+    // Limpiar el campo de email
+    document.getElementById('alert-email').value = '';
+}
+
+// Opcional: Permitir calcular con Enter en los inputs
+document.addEventListener('DOMContentLoaded', function() {
+    const inputs = ['calc-origin', 'calc-dest', 'calc-date'];
+    inputs.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    calculateTravelBudget();
+                }
+            });
+        }
+    });
+});
+</script>
 </body>
 </html>
+
 
 
 
