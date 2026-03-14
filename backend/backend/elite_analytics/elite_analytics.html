@@ -1513,6 +1513,53 @@ function saveBudgetAlert() {
     // ... (tu código existente) ...
 }
 </script>
+<script>
+// ===== SISTEMA DE IDIOMAS PARA LA CALCULADORA =====
+// Esta función se conecta con tus botones de idioma existentes
+function actualizarIdiomaCalculadora(idioma) {
+    // Actualizar todos los elementos con clase 'i18n'
+    document.querySelectorAll('.i18n').forEach(el => {
+        const texto = el.getAttribute(`data-${idioma}`);
+        if (texto) {
+            el.innerText = texto;
+        }
+    });
+    
+    // Actualizar placeholders
+    document.querySelectorAll('.i18n-placeholder').forEach(el => {
+        const placeholder = el.getAttribute(`data-${idioma}-placeholder`);
+        if (placeholder) {
+            el.placeholder = placeholder;
+        }
+    });
+}
+
+// Interceptar el cambio de idioma de tus botones existentes
+// (Asumiendo que tus botones llaman a setLanguage())
+const originalSetLanguage = window.setLanguage;
+window.setLanguage = function(lang) {
+    if (originalSetLanguage) {
+        originalSetLanguage(lang);
+    }
+    actualizarIdiomaCalculadora(lang);
+};
+
+// Inicializar con el idioma actual (por defecto 'en')
+document.addEventListener('DOMContentLoaded', function() {
+    const idiomaActual = document.querySelector('.lang-btn.active')?.textContent.includes('EN') ? 'en' : 
+                        document.querySelector('.lang-btn.active')?.textContent.includes('ES') ? 'es' : 'fr';
+    actualizarIdiomaCalculadora(idiomaActual || 'en');
+});
+
+// ===== TUS FUNCIONES EXISTENTES DE LA CALCULADORA =====
+function calculateTravelBudget() {
+    // ... (tu código existente) ...
+}
+
+function saveBudgetAlert() {
+    // ... (tu código existente) ...
+}
+</script>
 </body>
 </html>
 
