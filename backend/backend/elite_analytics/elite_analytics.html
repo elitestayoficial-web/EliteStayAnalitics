@@ -796,59 +796,61 @@
             <p style="color: #666; margin-top: 1rem;">87% alignment with brand standards</p>
         </div>
     </section>
-<!-- ===== INICIO: NUEVA SECCIÓN - CALCULADORA DE PRESUPUESTO (PASO 1) ===== -->
+<!-- ===== INICIO: BUDGET CALCULATOR CON SOPORTE MULTI-IDIOMA ===== -->
 <section class="rankings-section" style="padding-top: 2rem; padding-bottom: 2rem;">
     <div class="section-header">
-        <h2>Budget <span class="italic-sophistication">Calculator</span></h2>
-        <p>Estima el costo total de tu viaje con datos en tiempo real</p>
+        <h2><span class="i18n" data-en="Budget" data-es="Calculadora" data-fr="Budget">Budget</span> <span class="italic-sophistication i18n" data-en="Calculator" data-es="de Presupuesto" data-fr="de Budget">Calculator</span></h2>
+        <p class="i18n" data-en="Estimate your total trip cost with real-time data" data-es="Estima el costo total de tu viaje con datos en tiempo real" data-fr="Estimez le coût total de votre voyage avec des données en temps réel">Estimate your total trip cost with real-time data</p>
     </div>
 
     <div style="max-width: 800px; margin: 0 auto; background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 2rem;">
-        <!-- Formulario de 3 columnas -->
+        <!-- Formulario -->
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
             <div>
-                <label style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Origen</label>
-                <input type="text" id="calc-origin" placeholder="MAD" maxlength="3" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #333; color: var(--text-main); padding: 0.8rem; border-radius: 4px; font-family: 'Montserrat', sans-serif;">
+                <label style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;" class="i18n" data-en="Origin City" data-es="Ciudad Origen" data-fr="Ville de départ">Origin City</label>
+                <input type="text" id="calc-origin" class="i18n-placeholder" placeholder="e.g. London, Paris, Madrid" data-en-placeholder="e.g. London, Paris, Madrid" data-es-placeholder="Ej: Londres, París, Madrid" data-fr-placeholder="Ex: Londres, Paris, Madrid" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #333; color: var(--text-main); padding: 0.8rem; border-radius: 4px; font-family: 'Montserrat', sans-serif;">
             </div>
             <div>
-                <label style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Destino</label>
-                <input type="text" id="calc-dest" placeholder="LON" maxlength="3" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #333; color: var(--text-main); padding: 0.8rem; border-radius: 4px; font-family: 'Montserrat', sans-serif;">
+                <label style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;" class="i18n" data-en="Destination City" data-es="Ciudad Destino" data-fr="Ville de destination">Destination City</label>
+                <input type="text" id="calc-dest" class="i18n-placeholder" placeholder="e.g. Tokyo, New York, Rome" data-en-placeholder="e.g. Tokyo, New York, Rome" data-es-placeholder="Ej: Tokio, Nueva York, Roma" data-fr-placeholder="Ex: Tokyo, New York, Rome" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #333; color: var(--text-main); padding: 0.8rem; border-radius: 4px; font-family: 'Montserrat', sans-serif;">
             </div>
             <div>
-                <label style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Fecha Ida</label>
+                <label style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;" class="i18n" data-en="Departure Date" data-es="Fecha de Salida" data-fr="Date de départ">Departure Date</label>
                 <input type="date" id="calc-date" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #333; color: var(--text-main); padding: 0.8rem; border-radius: 4px; font-family: 'Montserrat', sans-serif;">
             </div>
         </div>
 
-        <!-- Botón Calcular (Color Analytics: Verde neón) -->
+        <!-- Botón Calcular -->
         <button onclick="calculateTravelBudget()" style="background: var(--primary-glow); color: #050505; border: none; padding: 1rem 2rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-radius: 4px; cursor: pointer; width: 100%; margin-bottom: 1.5rem; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-            📊 CALCULAR PRESUPUESTO
+            <span class="i18n" data-en="📊 CALCULATE BUDGET" data-es="📊 CALCULAR PRESUPUESTO" data-fr="📊 CALCULER LE BUDGET">📊 CALCULATE BUDGET</span>
         </button>
 
         <!-- Área de Resultados (oculta inicialmente) -->
         <div id="budget-result" style="display: none; border-top: 1px solid #333; padding-top: 1.5rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <span style="color: var(--text-muted);">Presupuesto estimado:</span>
+                <span style="color: var(--text-muted);" class="i18n" data-en="Estimated budget:" data-es="Presupuesto estimado:" data-fr="Budget estimé:">Estimated budget:</span>
                 <span style="font-size: 2rem; font-weight: 900; color: var(--primary-glow);" id="budget-amount">0 €</span>
             </div>
             
-            <!-- Botón hacia Travel (Color Travel: Dorado) -->
+            <!-- Botón hacia Travel -->
             <a href="#" id="travel-link" target="_blank" style="background: #D4AF37; color: #050505; text-decoration: none; padding: 1rem; font-weight: 700; border-radius: 4px; display: block; text-align: center; margin-bottom: 1rem; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                ✈️ VER OFERTAS EN ELITE STAY TRAVEL
+                <span class="i18n" data-en="✈️ VIEW OFFERS ON ELITE STAY TRAVEL" data-es="✈️ VER OFERTAS EN ELITE STAY TRAVEL" data-fr="✈️ VOIR LES OFFRES SUR ELITE STAY TRAVEL">✈️ VIEW OFFERS ON ELITE STAY TRAVEL</span>
             </a>
 
-            <!-- Mini registro para alertas de precio -->
+            <!-- Mini registro para alertas -->
             <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 4px;">
-                <p style="color: var(--text-muted); margin-bottom: 0.5rem;">📩 ¿Quieres que te avisemos si el precio baja?</p>
+                <p style="color: var(--text-muted); margin-bottom: 0.5rem;" class="i18n" data-en="📩 Want us to notify you if the price drops?" data-es="📩 ¿Quieres que te avisemos si el precio baja?" data-fr="📩 Voulez-vous être averti si le prix baisse?">📩 Want us to notify you if the price drops?</p>
                 <div style="display: flex; gap: 0.5rem;">
-                    <input type="email" id="alert-email" placeholder="tu@email.com" style="flex: 1; background: rgba(0,0,0,0.3); border: 1px solid #333; color: var(--text-main); padding: 0.8rem; border-radius: 4px;">
-                    <button onclick="saveBudgetAlert()" style="background: #4895EF; color: white; border: none; padding: 0 1.5rem; border-radius: 4px; font-weight: 600; cursor: pointer;">Activar</button>
+                    <input type="email" id="alert-email" class="i18n-placeholder" placeholder="your@email.com" data-en-placeholder="your@email.com" data-es-placeholder="tu@email.com" data-fr-placeholder="votre@email.com" style="flex: 1; background: rgba(0,0,0,0.3); border: 1px solid #333; color: var(--text-main); padding: 0.8rem; border-radius: 4px;">
+                    <button onclick="saveBudgetAlert()" style="background: #4895EF; color: white; border: none; padding: 0 1.5rem; border-radius: 4px; font-weight: 600; cursor: pointer;">
+                        <span class="i18n" data-en="Notify me" data-es="Avisarme" data-fr="M'avertir">Notify me</span>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 </section>
-<!-- ===== FIN: NUEVA SECCIÓN - CALCULADORA DE PRESUPUESTO ===== -->
+<!-- ===== FIN: BUDGET CALCULATOR CON SOPORTE MULTI-IDIOMA ===== -->
     <section class="rankings-section" id="rankings">
         <div class="section-header">
             <h2>Global <span class="italic-sophistication">Performance</span> Index</h2>
