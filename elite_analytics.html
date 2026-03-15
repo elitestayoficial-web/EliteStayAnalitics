@@ -1451,8 +1451,7 @@ window.calculateTravelBudget = async function() {
     
     try {
         // Llamar al backend local
-        const response = await fetch(`http://localhost:3001/api/budget/calculate?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(dest)}&date=${date}`);
-        const data = await response.json();
+        const response = await fetch(`http://localhost:3001/api/budget/calculate?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(dest)}&date=${date}&currency=USD`);
         
         if (data.success) {
             // Mostrar el presupuesto real
