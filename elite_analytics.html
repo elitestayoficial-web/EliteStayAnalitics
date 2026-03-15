@@ -1423,7 +1423,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Función principal del botón - CON DETECCIÓN DE MONEDA
+// Función principal del botón - VERSIÓN 100% CORREGIDA
 window.calculateTravelBudget = async function() {
     console.log('🔍 Calculando con backend local...');
     
@@ -1447,40 +1447,22 @@ window.calculateTravelBudget = async function() {
     // Mostrar carga
     const btn = event?.target;
     const originalText = btn?.innerText;
-    if (btn) btn.innerText = '⏳ DETECTING...';
+    if (btn) btn.innerText = '⏳ CALCULATING...';
     
     try {
-        // 1. Primero detectar moneda del usuario
-        console.log('📍 Detectando moneda por ubicación...');
-        const currencyResponse = await fetch(`http://localhost:3001/api/user-currency`);
-        const currencyData = await currencyResponse.json();
+        // 1. Primero, hacer la petición
+        const response = await fetch(`http://localhost:3001/api/budget/calculate?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(dest)}&date=${date}&currency=USD`);
         
-        const userCurrency = currencyData.currency || 'USD';
-        console.log(`💰 Moneda detectada: ${userCurrency}`);
+        // 2. ¡LO MÁS IMPORTANTE! Convertir la respuesta a JSON
+        const data = await response.json();  // ← Esto crea la variable 'data'
         
-        btn.innerText = '⏳ CALCULATING...';
-        
-        // 2. Llamar al backend con la moneda detectada
-        const response = await fetch(`http://localhost:3001/api/budget/calculate?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(dest)}&date=${date}&currency=${userCurrency}`);
-        const data = await response.json();
-        
+        // 3. AHORA sí podemos usar 'data' porque ya existe
         if (data.success) {
-            // Mostrar el presupuesto en moneda local
             document.getElementById('budget-amount').innerText = data.total + ' ' + data.currency;
             
-            // Mostrar ubicación detectada (opcional)
-            const locationMsg = currencyData.country ? 
-                `📍 Detected: ${currencyData.country} (${data.currency})` : 
-                `💰 Currency: ${data.currency}`;
-            
-            // Puedes mostrar esto en algún lugar
-            console.log(locationMsg);
-            
-            // Construir link a Travel
             const travelUrl = `https://elitestaytravel.com/search.html?origin=${encodeURIComponent(origin)}&dest=${encodeURIComponent(dest)}&date=${date}&budget=${data.total}&currency=${data.currency}`;
             document.getElementById('travel-link').href = travelUrl;
             
-            // Mostrar resultados
             document.getElementById('budget-result').style.display = 'block';
             document.getElementById('budget-result').scrollIntoView({ behavior: 'smooth' });
             
@@ -1492,12 +1474,12 @@ window.calculateTravelBudget = async function() {
     } catch (error) {
         console.error('❌ Error conectando con backend:', error);
         
-        // Fallback: usar número aleatorio
+        // Fallback
         const fallbackBudget = Math.floor(Math.random() * 500) + 400;
         document.getElementById('budget-amount').innerText = fallbackBudget + ' USD';
         document.getElementById('budget-result').style.display = 'block';
         
-        alert('⚠️ Using estimated budget. Using default USD.');
+        alert('⚠️ Using estimated budget. Backend unavailable.');
     } finally {
         if (btn) btn.innerText = originalText;
     }
