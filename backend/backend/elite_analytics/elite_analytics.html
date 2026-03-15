@@ -1422,9 +1422,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Función principal del botón
-window.calculateTravelBudget = function() {
-    console.log('Botón clickeado'); // Para depurar
+// Función principal del botón - AHORA CONECTADA AL BACKEND
+window.calculateTravelBudget = async function() {
+    console.log('🔍 Calculando con backend local...');
     
     const origin = document.getElementById('calc-origin')?.value.trim();
     const dest = document.getElementById('calc-dest')?.value.trim();
@@ -1443,17 +1443,48 @@ window.calculateTravelBudget = function() {
         return;
     }
 
-    // Calcular
-    const randomBudget = Math.floor(Math.random() * 500) + 400;
-    document.getElementById('budget-amount').innerText = randomBudget + ' €';
-
-    // Construir link
-    const travelUrl = `https://elitestaytravel.com/search.html?origin=${encodeURIComponent(origin)}&dest=${encodeURIComponent(dest)}&date=${date}&budget=${randomBudget}`;
-    document.getElementById('travel-link').href = travelUrl;
-
-    // Mostrar resultados
-    document.getElementById('budget-result').style.display = 'block';
-    document.getElementById('budget-result').scrollIntoView({ behavior: 'smooth' });
+    // Mostrar carga
+    const btn = event?.target;
+    const originalText = btn?.innerText;
+    if (btn) btn.innerText = '⏳ CALCULATING...';
+    
+    try {
+        // Llamar al backend local
+        const response = await fetch(`http://localhost:3001/api/budget/calculate?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(dest)}&date=${date}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            // Mostrar el presupuesto real
+            document.getElementById('budget-amount').innerText = data.total + ' €';
+            
+            // Construir link a Travel
+            const travelUrl = `https://elitestaytravel.com/search.html?origin=${encodeURIComponent(origin)}&dest=${encodeURIComponent(dest)}&date=${date}&budget=${data.total}`;
+            document.getElementById('travel-link').href = travelUrl;
+            
+            // Mostrar resultados
+            document.getElementById('budget-result').style.display = 'block';
+            document.getElementById('budget-result').scrollIntoView({ behavior: 'smooth' });
+            
+            console.log('✅ Presupuesto calculado:', data);
+        } else {
+            throw new Error('Error en la respuesta del backend');
+        }
+        
+    } catch (error) {
+        console.error('❌ Error conectando con backend:', error);
+        
+        // Fallback: usar número aleatorio si el backend no responde
+        const fallbackBudget = Math.floor(Math.random() * 500) + 400;
+        document.getElementById('budget-amount').innerText = fallbackBudget + ' €';
+        document.getElementById('budget-result').style.display = 'block';
+        
+        const lang = document.querySelector('.lang-btn.active')?.textContent.includes('ES') ? 'es' : 'en';
+        alert(lang === 'es' ? 
+              '⚠️ Usando presupuesto estimado. El backend no está disponible.' : 
+              '⚠️ Using estimated budget. Backend unavailable.');
+    } finally {
+        if (btn) btn.innerText = originalText;
+    }
 };
 
 // Función para alertas
