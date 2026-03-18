@@ -1450,7 +1450,7 @@ window.calculateTravelBudget = async function() {
     
     try {
         // 1. Primero, hacer la petición
-        const response = await fetch(`http://localhost:3001/api/budget/calculate?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(dest)}&date=${date}&currency=USD`);
+       const response = await fetch(`https://elitestaytravel.com/api/budget/calculate?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(dest)}&date=${date}&currency=USD`);
         
         // 2. ¡LO MÁS IMPORTANTE! Convertir la respuesta a JSON
         const data = await response.json();  // ← Esto crea la variable 'data'
