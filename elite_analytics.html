@@ -1423,65 +1423,30 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Función principal del botón - VERSIÓN 100% CORREGIDA
-window.calculateTravelBudget = async function() {
-    console.log('🔍 Calculando con backend local...');
-    
+// ===== VERSIÓN CON PRESUPUESTO ESTIMADO LOCAL =====
+window.calculateTravelBudget = function() {
     const origin = document.getElementById('calc-origin')?.value.trim();
     const dest = document.getElementById('calc-dest')?.value.trim();
     const date = document.getElementById('calc-date')?.value;
     
-    // Validar
     if (!origin || !dest || !date) {
-        const lang = document.querySelector('.lang-btn.active')?.textContent.includes('ES') ? 'es' : 
-                    document.querySelector('.lang-btn.active')?.textContent.includes('FR') ? 'fr' : 'en';
-        const mensajes = {
-            en: 'Please fill in all fields',
-            es: 'Por favor completa todos los campos',
-            fr: 'Veuillez remplir tous les champs'
-        };
-        alert(mensajes[lang]);
+        alert('Please fill in all fields');
         return;
     }
-
-    // Mostrar carga
-    const btn = event?.target;
-    const originalText = btn?.innerText;
-    if (btn) btn.innerText = '⏳ CALCULATING...';
     
-    try {
-        const response = await fetch(`https://elitestaytravel.com/api/budget/calculate?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(dest)}&date=${date}&currency=USD`);
-        
-        // 2. ¡LO MÁS IMPORTANTE! Convertir la respuesta a JSON
-        const data = await response.json();  // ← Esto crea la variable 'data'
-        
-        // 3. AHORA sí podemos usar 'data' porque ya existe
-        if (data.success) {
-            document.getElementById('budget-amount').innerText = data.total + ' ' + data.currency;
-            
-            const travelUrl = `https://elitestaytravel.com/search.html?origin=${encodeURIComponent(origin)}&dest=${encodeURIComponent(dest)}&date=${date}&budget=${data.total}&currency=${data.currency}`;
-            document.getElementById('travel-link').href = travelUrl;
-            
-            document.getElementById('budget-result').style.display = 'block';
-            document.getElementById('budget-result').scrollIntoView({ behavior: 'smooth' });
-            
-            console.log('✅ Presupuesto calculado:', data);
-        } else {
-            throw new Error('Error en la respuesta del backend');
-        }
-        
-    } catch (error) {
-        console.error('❌ Error conectando con backend:', error);
-        
-        // Fallback
-        const fallbackBudget = Math.floor(Math.random() * 500) + 400;
-        document.getElementById('budget-amount').innerText = fallbackBudget + ' USD';
-        document.getElementById('budget-result').style.display = 'block';
-        
-        alert('⚠️ Using estimated budget. Backend unavailable.');
-    } finally {
-        if (btn) btn.innerText = originalText;
-    }
+    // Calcular presupuesto estimado LOCALMENTE (sin backend)
+    const budgetEstimado = Math.floor(Math.random() * 800) + 400; // Entre $400 y $1200
+    
+    // Mostrar resultado
+    document.getElementById('budget-amount').innerText = budgetEstimado + ' USD';
+    document.getElementById('budget-result').style.display = 'block';
+    
+    // Configurar el enlace del botón "VIEW OFFERS"
+    const travelUrl = `https://elitestaytravel.com/?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(dest)}&date=${encodeURIComponent(date)}&budget=${budgetEstimado}`;
+    document.getElementById('travel-link').href = travelUrl;
+    
+    // Opcional: Redirigir automáticamente después de 1 segundo
+    // setTimeout(() => { window.location.href = travelUrl; }, 1000);
 };
 // Función para alertas
 window.saveBudgetAlert = function() {
