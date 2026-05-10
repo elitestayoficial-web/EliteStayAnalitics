@@ -977,9 +977,61 @@
     }
 
     // ========== FUNCIÓN PARA MOSTRAR RESULTADOS CON HOTELES CLICKABLES ==========
+// ===== VENTANA EMERGENTE MULTI-IDIOMA =====
 window.mostrarResultadosGoogle = function(hoteles, query) {
     const existente = document.getElementById('resultados-busqueda');
     if (existente) existente.remove();
+
+    // Detectar idioma actual
+    const langBtn = document.querySelector('.lang-btn.active');
+    let currentLang = 'en';
+    if (langBtn) {
+        const btnText = langBtn.textContent;
+        if (btnText.includes('ES')) currentLang = 'es';
+        else if (btnText.includes('FR')) currentLang = 'fr';
+    }
+
+    // Textos según idioma
+    const textos = {
+        en: {
+            title: `🌍 Hotels in ${query}`,
+            results: `${hoteles.length} results`,
+            clickHint: '👆 Click on any hotel to see full reviews',
+            status: {
+                excellent: '✅ Excellent, no issues',
+                good: '🟢 Good, minor complaints',
+                regular: '🟡 Regular, some problems',
+                bad: '🟠 Bad, multiple complaints',
+                critical: '🔴 Critical, avoid'
+            }
+        },
+        es: {
+            title: `🌍 Hoteles en ${query}`,
+            results: `${hoteles.length} resultados`,
+            clickHint: '👆 Haz clic en cualquier hotel para ver sus reseñas completas',
+            status: {
+                excellent: '✅ Excelente, sin problemas',
+                good: '🟢 Bueno, quejas menores',
+                regular: '🟡 Regular, hay problemas',
+                bad: '🟠 Malo, múltiples quejas',
+                critical: '🔴 Crítico, evitar'
+            }
+        },
+        fr: {
+            title: `🌍 Hôtels à ${query}`,
+            results: `${hoteles.length} résultats`,
+            clickHint: '👆 Cliquez sur un hôtel pour voir tous les avis',
+            status: {
+                excellent: '✅ Excellent, aucun problème',
+                good: '🟢 Bon, plaintes mineures',
+                regular: '🟡 Régulier, quelques problèmes',
+                bad: '🟠 Mauvais, multiples plaintes',
+                critical: '🔴 Critique, à éviter'
+            }
+        }
+    };
+
+    const t = textos[currentLang] || textos.en;
 
     const contenedor = document.createElement('div');
     contenedor.id = 'resultados-busqueda';
@@ -993,21 +1045,35 @@ window.mostrarResultadosGoogle = function(hoteles, query) {
 
     let html = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px;">
-            <h2 style="color: #00ff88; margin: 0; font-size: 1.8rem;">🌍 Hoteles en ${query}</h2>
-            <span style="color: #888; background: #1a1a1a; padding: 5px 15px; border-radius: 20px;">${hoteles.length} resultados</span>
+            <h2 style="color: #00ff88; margin: 0; font-size: 1.8rem;">${t.title}</h2>
+            <span style="color: #888; background: #1a1a1a; padding: 5px 15px; border-radius: 20px;">${t.results}</span>
         </div>
-        <p style="color: #aaa; margin-bottom: 15px; font-size: 0.9rem;">👆 Haz clic en cualquier hotel para ver sus reseñas completas</p>
+        <p style="color: #aaa; margin-bottom: 15px; font-size: 0.9rem;">${t.clickHint}</p>
     `;
 
     hoteles.forEach(hotel => {
-        // Determinar color según puntuación
-        const colorAlerta = hotel.puntuacion >= 4.5 ? '#00ff88' :
-                           hotel.puntuacion >= 4.0 ? '#00cc66' :
-                           hotel.puntuacion >= 3.5 ? '#ffd700' :
-                           hotel.puntuacion >= 3.0 ? '#ff8c00' : '#ff4444';
+        let statusText = '';
+        let statusColor = '#00ff88';
+        
+        if (hotel.puntuacion >= 4.5) {
+            statusText = t.status.excellent;
+            statusColor = '#00ff88';
+        } else if (hotel.puntuacion >= 4.0) {
+            statusText = t.status.good;
+            statusColor = '#00cc66';
+        } else if (hotel.puntuacion >= 3.5) {
+            statusText = t.status.regular;
+            statusColor = '#ffd700';
+        } else if (hotel.puntuacion >= 3.0) {
+            statusText = t.status.bad;
+            statusColor = '#ff8c00';
+        } else {
+            statusText = t.status.critical;
+            statusColor = '#ff4444';
+        }
 
         html += `
-            <div style="margin-bottom: 15px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 4px solid ${colorAlerta}; cursor: pointer; transition: transform 0.2s;" 
+            <div style="margin-bottom: 15px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 4px solid ${statusColor}; cursor: pointer; transition: transform 0.2s;" 
                  onclick="verResenasHotel('${hotel.id}', '${hotel.nombre}')"
                  onmouseover="this.style.transform='scale(1.02)'; this.style.background='rgba(0,255,136,0.1)';"
                  onmouseout="this.style.transform='scale(1)'; this.style.background='rgba(255,255,255,0.03)';">
@@ -1015,36 +1081,27 @@ window.mostrarResultadosGoogle = function(hoteles, query) {
                     <div style="flex: 1;">
                         <div style="color: #fff; font-size: 1.3rem; font-weight: bold; margin-bottom: 5px;">
                             ${hotel.nombre}
-                            <span style="margin-left: 10px; font-size: 0.9rem; color: ${colorAlerta};">
-                                ${hotel.puntuacion >= 4.5 ? '✅' : 
-                                  hotel.puntuacion >= 4.0 ? '🟢' :
-                                  hotel.puntuacion >= 3.5 ? '🟡' :
-                                  hotel.puntuacion >= 3.0 ? '🟠' : '🔴'}
-                            </span>
                         </div>
                         <div style="color: #aaa; font-size: 0.95rem; margin-bottom: 8px;">📍 ${hotel.direccion || hotel.ciudad}</div>
-                        <div style="color: ${colorAlerta}; font-size: 0.9rem;">
-                            ⚠️ ${hotel.puntuacion >= 4.5 ? 'Excelente, sin problemas' :
-                                hotel.puntuacion >= 4.0 ? 'Bueno, quejas menores' :
-                                hotel.puntuacion >= 3.5 ? 'Regular, hay problemas' :
-                                hotel.puntuacion >= 3.0 ? 'Malo, múltiples quejas' : 'Crítico, evitar'}
-                        </div>
+                        <div style="color: ${statusColor}; font-size: 0.9rem;">${statusText}</div>
                     </div>
                     <div style="text-align: right; background: #1a1a1a; padding: 10px; border-radius: 8px; min-width: 120px;">
                         <div style="color: #00ff88; font-size: 2rem; font-weight: bold; line-height: 1;">${hotel.puntuacion || 'N/A'}</div>
-                        <div style="color: #666; font-size: 0.9rem;">📊 ${hotel.total_resenas || 0} reseñas</div>
-                        <div style="color: #00ff88; font-size: 0.8rem; margin-top: 5px;">👆 Click para reseñas</div>
+                        <div style="color: #666; font-size: 0.9rem;">📊 ${hotel.total_resenas || 0} ${currentLang === 'en' ? 'reviews' : currentLang === 'es' ? 'reseñas' : 'avis'}</div>
+                        <div style="color: #00ff88; font-size: 0.8rem; margin-top: 5px;">👆 ${currentLang === 'en' ? 'Click for reviews' : currentLang === 'es' ? 'Click para reseñas' : 'Cliquez pour avis'}</div>
                     </div>
                 </div>
             </div>
         `;
     });
 
+    const closeText = currentLang === 'en' ? 'CLOSE RESULTS' : currentLang === 'es' ? 'CERRAR RESULTADOS' : 'FERMER LES RÉSULTATS';
+    
     html += `<button onclick="this.parentElement.remove()" style="
         background: #00ff88; color: #050505; border: none; padding: 15px;
         border-radius: 8px; margin-top: 20px; cursor: pointer; width: 100%;
         font-weight: bold; font-size: 1.1rem;
-    ">CERRAR RESULTADOS</button>`;
+    ">${closeText}</button>`;
 
     contenedor.innerHTML = html;
     document.body.appendChild(contenedor);
