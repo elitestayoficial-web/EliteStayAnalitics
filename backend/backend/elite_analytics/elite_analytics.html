@@ -1443,26 +1443,198 @@ function mostrarVentanaResenas(data, nombreHotel) {
 
         console.log("✅ Página inicializada. Buscador listo.");
     });
-</script>
-<script>
-<script>
-<script>
-// ===== SCRIPT DE CALCULADORA - IDIOMA INGLÉS POR DEFECTO =====
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
-// Sistema de idiomas
+<script>
+// ===== INICIALIZACIÓN DE GRÁFICOS Y DATOS =====
+let gaugeChart = null;
+
+function initGaugeChart() {
+    const ctx = document.getElementById('gaugeChart')?.getContext('2d');
+    if (!ctx) return;
+    if (gaugeChart) gaugeChart.destroy();
+    gaugeChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: { datasets: [{ data: [87, 13], backgroundColor: ['#00ff88', '#ff4444'], borderWidth: 0, circumference: 180, rotation: 270 }] },
+        options: { cutout: '70%', responsive: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+    });
+}
+
+async function loadRealData() {
+    try {
+        const [bestRes, worstRes, semRes] = await Promise.all([
+            fetch('/api/rankings/global/best'),
+            fetch('/api/rankings/global/worst'),
+            fetch('/api/semaphore/stats')
+        ]);
+
+        const bestHotels = await bestRes.json();
+        const bestList = document.getElementById('bestList');
+        if (bestList && bestHotels.length) {
+            bestList.innerHTML = bestHotels.map((hotel, i) => `
+                <div class="ranking-item" onclick="autoSearch('${hotel.name}')">
+                    <div class="hotel-info">
+                        <span class="hotel-rank-badge">${String(i+1).padStart(2, '0')}</span>
+                        <div>
+                            <div class="hotel-name">${hotel.name}</div>
+                            <div class="hotel-city">${hotel.city}</div>
+                        </div>
+                    </div>
+                    <span class="hotel-score">${hotel.score} ⭐</span>
+                </div>
+            `).join('');
+        }
+
+        const worstHotels = await worstRes.json();
+        const worstList = document.getElementById('worstList');
+        if (worstList && worstHotels.length) {
+            worstList.innerHTML = worstHotels.map((hotel, i) => `
+                <div class="ranking-item" onclick="autoSearch('${hotel.name}')">
+                    <div class="hotel-info">
+                        <span class="hotel-rank-badge">${String(i+1).padStart(2, '0')}</span>
+                        <div>
+                            <div class="hotel-name" style="color: #ff6b6b;">${hotel.name}</div>
+                            <div class="hotel-city">${hotel.city}</div>
+                        </div>
+                    </div>
+                    <span class="hotel-score" style="color: #ff6b6b;">${hotel.score} ⭐</span>
+                </div>
+            `).join('');
+        }
+
+        const semData = await semRes.json();
+        document.getElementById('yellowCount').innerText = semData.yellow || 0;
+        document.getElementById('orangeCount').innerText = semData.orange || 0;
+        document.getElementById('redCount').innerText = semData.red || 0;
+
+    } catch (e) {
+        console.error("Error cargando datos:", e);
+    }
+}
+
+// Búsqueda en Google
+window.buscarEnGoogle = async function() {
+    const query = document.getElementById('hotelSearch').value.trim();
+    if (!query) return alert("Please enter a hotel name or city");
+
+    const searchBtn = document.querySelector('.search-btn');
+    const originalText = searchBtn.textContent;
+    searchBtn.textContent = 'SEARCHING...';
+    searchBtn.disabled = true;
+
+    try {
+        const response = await fetch(`/api/google/places?q=${encodeURIComponent(query)}`);
+        const hoteles = await response.json();
+        if (hoteles?.length) {
+            window.mostrarResultadosGoogle(hoteles, query);
+        } else {
+            alert(`No hotels found for: "${query}"`);
+        }
+    } catch (error) {
+        alert("Search error. Please try again.");
+    } finally {
+        searchBtn.textContent = originalText;
+        searchBtn.disabled = false;
+    }
+};
+
+window.autoSearch = function(name) {
+    document.getElementById('hotelSearch').value = name;
+    window.buscarEnGoogle();
+};
+
+// Mostrar resultados (multi-idioma)
+window.mostrarResultadosGoogle = function(hoteles, query) {
+    const existente = document.getElementById('resultados-busqueda');
+    if (existente) existente.remove();
+
+    let currentLang = 'en';
+    const langBtn = document.querySelector('.lang-btn.active');
+    if (langBtn) {
+        if (langBtn.textContent.includes('ES')) currentLang = 'es';
+        else if (langBtn.textContent.includes('FR')) currentLang = 'fr';
+    }
+
+    const textos = {
+        en: { title: `Hotels in ${query}`, results: `${hoteles.length} results`, clickHint: 'Click on any hotel to see full reviews' },
+        es: { title: `Hoteles en ${query}`, results: `${hoteles.length} resultados`, clickHint: 'Haz clic en cualquier hotel para ver sus reseñas completas' },
+        fr: { title: `Hôtels à ${query}`, results: `${hoteles.length} résultats`, clickHint: 'Cliquez sur un hôtel pour voir tous les avis' }
+    };
+    const t = textos[currentLang] || textos.en;
+
+    const contenedor = document.createElement('div');
+    contenedor.id = 'resultados-busqueda';
+    contenedor.style.cssText = `position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 1000px; max-height: 80vh; overflow-y: auto; background: #0a0a0a; border: 2px solid #00ff88; border-radius: 15px; padding: 25px; z-index: 10000; box-shadow: 0 0 40px rgba(0,255,136,0.5); font-family: 'Montserrat', sans-serif;`;
+
+    let html = `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;"><h2 style="color: #00ff88;">🌍 ${t.title}</h2><span style="color: #888;">${t.results}</span></div><p style="color: #aaa;">${t.clickHint}</p>`;
+
+    hoteles.forEach(hotel => {
+        let statusColor = hotel.puntuacion >= 4.5 ? '#00ff88' : hotel.puntuacion >= 4.0 ? '#00cc66' : hotel.puntuacion >= 3.5 ? '#ffd700' : hotel.puntuacion >= 3.0 ? '#ff8c00' : '#ff4444';
+        html += `<div style="margin-bottom: 15px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 4px solid ${statusColor}; cursor: pointer;" onclick="verResenasHotel('${hotel.id}', '${hotel.nombre}')">
+            <div style="display: flex; justify-content: space-between;">
+                <div><div style="color: #fff; font-size: 1.3rem;">${hotel.nombre}</div><div style="color: #aaa;">📍 ${hotel.direccion || hotel.ciudad}</div></div>
+                <div style="text-align: right;"><div style="color: #00ff88; font-size: 2rem;">${hotel.puntuacion || 'N/A'}</div><div style="color: #666;">${hotel.total_resenas || 0} reviews</div></div>
+            </div>
+        </div>`;
+    });
+
+    html += `<button onclick="this.parentElement.remove()" style="background: #00ff88; color: #050505; border: none; padding: 15px; border-radius: 8px; margin-top: 20px; cursor: pointer; width: 100%;">CLOSE RESULTS</button>`;
+    contenedor.innerHTML = html;
+    document.body.appendChild(contenedor);
+};
+
+// Ver reseñas
+window.verResenasHotel = async function(placeId, nombreHotel) {
+    try {
+        const response = await fetch(`/api/google/place/${placeId}`);
+        const data = await response.json();
+        alert(`Reviews for ${nombreHotel}\nRating: ${data.puntuacion}\nTotal reviews: ${data.total_resenas}`);
+    } catch (error) {
+        alert(`Error loading reviews for ${nombreHotel}`);
+    }
+};
+
+// Inicialización
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('currentDate').innerText = new Date().toISOString().split('T')[0];
+    initGaugeChart();
+    loadRealData();
+
+    const searchBtn = document.querySelector('.search-btn');
+    if (searchBtn) {
+        searchBtn.onclick = function(e) {
+            e.preventDefault();
+            window.buscarEnGoogle();
+        };
+    }
+
+    const searchInput = document.getElementById('hotelSearch');
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                window.buscarEnGoogle();
+            }
+        });
+    }
+});
+</script>
+
+<script>
+// ===== SCRIPT DE CALCULADORA Y BOTÓN =====
+
+// Sistema de idiomas para la calculadora
 function actualizarIdiomaCalculadora(idioma) {
     document.querySelectorAll('.i18n').forEach(el => {
         const texto = el.getAttribute(`data-${idioma}`);
         if (texto) el.innerText = texto;
     });
-    
     document.querySelectorAll('.i18n-placeholder').forEach(el => {
         const placeholder = el.getAttribute(`data-${idioma}-placeholder`);
         if (placeholder) el.placeholder = placeholder;
     });
 }
 
-// Interceptar cambio de idioma global
 const originalSetLanguage = window.setLanguage;
 window.setLanguage = function(lang) {
     if (originalSetLanguage) originalSetLanguage(lang);
@@ -1470,209 +1642,85 @@ window.setLanguage = function(lang) {
     localStorage.setItem('preferred-language', lang);
 };
 
-// Inicializar con INGLÉS por defecto
+// Inicializar con inglés por defecto
 document.addEventListener('DOMContentLoaded', function() {
-    // Forzar inglés como idioma inicial
     actualizarIdiomaCalculadora('en');
-    
-    // Verificar si hay idioma guardado (pero NO cambiar hasta que usuario elija)
     const langGuardado = localStorage.getItem('preferred-language');
     if (langGuardado && langGuardado !== 'en') {
-        // Solo cambiar si el usuario cambió manualmente antes
-        setTimeout(() => {
-            actualizarIdiomaCalculadora(langGuardado);
-            // También actualizar el botón activo
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.textContent.includes(langGuardado.toUpperCase())) {
-                    btn.classList.add('active');
-                }
-            });
-        }, 100);
-    } else {
-        // Asegurar que el botón de inglés esté activo
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.classList.remove('active');
-            if (btn.textContent.includes('EN')) {
-                btn.classList.add('active');
-            }
-        });
+        setTimeout(() => actualizarIdiomaCalculadora(langGuardado), 100);
     }
-});
-
-// ===== FUNCIÓN PRINCIPAL DEL BOTÓN - REDIRIGE A ELITESTAYTRAVEL =====
-window.calculateTravelBudget = function() {
-    console.log('Redirecting to Elite Stay Travel...');
-    
-    // Obtener valores
-    const originInput = document.getElementById('calc-origin');
-    const destInput = document.getElementById('calc-dest');
-    const dateInput = document.getElementById('calc-date');
-    
-    const origin = originInput ? originInput.value.trim() : '';
-    const dest = destInput ? destInput.value.trim() : '';
-    const date = dateInput ? dateInput.value : '';
-    
-    // Validar campos
-    if (!origin || !dest || !date) {
-        alert('Please fill in all fields');
-        return;
-    }
-    
-    // REDIRECCIÓN DIRECTA
-    window.location.href = 'https://elitestaytravel.com/';
-};
-
-// Función para alertas de precio
-window.saveBudgetAlert = function() {
-    const email = document.getElementById('alert-email')?.value.trim();
-    const dest = document.getElementById('calc-dest')?.value.trim();
-    
-    // Detectar idioma actual
-    let currentLang = 'en';
-    const langBtn = document.querySelector('.lang-btn.active');
-    if (langBtn) {
-        if (langBtn.textContent.includes('ES')) currentLang = 'es';
-        else if (langBtn.textContent.includes('FR')) currentLang = 'fr';
-    }
-    
-    const mensajes = {
-        en: {
-            invalid: 'Please enter a valid email',
-            noDest: 'Please enter a destination first',
-            success: (email, dest) => `✅ Alert activated! We'll notify you at ${email} about ${dest}`
-        },
-        es: {
-            invalid: 'Por favor ingresa un email válido',
-            noDest: 'Por favor ingresa un destino primero',
-            success: (email, dest) => `✅ ¡Alerta activada! Te avisaremos a ${email} sobre ${dest}`
-        },
-        fr: {
-            invalid: 'Veuillez entrer un email valide',
-            noDest: 'Veuillez d\'abord entrer une destination',
-            success: (email, dest) => `✅ Alerte activée ! Nous vous avertirons à ${email} pour ${dest}`
-        }
-    };
-    
-    const t = mensajes[currentLang] || mensajes.en;
-    
-    if (!email || !email.includes('@')) {
-        alert(t.invalid);
-        return;
-    }
-
-    if (!dest) {
-        alert(t.noDest);
-        return;
-    }
-
-    console.log('Alert saved:', { email, dest });
-    alert(t.success(email, dest));
-    document.getElementById('alert-email').value = '';
-};
-
-// Permitir tecla Enter
-document.addEventListener('DOMContentLoaded', function() {
-    const inputs = ['calc-origin', 'calc-dest', 'calc-date'];
-    inputs.forEach(id => {
-        const input = document.getElementById(id);
-        if (input) {
-            input.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    window.calculateTravelBudget();
-                }
-            });
-        }
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent.includes('EN')) btn.classList.add('active');
     });
 });
-</script>
-// ===== FUNCIÓN PRINCIPAL - SOLO REDIRIGE A ELITESTAYTRAVEL =====
+
+// ✅ BOTÓN PRINCIPAL - REDIRIGE A ELITESTAYTRAVEL
 window.calculateTravelBudget = function() {
-    console.log('🔍 Redirecting to Elite Stay Travel...');
-    
     const origin = document.getElementById('calc-origin')?.value.trim();
     const dest = document.getElementById('calc-dest')?.value.trim();
     const date = document.getElementById('calc-date')?.value;
     
-    // Validar campos - mensajes en inglés por defecto
     if (!origin || !dest || !date) {
         alert('Please fill in all fields');
         return;
     }
     
-    // Feedback visual en el botón
-    const btn = event?.target;
-    if (btn) {
-        const originalText = btn.innerText;
-        btn.innerText = '⏳ REDIRECTING...';
-        btn.style.opacity = '0.7';
-    }
-    
-    // REDIRECCIÓN DIRECTA
     window.location.href = 'https://elitestaytravel.com/';
 };
 
-// Función para alertas de precio
+// Alerta de precio
 window.saveBudgetAlert = function() {
     const email = document.getElementById('alert-email')?.value.trim();
     const dest = document.getElementById('calc-dest')?.value.trim();
     
-    // Detectar idioma actual para el mensaje
-    const lang = document.querySelector('.lang-btn.active')?.textContent.includes('ES') ? 'es' : 
-                document.querySelector('.lang-btn.active')?.textContent.includes('FR') ? 'fr' : 'en';
+    let lang = 'en';
+    const langBtn = document.querySelector('.lang-btn.active');
+    if (langBtn && langBtn.textContent.includes('ES')) lang = 'es';
+    else if (langBtn && langBtn.textContent.includes('FR')) lang = 'fr';
     
-    const mensajes = {
-        en: {
-            invalid: 'Please enter a valid email',
-            noDest: 'Please enter a destination first',
-            success: (email, dest) => `✅ Alert activated! We'll notify you at ${email} about ${dest}`
-        },
-        es: {
-            invalid: 'Por favor ingresa un email válido',
-            noDest: 'Por favor ingresa un destino primero',
-            success: (email, dest) => `✅ ¡Alerta activada! Te avisaremos a ${email} sobre ${dest}`
-        },
-        fr: {
-            invalid: 'Veuillez entrer un email valide',
-            noDest: 'Veuillez d\'abord entrer une destination',
-            success: (email, dest) => `✅ Alerte activée ! Nous vous avertirons à ${email} pour ${dest}`
-        }
+    const msg = {
+        en: { invalid: 'Please enter a valid email', noDest: 'Enter a destination first', success: '✅ Alert activated!' },
+        es: { invalid: 'Email inválido', noDest: 'Ingresa un destino primero', success: '✅ ¡Alerta activada!' },
+        fr: { invalid: 'Email invalide', noDest: 'Entrez une destination', success: '✅ Alerte activée!' }
     };
+    const m = msg[lang];
     
-    const messages = mensajes[lang] || mensajes.en;
+    if (!email || !email.includes('@')) return alert(m.invalid);
+    if (!dest) return alert(m.noDest);
     
-    if (!email || !email.includes('@')) {
-        alert(messages.invalid);
-        return;
-    }
-
-    if (!dest) {
-        alert(messages.noDest);
-        return;
-    }
-
-    console.log('Alert saved:', { email, dest });
-    alert(messages.success(email, dest));
+    console.log('Alert saved:', email, dest);
+    alert(m.success);
     document.getElementById('alert-email').value = '';
 };
 
-// Permitir tecla Enter en los campos
+// Tecla Enter
 document.addEventListener('DOMContentLoaded', function() {
-    const inputs = ['calc-origin', 'calc-dest', 'calc-date'];
-    inputs.forEach(id => {
+    ['calc-origin', 'calc-dest', 'calc-date'].forEach(id => {
         const input = document.getElementById(id);
-        if (input) {
-            input.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    window.calculateTravelBudget();
-                }
-            });
-        }
+        if (input) input.addEventListener('keypress', e => { if (e.key === 'Enter') window.calculateTravelBudget(); });
     });
 });
 </script>
+
+<!-- Funciones de pago -->
+<script>
+function showPaymentModal(plan) {
+    alert(`Payment for ${plan} plan - Demo mode`);
+}
+function closeModal() {
+    document.getElementById('paymentModal').style.display = 'none';
+}
+function toggleTheme() {
+    document.body.classList.toggle('light-mode');
+    const btn = document.getElementById('themeBtn');
+    btn.textContent = document.body.classList.contains('light-mode') ? '☀️ Light' : '🌙 Dark';
+}
+function setLanguage(lang) {
+    // Ya está definido arriba
+}
+</script>
+
 </body>
 </html>
 
