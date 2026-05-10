@@ -1447,6 +1447,7 @@ function mostrarVentanaResenas(data, nombreHotel) {
 </script>
 <script>
 <script>
+<script>
 // ===== SCRIPT DE CALCULADORA - IDIOMA INGLÉS POR DEFECTO =====
 
 // Sistema de idiomas
@@ -1500,6 +1501,93 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// ===== FUNCIÓN PRINCIPAL DEL BOTÓN - REDIRIGE A ELITESTAYTRAVEL =====
+window.calculateTravelBudget = function() {
+    console.log('Redirecting to Elite Stay Travel...');
+    
+    // Obtener valores
+    const originInput = document.getElementById('calc-origin');
+    const destInput = document.getElementById('calc-dest');
+    const dateInput = document.getElementById('calc-date');
+    
+    const origin = originInput ? originInput.value.trim() : '';
+    const dest = destInput ? destInput.value.trim() : '';
+    const date = dateInput ? dateInput.value : '';
+    
+    // Validar campos
+    if (!origin || !dest || !date) {
+        alert('Please fill in all fields');
+        return;
+    }
+    
+    // REDIRECCIÓN DIRECTA
+    window.location.href = 'https://elitestaytravel.com/';
+};
+
+// Función para alertas de precio
+window.saveBudgetAlert = function() {
+    const email = document.getElementById('alert-email')?.value.trim();
+    const dest = document.getElementById('calc-dest')?.value.trim();
+    
+    // Detectar idioma actual
+    let currentLang = 'en';
+    const langBtn = document.querySelector('.lang-btn.active');
+    if (langBtn) {
+        if (langBtn.textContent.includes('ES')) currentLang = 'es';
+        else if (langBtn.textContent.includes('FR')) currentLang = 'fr';
+    }
+    
+    const mensajes = {
+        en: {
+            invalid: 'Please enter a valid email',
+            noDest: 'Please enter a destination first',
+            success: (email, dest) => `✅ Alert activated! We'll notify you at ${email} about ${dest}`
+        },
+        es: {
+            invalid: 'Por favor ingresa un email válido',
+            noDest: 'Por favor ingresa un destino primero',
+            success: (email, dest) => `✅ ¡Alerta activada! Te avisaremos a ${email} sobre ${dest}`
+        },
+        fr: {
+            invalid: 'Veuillez entrer un email valide',
+            noDest: 'Veuillez d\'abord entrer une destination',
+            success: (email, dest) => `✅ Alerte activée ! Nous vous avertirons à ${email} pour ${dest}`
+        }
+    };
+    
+    const t = mensajes[currentLang] || mensajes.en;
+    
+    if (!email || !email.includes('@')) {
+        alert(t.invalid);
+        return;
+    }
+
+    if (!dest) {
+        alert(t.noDest);
+        return;
+    }
+
+    console.log('Alert saved:', { email, dest });
+    alert(t.success(email, dest));
+    document.getElementById('alert-email').value = '';
+};
+
+// Permitir tecla Enter
+document.addEventListener('DOMContentLoaded', function() {
+    const inputs = ['calc-origin', 'calc-dest', 'calc-date'];
+    inputs.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    window.calculateTravelBudget();
+                }
+            });
+        }
+    });
+});
+</script>
 // ===== FUNCIÓN PRINCIPAL - SOLO REDIRIGE A ELITESTAYTRAVEL =====
 window.calculateTravelBudget = function() {
     console.log('🔍 Redirecting to Elite Stay Travel...');
