@@ -1389,7 +1389,8 @@ function mostrarVentanaResenas(data, nombreHotel) {
     });
 </script>
 <script>
-// ===== ÚNICO SCRIPT PARA LA CALCULADORA (MULTI-IDIOMA) =====
+<script>
+// ===== SCRIPT DE CALCULADORA - IDIOMA INGLÉS POR DEFECTO =====
 
 // Sistema de idiomas
 function actualizarIdiomaCalculadora(idioma) {
@@ -1404,92 +1405,115 @@ function actualizarIdiomaCalculadora(idioma) {
     });
 }
 
-// Interceptar cambio de idioma
+// Interceptar cambio de idioma global
 const originalSetLanguage = window.setLanguage;
 window.setLanguage = function(lang) {
     if (originalSetLanguage) originalSetLanguage(lang);
     actualizarIdiomaCalculadora(lang);
+    localStorage.setItem('preferred-language', lang);
 };
 
-// Inicializar en inglés
+// Inicializar con INGLÉS por defecto
 document.addEventListener('DOMContentLoaded', function() {
+    // Forzar inglés como idioma inicial
     actualizarIdiomaCalculadora('en');
     
+    // Verificar si hay idioma guardado (pero NO cambiar hasta que usuario elija)
     const langGuardado = localStorage.getItem('preferred-language');
     if (langGuardado && langGuardado !== 'en') {
+        // Solo cambiar si el usuario cambió manualmente antes
         setTimeout(() => {
             actualizarIdiomaCalculadora(langGuardado);
+            // También actualizar el botón activo
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.includes(langGuardado.toUpperCase())) {
+                    btn.classList.add('active');
+                }
+            });
         }, 100);
+    } else {
+        // Asegurar que el botón de inglés esté activo
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.textContent.includes('EN')) {
+                btn.classList.add('active');
+            }
+        });
     }
 });
 
-// ===== VERSIÓN CON PRESUPUESTO ESTIMADO LOCAL =====
+// ===== FUNCIÓN PRINCIPAL - SOLO REDIRIGE A ELITESTAYTRAVEL =====
 window.calculateTravelBudget = function() {
+    console.log('🔍 Redirecting to Elite Stay Travel...');
+    
     const origin = document.getElementById('calc-origin')?.value.trim();
     const dest = document.getElementById('calc-dest')?.value.trim();
     const date = document.getElementById('calc-date')?.value;
     
+    // Validar campos - mensajes en inglés por defecto
     if (!origin || !dest || !date) {
         alert('Please fill in all fields');
         return;
     }
     
-    // Calcular presupuesto estimado LOCALMENTE (sin backend)
-    const budgetEstimado = Math.floor(Math.random() * 800) + 400; // Entre $400 y $1200
+    // Feedback visual en el botón
+    const btn = event?.target;
+    if (btn) {
+        const originalText = btn.innerText;
+        btn.innerText = '⏳ REDIRECTING...';
+        btn.style.opacity = '0.7';
+    }
     
-    // Mostrar resultado
-    document.getElementById('budget-amount').innerText = budgetEstimado + ' USD';
-    document.getElementById('budget-result').style.display = 'block';
-    
-    // Configurar el enlace del botón "VIEW OFFERS"
-    const travelUrl = `https://elitestaytravel.com/?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(dest)}&date=${encodeURIComponent(date)}&budget=${budgetEstimado}`;
-    document.getElementById('travel-link').href = travelUrl;
-    
-    // Opcional: Redirigir automáticamente después de 1 segundo
-    // setTimeout(() => { window.location.href = travelUrl; }, 1000);
+    // REDIRECCIÓN DIRECTA
+    window.location.href = 'https://elitestaytravel.com/';
 };
-// Función para alertas
+
+// Función para alertas de precio
 window.saveBudgetAlert = function() {
     const email = document.getElementById('alert-email')?.value.trim();
     const dest = document.getElementById('calc-dest')?.value.trim();
     
+    // Detectar idioma actual para el mensaje
     const lang = document.querySelector('.lang-btn.active')?.textContent.includes('ES') ? 'es' : 
                 document.querySelector('.lang-btn.active')?.textContent.includes('FR') ? 'fr' : 'en';
     
     const mensajes = {
         en: {
             invalid: 'Please enter a valid email',
-            noDest: 'Please calculate a budget first',
+            noDest: 'Please enter a destination first',
             success: (email, dest) => `✅ Alert activated! We'll notify you at ${email} about ${dest}`
         },
         es: {
             invalid: 'Por favor ingresa un email válido',
-            noDest: 'Por favor calcula un presupuesto primero',
+            noDest: 'Por favor ingresa un destino primero',
             success: (email, dest) => `✅ ¡Alerta activada! Te avisaremos a ${email} sobre ${dest}`
         },
         fr: {
             invalid: 'Veuillez entrer un email valide',
-            noDest: 'Veuillez d\'abord calculer un budget',
+            noDest: 'Veuillez d\'abord entrer une destination',
             success: (email, dest) => `✅ Alerte activée ! Nous vous avertirons à ${email} pour ${dest}`
         }
     };
     
+    const messages = mensajes[lang] || mensajes.en;
+    
     if (!email || !email.includes('@')) {
-        alert(mensajes[lang].invalid);
+        alert(messages.invalid);
         return;
     }
 
     if (!dest) {
-        alert(mensajes[lang].noDest);
+        alert(messages.noDest);
         return;
     }
 
     console.log('Alert saved:', { email, dest });
-    alert(mensajes[lang].success(email, dest));
+    alert(messages.success(email, dest));
     document.getElementById('alert-email').value = '';
 };
 
-// Permitir Enter
+// Permitir tecla Enter en los campos
 document.addEventListener('DOMContentLoaded', function() {
     const inputs = ['calc-origin', 'calc-dest', 'calc-date'];
     inputs.forEach(id => {
@@ -1497,6 +1521,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (input) {
             input.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
+                    e.preventDefault();
                     window.calculateTravelBudget();
                 }
             });
