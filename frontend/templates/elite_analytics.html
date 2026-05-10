@@ -1719,7 +1719,24 @@ function setLanguage(lang) {
     // Ya está definido arriba
 }
 </script>
+    <!-- Aquí va el script -->
+    <script>
+    window.calculateTravelBudget = function() {
+        var origin = document.getElementById('calc-origin');
+        var dest = document.getElementById('calc-dest');
+        var date = document.getElementById('calc-date');
+        
+        if (!origin.value.trim() || !dest.value.trim() || !date.value) {
+            alert('Please fill in all fields');
+            return;
+        }
+        
+        window.location.href = 'https://elitestaytravel.com/';
+    };
+    </script>
 
+</body>
+</html>
 </body>
 </html>
 
