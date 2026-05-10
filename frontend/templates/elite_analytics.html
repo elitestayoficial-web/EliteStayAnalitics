@@ -1619,8 +1619,10 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
 <script>
-// ===== SCRIPT DE CALCULADORA Y BOTÓN =====
+// ===== SCRIPT PRINCIPAL - CALCULADORA CON PRECIOS REALES =====
 
 // Sistema de idiomas para la calculadora
 function actualizarIdiomaCalculadora(idioma) {
@@ -1654,21 +1656,78 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// ✅ BOTÓN PRINCIPAL - REDIRIGE A ELITESTAYTRAVEL
-window.calculateTravelBudget = function() {
-    const origin = document.getElementById('calc-origin')?.value.trim();
-    const dest = document.getElementById('calc-dest')?.value.trim();
-    const date = document.getElementById('calc-date')?.value;
+// ===== FUNCIÓN PRINCIPAL - CALCULA PRESUPUESTO REAL =====
+window.calculateTravelBudget = async function() {
+    console.log('🔍 Consultando precios reales...');
+    
+    const originInput = document.getElementById('calc-origin');
+    const destInput = document.getElementById('calc-dest');
+    const dateInput = document.getElementById('calc-date');
+    
+    const origin = originInput ? originInput.value.trim() : '';
+    const dest = destInput ? destInput.value.trim() : '';
+    const date = dateInput ? dateInput.value : '';
     
     if (!origin || !dest || !date) {
         alert('Please fill in all fields');
         return;
     }
     
-    window.location.href = 'https://elitestaytravel.com/';
+    // Feedback visual en el botón
+    const btn = document.querySelector('button[onclick="calculateTravelBudget()"]');
+    const originalText = btn ? btn.innerText : '📊 CALCULATE BUDGET';
+    if (btn) {
+        btn.innerText = '⏳ CALCULATING...';
+        btn.style.opacity = '0.7';
+    }
+    
+    try {
+        // LLAMADA A TU BACKEND REAL
+        const response = await fetch(`http://localhost:3001/api/budget/calculate?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(dest)}&date=${date}&currency=USD`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Mostrar presupuesto real
+            const budgetAmount = document.getElementById('budget-amount');
+            if (budgetAmount) {
+                budgetAmount.innerText = data.total + ' ' + data.currency;
+            }
+            
+            // Configurar el enlace del botón "VIEW OFFERS"
+            const travelLink = document.getElementById('travel-link');
+            if (travelLink) {
+                travelLink.href = `https://elitestaytravel.com/?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(dest)}&date=${date}&budget=${data.total}&currency=${data.currency}`;
+            }
+            
+            // Mostrar el panel de resultados
+            const resultDiv = document.getElementById('budget-result');
+            if (resultDiv) {
+                resultDiv.style.display = 'block';
+                resultDiv.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            console.log('✅ Presupuesto real calculado:', data);
+        } else {
+            throw new Error(data.error || 'Error en el cálculo');
+        }
+        
+    } catch (error) {
+        console.error('❌ Error:', error);
+        alert(`Error: ${error.message}. No se pudo obtener precios reales. Asegúrate que el backend esté corriendo en localhost:3001`);
+    } finally {
+        if (btn) {
+            btn.innerText = originalText;
+            btn.style.opacity = '1';
+        }
+    }
 };
 
-// Alerta de precio
+// Alerta de precio (funciona después de calcular)
 window.saveBudgetAlert = function() {
     const email = document.getElementById('alert-email')?.value.trim();
     const dest = document.getElementById('calc-dest')?.value.trim();
@@ -1679,67 +1738,69 @@ window.saveBudgetAlert = function() {
     else if (langBtn && langBtn.textContent.includes('FR')) lang = 'fr';
     
     const msg = {
-        en: { invalid: 'Please enter a valid email', noDest: 'Enter a destination first', success: '✅ Alert activated!' },
-        es: { invalid: 'Email inválido', noDest: 'Ingresa un destino primero', success: '✅ ¡Alerta activada!' },
-        fr: { invalid: 'Email invalide', noDest: 'Entrez une destination', success: '✅ Alerte activée!' }
+        en: { invalid: 'Please enter a valid email', noDest: 'Enter a destination first', success: '✅ Alert activated! We will notify you.' },
+        es: { invalid: 'Email inválido', noDest: 'Ingresa un destino primero', success: '✅ ¡Alerta activada! Te avisaremos.' },
+        fr: { invalid: 'Email invalide', noDest: 'Entrez une destination', success: '✅ Alerte activée! Nous vous avertirons.' }
     };
     const m = msg[lang];
     
-    if (!email || !email.includes('@')) return alert(m.invalid);
-    if (!dest) return alert(m.noDest);
+    if (!email || !email.includes('@')) {
+        alert(m.invalid);
+        return;
+    }
+    if (!dest) {
+        alert(m.noDest);
+        return;
+    }
     
     console.log('Alert saved:', email, dest);
     alert(m.success);
     document.getElementById('alert-email').value = '';
 };
 
-// Tecla Enter
+// Tecla Enter en los campos
 document.addEventListener('DOMContentLoaded', function() {
-    ['calc-origin', 'calc-dest', 'calc-date'].forEach(id => {
+    const inputs = ['calc-origin', 'calc-dest', 'calc-date'];
+    inputs.forEach(id => {
         const input = document.getElementById(id);
-        if (input) input.addEventListener('keypress', e => { if (e.key === 'Enter') window.calculateTravelBudget(); });
+        if (input) {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    window.calculateTravelBudget();
+                }
+            });
+        }
     });
 });
 </script>
 
-<!-- Funciones de pago -->
+<!-- Funciones de pago y utilidades -->
 <script>
 function showPaymentModal(plan) {
     alert(`Payment for ${plan} plan - Demo mode`);
 }
 function closeModal() {
-    document.getElementById('paymentModal').style.display = 'none';
+    const modal = document.getElementById('paymentModal');
+    if (modal) modal.style.display = 'none';
 }
 function toggleTheme() {
     document.body.classList.toggle('light-mode');
     const btn = document.getElementById('themeBtn');
-    btn.textContent = document.body.classList.contains('light-mode') ? '☀️ Light' : '🌙 Dark';
+    if (btn) {
+        btn.textContent = document.body.classList.contains('light-mode') ? '☀️ Light' : '🌙 Dark';
+    }
 }
 function setLanguage(lang) {
-    // Ya está definido arriba
+    // La función ya está definida arriba
+    if (typeof window.setLanguage === 'function') {
+        window.setLanguage(lang);
+    }
 }
 </script>
-    <!-- Aquí va el script -->
-    <script>
-    window.calculateTravelBudget = function() {
-        var origin = document.getElementById('calc-origin');
-        var dest = document.getElementById('calc-dest');
-        var date = document.getElementById('calc-date');
-        
-        if (!origin.value.trim() || !dest.value.trim() || !date.value) {
-            alert('Please fill in all fields');
-            return;
-        }
-        
-        window.location.href = 'https://elitestaytravel.com/';
-    };
-    </script>
 
 </body>
 </html>
-</body>
-</html>
-
 
 
 
