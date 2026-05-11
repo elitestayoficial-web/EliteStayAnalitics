@@ -1660,71 +1660,93 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ===== FUNCIÓN PRINCIPAL - CALCULA PRESUPUESTO REAL =====
+// ===== FUNCIÓN CORREGIDA - CONSULTA API Y MUESTRA PRESUPUESTO =====
 window.calculateTravelBudget = async function() {
-    console.log('🔍 Consultando precios reales...');
+    console.log('🔍 Consultando API para precios reales...');
     
-    const originInput = document.getElementById('calc-origin');
-    const destInput = document.getElementById('calc-dest');
-    const dateInput = document.getElementById('calc-date');
+    // Obtener valores del formulario
+    const origin = document.getElementById('calc-origin')?.value.trim();
+    const dest = document.getElementById('calc-dest')?.value.trim();
+    const date = document.getElementById('calc-date')?.value;
     
-    const origin = originInput ? originInput.value.trim() : '';
-    const dest = destInput ? destInput.value.trim() : '';
-    const date = dateInput ? dateInput.value : '';
-    
+    // Validar campos
     if (!origin || !dest || !date) {
         alert('Please fill in all fields');
         return;
     }
     
     // Feedback visual en el botón
-    const btn = document.querySelector('button[onclick="calculateTravelBudget()"]');
-    const originalText = btn ? btn.innerText : '📊 CALCULATE BUDGET';
+    const btn = event?.target;
+    const originalText = btn?.innerText;
     if (btn) {
         btn.innerText = '⏳ CALCULATING...';
+        btn.disabled = true;
         btn.style.opacity = '0.7';
     }
     
     try {
-        // LLAMADA A TU BACKEND REAL
-        const response = await fetch(`http://localhost:3001/api/budget/calculate?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(dest)}&date=${date}&currency=USD`);
+        // === CONSULTA A TU API (localhost:3001) ===
+        // Ajusta la URL según donde corra tu backend
+        const apiUrl = `http://localhost:3001/api/budget/calculate?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(dest)}&date=${date}&currency=USD`;
+        
+        console.log('📡 Llamando a:', apiUrl);
+        const response = await fetch(apiUrl);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
         const data = await response.json();
+        console.log('✅ Respuesta de API:', data);
         
         if (data.success) {
-            // Mostrar presupuesto real
+            // === MOSTRAR PRESUPUESTO ===
             const budgetAmount = document.getElementById('budget-amount');
             if (budgetAmount) {
-                budgetAmount.innerText = data.total + ' ' + data.currency;
+                budgetAmount.innerText = `${data.total} ${data.currency || 'USD'}`;
             }
             
-            // Configurar el enlace del botón "VIEW OFFERS"
+            // === HABILITAR BOTÓN "VIEW OFFERS" ===
             const travelLink = document.getElementById('travel-link');
             if (travelLink) {
-                travelLink.href = `https://elitestaytravel.com/?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(dest)}&date=${date}&budget=${data.total}&currency=${data.currency}`;
+                // Construir URL con los datos del viaje
+                travelLink.href = `https://elitestaytravel.com/?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(dest)}&date=${date}&budget=${data.total}`;
+                travelLink.style.opacity = '1';
+                travelLink.style.pointerEvents = 'auto';
+                travelLink.style.display = 'block';
             }
             
-            // Mostrar el panel de resultados
+            // === MOSTRAR PANEL DE RESULTADOS ===
             const resultDiv = document.getElementById('budget-result');
             if (resultDiv) {
                 resultDiv.style.display = 'block';
                 resultDiv.scrollIntoView({ behavior: 'smooth' });
             }
             
-            console.log('✅ Presupuesto real calculado:', data);
+            // Opcional: Mostrar mensaje de éxito
+            alert(`✅ Budget calculated: ${data.total} ${data.currency || 'USD'}`);
+            
         } else {
             throw new Error(data.error || 'Error en el cálculo');
         }
         
     } catch (error) {
         console.error('❌ Error:', error);
-        alert(`Error: ${error.message}. No se pudo obtener precios reales. Asegúrate que el backend esté corriendo en localhost:3001`);
+        
+        // Mensaje de error amigable
+        let errorMsg = 'Could not get real prices. ';
+        if (error.message.includes('Failed to fetch') || error.message.includes('ERR_CONNECTION_REFUSED')) {
+            errorMsg += 'Make sure the backend server is running on port 3001.';
+        } else {
+            errorMsg += error.message;
+        }
+        alert(errorMsg);
+        
     } finally {
+        // Restaurar botón
         if (btn) {
-            btn.innerText = originalText;
+            btn.innerText = originalText || '📊 CALCULATE BUDGET';
+            btn.disabled = false;
             btn.style.opacity = '1';
         }
     }
