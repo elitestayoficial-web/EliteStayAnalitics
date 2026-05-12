@@ -942,6 +942,108 @@
     let gaugeChart = null;
 
     // ========== FUNCIONES DE INTERFAZ ==========
+    // Objeto de traducciones para la ventana de reseñas
+const reviewModalTranslations = {
+    en: {
+        loading: "Loading hotel reviews...",
+        close: "✕ CLOSE",
+        reviews: "reviews",
+        website: "Website",
+        problemsReported: "⚠️ Problems reported",
+        positiveExperiences: "✅ Positive experiences",
+        noReviews: "No reviews available for this hotel.",
+        anonymous: "Anonymous",
+        backButton: "CERRAR RESULTADOS" // No se usa en esta modal, pero por consistencia
+    },
+    es: {
+        loading: "Cargando reseñas del hotel...",
+        close: "✕ CERRAR",
+        reviews: "reseñas",
+        website: "Sitio web",
+        problemsReported: "⚠️ Problemas reportados",
+        positiveExperiences: "✅ Experiencias positivas",
+        noReviews: "No hay reseñas disponibles para este hotel.",
+        anonymous: "Anónimo",
+        backButton: "CERRAR RESULTADOS" // No se usa en esta modal
+    },
+    fr: {
+        loading: "Chargement des avis hôtel...",
+        close: "✕ FERMER",
+        reviews: "avis",
+        website: "Site web",
+        problemsReported: "⚠️ Problèmes signalés",
+        positiveExperiences: "✅ Expériences positives",
+        noReviews: "Aucun avis disponible pour cet hôtel.",
+        anonymous: "Anonyme",
+        backButton: "FERMER LES RÉSULTATS"
+    },
+    de: {
+        loading: "Lade Hotelbewertungen...",
+        close: "✕ SCHLIESSEN",
+        reviews: "Bewertungen",
+        website: "Webseite",
+        problemsReported: "⚠️ Gemeldete Probleme",
+        positiveExperiences: "✅ Positive Erfahrungen",
+        noReviews: "Keine Bewertungen für dieses Hotel verfügbar.",
+        anonymous: "Anonym",
+        backButton: "ERGEBNISSE SCHLIESSEN"
+    },
+    it: {
+        loading: "Caricamento recensioni dell'hotel...",
+        close: "✕ CHIUDI",
+        reviews: "recensioni",
+        website: "Sito web",
+        problemsReported: "⚠️ Problemi segnalati",
+        positiveExperiences: "✅ Esperienze positive",
+        noReviews: "Nessuna recensione disponibile per questo hotel.",
+        anonymous: "Anonimo",
+        backButton: "CHIUDI RISULTATI"
+    },
+    pt: {
+        loading: "Carregando avaliações do hotel...",
+        close: "✕ FECHAR",
+        reviews: "avaliações",
+        website: "Site web",
+        problemsReported: "⚠️ Problemas relatados",
+        positiveExperiences: "✅ Experiências positivas",
+        noReviews: "Nenhuma avaliação disponível para este hotel.",
+        anonymous: "Anônimo",
+        backButton: "FECHAR RESULTADOS"
+    },
+    ja: {
+        loading: "ホテルのレビューを読み込み中...",
+        close: "✕ 閉じる",
+        reviews: "レビュー",
+        website: "ウェブサイト",
+        problemsReported: "⚠️ 報告された問題",
+        positiveExperiences: "✅ 良い体験",
+        noReviews: "このホテルのレビューはありません。",
+        anonymous: "匿名",
+        backButton: "結果を閉じる"
+    },
+    ko: {
+        loading: "호텔 리뷰 로딩 중...",
+        close: "✕ 닫기",
+        reviews: "리뷰",
+        website: "웹사이트",
+        problemsReported: "⚠️ 보고된 문제",
+        positiveExperiences: "✅ 긍정적인 경험",
+        noReviews: "이 호텔에 대한 리뷰가 없습니다.",
+        anonymous: "익명",
+        backButton: "결과 닫기"
+    },
+    zh: {
+        loading: "正在加载酒店评论...",
+        close: "✕ 关闭",
+        reviews: "评论",
+        website: "网站",
+        problemsReported: "⚠️ 报告的问题",
+        positiveExperiences: "✅ 积极体验",
+        noReviews: "此酒店没有可用的评论。",
+        anonymous: "匿名",
+        backButton: "关闭结果"
+    }
+};
     const translations = {
         en: { hero_subtitle: 'Advanced analytics for the high-end hospitality industry. Empirical data, strategic vision.' },
         es: { hero_subtitle: 'Análisis avanzado para la industria hotelera de alto nivel. Datos empíricos, visión estratégica.' },
