@@ -1295,7 +1295,7 @@ function mostrarVentanaResenas(data, nombreHotel) {
     
     // Obtener el idioma actual (global)
     const lang = currentLanguage || 'en';
-    const t = reviewModalTranslations[lang] || reviewModalTranslations.es; // Fallback a español
+    const t = reviewModalTranslations[lang] || reviewModalTranslations.en; // Fallback a español
     
     const existente = document.getElementById('ventana-resenas');
     if (existente) existente.remove();
