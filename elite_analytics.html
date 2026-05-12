@@ -1227,15 +1227,11 @@ window.mostrarResultadosGoogle = function(hoteles, query) {
         `;
     });
 
-    html += `<button onclick="this.parentElement.remove()" style="
+   html += `<button onclick="this.parentElement.remove()" style="
         background: #00ff88; color: #050505; border: none; padding: 15px;
         border-radius: 8px; margin-top: 20px; cursor: pointer; width: 100%;
         font-weight: bold; font-size: 1.1rem;
-    ">t.closeButton</button>`;
-
-    contenedor.innerHTML = html;
-    document.body.appendChild(contenedor);
-};
+    ">${t.closeButton}</button>`;
 
 // ========== FUNCIÓN PARA VER RESEÑAS DE UN HOTEL (VERSIÓN CORREGIDA) ==========
 window.verResenasHotel = async function(placeId, nombreHotel) {
