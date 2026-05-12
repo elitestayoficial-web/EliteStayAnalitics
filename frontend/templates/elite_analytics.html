@@ -1140,122 +1140,131 @@ const reviewModalTranslations = {
     ko: { hero_subtitle: '고급 호텔 업계를 위한 고급 분석. 경험적 데이터, 전략적 비전.' },
     zh: { hero_subtitle: '针对高端酒店业的高级分析。经验数据，战略愿景。' }
 };
-// Traducciones para la página principal
-const pageTranslations = {
-    en: {
-        systemOnline: "SYSTEM ONLINE",
-        heroTitle: "Intelligence",
-        heroTitleItalic: "Redefined",
-        heroSubtitle: "Advanced analytics for the high-end hospitality industry. Empirical data, strategic vision.",
-        searchPlaceholder: "Search by hotel name, city, or ID...",
-        searchBtn: "ANALYZE",
-        searchHint: "DATABASE UPDATED:",
-        statHotels: "HOTELS ANALYZED",
-        statAccuracy: "AI ACCURACY",
-        statReviews: "REVIEWS PROCESSED",
-        statAlerts: "ACTIVE ALERTS",
-        semaphoreTitle: "Risk",
-        semaphoreSubtitle: "Real-time hotel risk assessment and monitoring",
-        semaphoreAlert: "ALERT",
-        semaphoreIncident: "INCIDENT",
-        semaphoreCrisis: "CRISIS",
-        gaugeTitle: "Brand Consistency Index",
-        gaugeText: "alignment with brand standards",
-        performanceTitle: "Global",
-        performanceSubtitle: "Results based on satisfaction metrics and operational efficiency",
-        topPerformers: "TOP PERFORMERS",
-        underperforming: "UNDERPERFORMING",
-        recentlyTitle: "Recently",
-        recentlySubtitle: "60 new luxury hotels just integrated into our system",
-        pricingTitle: "Enterprise",
-        pricingSubtitle: "Scalable solutions for hotel chains and investment groups",
-        basic: "BASIC",
-        premium: "PREMIUM",
-        enterprise: "ENTERPRISE",
-        perMonth: "/month",
-        subscribeBasic: "Subscribe with Stripe",
-        subscribePremium: "⭐ Subscribe with Stripe ⭐",
-        contactSales: "Contact Sales",
-        footerText: "DATA INTELLIGENCE DIVISION",
-        privacy: "PRIVACY POLICY",
-        loadingRankings: "Loading..."
-    },
-    es: {
-        systemOnline: "SISTEMA EN LÍNEA",
-        heroTitle: "Inteligencia",
-        heroTitleItalic: "Redefinida",
-        heroSubtitle: "Análisis avanzado para la industria hotelera de alto nivel. Datos empíricos, visión estratégica.",
-        searchPlaceholder: "Buscar por nombre de hotel, ciudad o ID...",
-        searchBtn: "ANALIZAR",
-        searchHint: "BASE DE DATOS ACTUALIZADA:",
-        statHotels: "HOTELES ANALIZADOS",
-        statAccuracy: "PRECISIÓN IA",
-        statReviews: "RESEÑAS PROCESADAS",
-        statAlerts: "ALERTAS ACTIVAS",
-        semaphoreTitle: "Riesgo",
-        semaphoreSubtitle: "Evaluación y monitoreo de riesgo hotelero en tiempo real",
-        semaphoreAlert: "ALERTA",
-        semaphoreIncident: "INCIDENTE",
-        semaphoreCrisis: "CRISIS",
-        gaugeTitle: "Índice de Consistencia de Marca",
-        gaugeText: "alineación con estándares de marca",
-        performanceTitle: "Rendimiento",
-        performanceSubtitle: "Resultados basados en métricas de satisfacción y eficiencia operativa",
-        topPerformers: "MEJORES RENDIMIENTOS",
-        underperforming: "BAJO RENDIMIENTO",
-        recentlyTitle: "Recientemente",
-        recentlySubtitle: "60 nuevos hoteles de lujo integrados en nuestro sistema",
-        pricingTitle: "Planes",
-        pricingSubtitle: "Soluciones escalables para cadenas hoteleras y grupos de inversión",
-        basic: "BÁSICO",
-        premium: "PREMIUM",
-        enterprise: "EMPRESA",
-        perMonth: "/mes",
-        subscribeBasic: "Suscribir con Stripe",
-        subscribePremium: "⭐ Suscribir con Stripe ⭐",
-        contactSales: "Contactar Ventas",
-        footerText: "DIVISIÓN DE INTELIGENCIA DE DATOS",
-        privacy: "POLÍTICA DE PRIVACIDAD",
-        loadingRankings: "Cargando..."
-    },
-    fr: {
-        systemOnline: "SYSTÈME EN LIGNE",
-        heroTitle: "Intelligence",
-        heroTitleItalic: "Redéfinie",
-        heroSubtitle: "Analyses avancées pour l'industrie hôtelière haut de gamme. Données empiriques, vision stratégique.",
-        searchPlaceholder: "Rechercher par nom d'hôtel, ville ou ID...",
-        searchBtn: "ANALYSER",
-        searchHint: "BASE DE DONNÉES MISE À JOUR:",
-        statHotels: "HÔTELS ANALYSÉS",
-        statAccuracy: "PRÉCISION IA",
-        statReviews: "AVIS TRAITÉS",
-        statAlerts: "ALERTES ACTIVES",
-        semaphoreTitle: "Risque",
-        semaphoreSubtitle: "Évaluation et surveillance des risques hôteliers en temps réel",
-        semaphoreAlert: "ALERTE",
-        semaphoreIncident: "INCIDENT",
-        semaphoreCrisis: "CRISE",
-        gaugeTitle: "Indice de Cohérence de Marque",
-        gaugeText: "alignement avec les normes de la marque",
-        performanceTitle: "Performance",
-        performanceSubtitle: "Résultats basés sur des métriques de satisfaction et d'efficacité opérationnelle",
-        topPerformers: "MEILLEURES PERFORMANCES",
-        underperforming: "SOUS-PERFORMANCE",
-        recentlyTitle: "Récemment",
-        recentlySubtitle: "60 nouveaux hôtels de luxe intégrés dans notre système",
-        pricingTitle: "Entreprise",
-        pricingSubtitle: "Solutions évolutives pour chaînes hôtelières et groupes d'investissement",
-        basic: "BASIQUE",
-        premium: "PREMIUM",
-        enterprise: "ENTREPRISE",
-        perMonth: "/mois",
-        subscribeBasic: "S'abonner avec Stripe",
-        subscribePremium: "⭐ S'abonner avec Stripe ⭐",
-        contactSales: "Contacter les ventes",
-        footerText: "DIVISION INTELLIGENCE DES DONNÉES",
-        privacy: "POLITIQUE DE CONFIDENTIALITÉ",
-        loadingRankings: "Chargement..."
-    },
+function setLanguage(lang) {
+    currentLanguage = lang;
+    
+    // Actualizar botones activos
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.includes(lang.toUpperCase()));
+    });
+    
+    // Obtener traducciones
+    const t = pageTranslations[lang] || pageTranslations.en;
+    
+    // 1. NAVBAR - Estado del sistema
+    const statusBadge = document.querySelector('.status-badge');
+    if (statusBadge) statusBadge.innerHTML = `<span class="status-dot"></span> ${t.systemOnline}`;
+    
+    // 2. TÍTULO PRINCIPAL
+    const mainTitle = document.getElementById('mainTitle');
+    if (mainTitle) mainTitle.innerHTML = `${t.heroTitle} <span class="italic-sophistication">${t.heroTitleItalic}</span>`;
+    
+    // 3. SUBTÍTULO
+    const subtitle = document.querySelector('.subtitle');
+    if (subtitle) subtitle.textContent = t.heroSubtitle;
+    
+    // 4. BUSCADOR
+    const searchInput = document.getElementById('hotelSearch');
+    if (searchInput) searchInput.placeholder = t.searchPlaceholder;
+    
+    const searchBtn = document.querySelector('.search-btn');
+    if (searchBtn) searchBtn.textContent = t.searchBtn;
+    
+    const searchHint = document.querySelector('.search-hint');
+    if (searchHint) searchHint.innerHTML = `${t.searchHint} <span id="currentDate"></span> UTC`;
+    
+    // 5. TARJETAS DE ESTADÍSTICAS
+    const statLabels = document.querySelectorAll('.stat-label');
+    if (statLabels[0]) statLabels[0].textContent = t.statHotels;
+    if (statLabels[1]) statLabels[1].textContent = t.statAccuracy;
+    if (statLabels[2]) statLabels[2].textContent = t.statReviews;
+    if (statLabels[3]) statLabels[3].textContent = t.statAlerts;
+    
+    // 6. SEMÁFORO DE RIESGO
+    const semaphoreTitle = document.querySelector('#semaphore .section-header h2');
+    if (semaphoreTitle) semaphoreTitle.innerHTML = `${t.semaphoreTitle} <span class="italic-sophistication">Semaphore</span>`;
+    
+    const semaphoreSubtitle = document.querySelector('#semaphore .section-header p');
+    if (semaphoreSubtitle) semaphoreSubtitle.textContent = t.semaphoreSubtitle;
+    
+    const semaphoreTitles = document.querySelectorAll('.semaphore-title');
+    if (semaphoreTitles[0]) semaphoreTitles[0].textContent = t.semaphoreAlert;
+    if (semaphoreTitles[1]) semaphoreTitles[1].textContent = t.semaphoreIncident;
+    if (semaphoreTitles[2]) semaphoreTitles[2].textContent = t.semaphoreCrisis;
+    
+    // 7. GRÁFICO GAUGE
+    const gaugeTitle = document.querySelector('.gauge-title');
+    if (gaugeTitle) gaugeTitle.textContent = t.gaugeTitle;
+    
+    const gaugeText = document.querySelector('.gauge-container p');
+    if (gaugeText) gaugeText.innerHTML = `87% ${t.gaugeText}`;
+    
+    // 8. RANKINGS
+    const performanceTitle = document.querySelector('#rankings .section-header h2');
+    if (performanceTitle) performanceTitle.innerHTML = `${t.performanceTitle} <span class="italic-sophistication">Performance</span> Index`;
+    
+    const performanceSubtitle = document.querySelector('#rankings .section-header p');
+    if (performanceSubtitle) performanceSubtitle.textContent = t.performanceSubtitle;
+    
+    const rankingHeaders = document.querySelectorAll('.ranking-header h3');
+    if (rankingHeaders[0]) rankingHeaders[0].textContent = t.topPerformers;
+    if (rankingHeaders[1]) rankingHeaders[1].textContent = t.underperforming;
+    
+    // 9. SECCIÓN RECIENTEMENTE AGREGADOS
+    const recentlyContainers = document.querySelectorAll('.rankings-section');
+    let recentlySection = null;
+    for (let i = 0; i < recentlyContainers.length; i++) {
+        if (recentlyContainers[i].querySelector('.section-header h2') && 
+            recentlyContainers[i].querySelector('.section-header h2').innerText.includes('Recently')) {
+            recentlySection = recentlyContainers[i];
+            break;
+        }
+    }
+    if (recentlySection) {
+        const recentlyTitle = recentlySection.querySelector('.section-header h2');
+        if (recentlyTitle) recentlyTitle.innerHTML = `${t.recentlyTitle} <span class="italic-sophistication">Added</span>`;
+        const recentlySubtitle = recentlySection.querySelector('.section-header p');
+        if (recentlySubtitle) recentlySubtitle.textContent = t.recentlySubtitle;
+    }
+    
+    // 10. SECCIÓN DE PRECIOS
+    const pricingTitle = document.querySelector('#pricing .section-header h2');
+    if (pricingTitle) pricingTitle.innerHTML = `${t.pricingTitle} <span class="italic-sophistication">Plans</span>`;
+    
+    const pricingSubtitle = document.querySelector('#pricing .section-header p');
+    if (pricingSubtitle) pricingSubtitle.textContent = t.pricingSubtitle;
+    
+    const pricingCards = document.querySelectorAll('.pricing-header h3');
+    if (pricingCards[0]) pricingCards[0].textContent = t.basic;
+    if (pricingCards[1]) pricingCards[1].textContent = t.premium;
+    if (pricingCards[2]) pricingCards[2].textContent = t.enterprise;
+    
+    const priceSpans = document.querySelectorAll('.pricing-price span');
+    if (priceSpans[0]) priceSpans[0].textContent = t.perMonth;
+    if (priceSpans[1]) priceSpans[1].textContent = t.perMonth;
+    if (priceSpans[2]) priceSpans[2].textContent = t.perMonth;
+    
+    const subscribeBtns = document.querySelectorAll('.stripe-button, .stripe-button-gold');
+    if (subscribeBtns[0]) subscribeBtns[0].textContent = t.subscribeBasic;
+    if (subscribeBtns[1]) subscribeBtns[1].innerHTML = t.subscribePremium;
+    if (subscribeBtns[2]) subscribeBtns[2].textContent = t.contactSales;
+    
+    // 11. FOOTER
+    const footer = document.querySelector('.footer');
+    if (footer) footer.innerHTML = `ELITESTAYANALYTICS.COM &copy; 2024 | ${t.footerText} | <a href="#">${t.privacy}</a>`;
+    
+    // 12. ACTUALIZAR TEXTOS DE CARGA
+    const loadingElements = document.querySelectorAll('.hotel-name');
+    loadingElements.forEach(el => {
+        const text = el.textContent;
+        if (text === 'Cargando...' || text === 'Loading...' || text === '読み込み中...' || text === '加载中...') {
+            el.textContent = t.loadingRankings;
+        }
+    });
+    
+    // Guardar preferencia
+    localStorage.setItem('preferred-language', lang);
+}
     de: {
         systemOnline: "SYSTEM ONLINE",
         heroTitle: "Intelligenz",
