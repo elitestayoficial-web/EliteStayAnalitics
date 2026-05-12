@@ -1099,9 +1099,13 @@ window.verResenasHotel = async function(placeId, nombreHotel) {
     }
 };
 
-// ========== FUNCIÓN PARA MOSTRAR VENTANA DE RESEÑAS (VERSIÓN CON LOGS) ==========
+// ========== FUNCIÓN PARA MOSTRAR VENTANA DE RESEÑAS (VERSIÓN MULTI-IDIOMA) ==========
 function mostrarVentanaResenas(data, nombreHotel) {
     console.log('🔥 DATOS COMPLETOS RECIBIDOS:', data);
+    
+    // Obtener el idioma actual (global)
+    const lang = currentLanguage || 'es';
+    const t = reviewModalTranslations[lang] || reviewModalTranslations.es; // Fallback a español
     
     const existente = document.getElementById('ventana-resenas');
     if (existente) existente.remove();
@@ -1122,26 +1126,7 @@ function mostrarVentanaResenas(data, nombreHotel) {
     const telefono = data.telefono || data.nationalPhoneNumber || 'Teléfono no disponible';
     const website = data.website || data.websiteUri || '#';
     
-    // 🔍 INVESTIGAR LAS RESEÑAS
     const todasResenas = data.reviews || [];
-    console.log('📝 ARRAY DE RESEÑAS:', todasResenas);
-    console.log('📝 CANTIDAD DE RESEÑAS:', todasResenas.length);
-    
-    if (todasResenas.length > 0) {
-        console.log('🔍 PRIMERA RESEÑA (COMPLETA):', todasResenas[0]);
-        console.log('🔍 TIPO DE LA PRIMERA RESEÑA:', typeof todasResenas[0]);
-        console.log('🔍 CAMPOS DE LA PRIMERA RESEÑA:', Object.keys(todasResenas[0]));
-        
-        // Ver específicamente el campo text
-        console.log('🔍 VALOR DE text:', todasResenas[0].text);
-        console.log('🔍 TIPO DE text:', typeof todasResenas[0].text);
-        
-        // Si text es un objeto, ver sus propiedades
-        if (todasResenas[0].text && typeof todasResenas[0].text === 'object') {
-            console.log('🔍 PROPIEDADES DE text:', Object.keys(todasResenas[0].text));
-            console.log('🔍 VALOR DE text.text:', todasResenas[0].text.text);
-        }
-    }
     
     const resenasNegativas = todasResenas.filter(r => r.rating <= 2);
     const resenasPositivas = todasResenas.filter(r => r.rating >= 4);
@@ -1152,19 +1137,19 @@ function mostrarVentanaResenas(data, nombreHotel) {
             <button onclick="this.parentElement.parentElement.remove()" style="
                 background: transparent; color: #ff6b6b; border: 1px solid #ff6b6b;
                 border-radius: 5px; padding: 5px 10px; cursor: pointer; font-weight: bold;
-            ">✕ CERRAR</button>
+            ">${t.close}</button>
         </div>
         
         <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 15px; margin-bottom: 20px;">
             <div style="background: #1a1a1a; padding: 15px; border-radius: 10px; text-align: center;">
                 <div style="color: #00ff88; font-size: 3rem; font-weight: bold;">${puntuacion}</div>
                 <div style="color: #00ff88; font-size: 1.5rem;">⭐</div>
-                <div style="color: #888; margin-top: 5px;">${totalResenas} reseñas</div>
+                <div style="color: #888; margin-top: 5px;">${totalResenas} ${t.reviews}</div>
             </div>
             <div style="background: #1a1a1a; padding: 15px; border-radius: 10px;">
                 <div style="margin-bottom: 8px;"><span style="color: #888;">📍</span> ${direccion}</div>
                 <div style="margin-bottom: 8px;"><span style="color: #888;">📞</span> ${telefono}</div>
-                <div><span style="color: #888;">🌐</span> <a href="${website}" target="_blank" style="color: #00ff88;">Sitio web</a></div>
+                <div><span style="color: #888;">🌐</span> <a href="${website}" target="_blank" style="color: #00ff88;">${t.website}</a></div>
             </div>
         </div>
     `;
@@ -1174,13 +1159,12 @@ function mostrarVentanaResenas(data, nombreHotel) {
         html += `
             <div style="margin-bottom: 20px;">
                 <h3 style="color: #ff6b6b; border-bottom: 1px solid #ff6b6b; padding-bottom: 10px;">
-                    ⚠️ Problemas reportados (${resenasNegativas.length})
+                    ${t.problemsReported} (${resenasNegativas.length})
                 </h3>
                 <div style="max-height: 300px; overflow-y: auto;">
         `;
         
         resenasNegativas.slice(0, 5).forEach(r => {
-            // Extraer texto de forma inteligente
             let textoResena = 'No hay texto disponible';
             
             if (r.text) {
@@ -1198,7 +1182,7 @@ function mostrarVentanaResenas(data, nombreHotel) {
             html += `
                 <div style="background: rgba(255,107,107,0.1); margin: 10px 0; padding: 15px; border-radius: 8px;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                        <span style="color: #ff6b6b; font-weight: bold;">${r.author_name || r.authorName || 'Anónimo'}</span>
+                        <span style="color: #ff6b6b; font-weight: bold;">${r.author_name || r.authorName || t.anonymous}</span>
                         <span style="color: #ff6b6b;">${r.rating} ⭐</span>
                     </div>
                     <p style="color: #fff; margin: 5px 0; font-style: italic;">"${textoResena}"</p>
@@ -1215,7 +1199,7 @@ function mostrarVentanaResenas(data, nombreHotel) {
         html += `
             <div style="margin-bottom: 20px;">
                 <h3 style="color: #00ff88; border-bottom: 1px solid #00ff88; padding-bottom: 10px;">
-                    ✅ Experiencias positivas (${resenasPositivas.length})
+                    ${t.positiveExperiences} (${resenasPositivas.length})
                 </h3>
                 <div style="max-height: 200px; overflow-y: auto;">
         `;
@@ -1240,7 +1224,7 @@ function mostrarVentanaResenas(data, nombreHotel) {
             html += `
                 <div style="background: rgba(0,255,136,0.05); margin: 10px 0; padding: 10px; border-radius: 5px;">
                     <div style="display: flex; justify-content: space-between;">
-                        <span style="color: #00ff88;">${r.author_name || r.authorName || 'Anónimo'}</span>
+                        <span style="color: #00ff88;">${r.author_name || r.authorName || t.anonymous}</span>
                         <span style="color: #00ff88;">${r.rating} ⭐</span>
                     </div>
                     <p style="color: #aaa; margin-top: 5px;">"${textoCorto}"</p>
@@ -1252,7 +1236,7 @@ function mostrarVentanaResenas(data, nombreHotel) {
     }
 
     if (resenasNegativas.length === 0 && resenasPositivas.length === 0) {
-        html += `<p style="color: #888; text-align: center;">No hay reseñas disponibles para este hotel.</p>`;
+        html += `<p style="color: #888; text-align: center;">${t.noReviews}</p>`;
     }
 
     contenedor.innerHTML = html;
