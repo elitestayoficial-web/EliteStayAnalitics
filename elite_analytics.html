@@ -943,9 +943,12 @@
 
     // ========== FUNCIONES DE INTERFAZ ==========
     // Objeto de traducciones para la ventana de reseñas
+// Objeto de traducciones para AMBAS ventanas (resultados de búsqueda + reseñas)
 const reviewModalTranslations = {
     en: {
+        // Para la ventana de carga
         loading: "Loading hotel reviews...",
+        // Para la ventana de reseñas
         close: "✕ CLOSE",
         reviews: "reviews",
         website: "Website",
@@ -953,7 +956,17 @@ const reviewModalTranslations = {
         positiveExperiences: "✅ Positive experiences",
         noReviews: "No reviews available for this hotel.",
         anonymous: "Anonymous",
-        backButton: "CERRAR RESULTADOS" // No se usa en esta modal, pero por consistencia
+        // Para la ventana de RESULTADOS DE BÚSQUEDA (NUEVO)
+        searchTitle: "Hotels in",
+        results: "results",
+        clickHint: "👆 Click on any hotel to see their full reviews",
+        ratingExcellent: "Excellent, no issues",
+        ratingGood: "Good, minor complaints",
+        ratingRegular: "Average, some issues",
+        ratingBad: "Bad, multiple complaints",
+        ratingCritical: "Critical, avoid",
+        clickForReviews: "👆 Click for reviews",
+        closeButton: "CLOSE RESULTS"
     },
     es: {
         loading: "Cargando reseñas del hotel...",
@@ -964,7 +977,16 @@ const reviewModalTranslations = {
         positiveExperiences: "✅ Experiencias positivas",
         noReviews: "No hay reseñas disponibles para este hotel.",
         anonymous: "Anónimo",
-        backButton: "CERRAR RESULTADOS" // No se usa en esta modal
+        searchTitle: "Hoteles en",
+        results: "resultados",
+        clickHint: "👆 Haz clic en cualquier hotel para ver sus reseñas completas",
+        ratingExcellent: "Excelente, sin problemas",
+        ratingGood: "Bueno, quejas menores",
+        ratingRegular: "Regular, hay problemas",
+        ratingBad: "Malo, múltiples quejas",
+        ratingCritical: "Crítico, evitar",
+        clickForReviews: "👆 Click para reseñas",
+        closeButton: "CERRAR RESULTADOS"
     },
     fr: {
         loading: "Chargement des avis hôtel...",
@@ -975,7 +997,16 @@ const reviewModalTranslations = {
         positiveExperiences: "✅ Expériences positives",
         noReviews: "Aucun avis disponible pour cet hôtel.",
         anonymous: "Anonyme",
-        backButton: "FERMER LES RÉSULTATS"
+        searchTitle: "Hôtels à",
+        results: "résultats",
+        clickHint: "👆 Cliquez sur n'importe quel hôtel pour voir tous ses avis",
+        ratingExcellent: "Excellent, aucun problème",
+        ratingGood: "Bon, plaintes mineures",
+        ratingRegular: "Moyen, certains problèmes",
+        ratingBad: "Mauvais, multiples plaintes",
+        ratingCritical: "Critique, à éviter",
+        clickForReviews: "👆 Cliquez pour les avis",
+        closeButton: "FERMER LES RÉSULTATS"
     },
     de: {
         loading: "Lade Hotelbewertungen...",
@@ -986,7 +1017,16 @@ const reviewModalTranslations = {
         positiveExperiences: "✅ Positive Erfahrungen",
         noReviews: "Keine Bewertungen für dieses Hotel verfügbar.",
         anonymous: "Anonym",
-        backButton: "ERGEBNISSE SCHLIESSEN"
+        searchTitle: "Hotels in",
+        results: "Ergebnisse",
+        clickHint: "👆 Klicken Sie auf ein Hotel, um alle Bewertungen zu sehen",
+        ratingExcellent: "Ausgezeichnet, keine Probleme",
+        ratingGood: "Gut, kleinere Beschwerden",
+        ratingRegular: "Durchschnittlich, einige Probleme",
+        ratingBad: "Schlecht, mehrere Beschwerden",
+        ratingCritical: "Kritisch, vermeiden",
+        clickForReviews: "👆 Für Bewertungen klicken",
+        closeButton: "ERGEBNISSE SCHLIESSEN"
     },
     it: {
         loading: "Caricamento recensioni dell'hotel...",
@@ -997,7 +1037,16 @@ const reviewModalTranslations = {
         positiveExperiences: "✅ Esperienze positive",
         noReviews: "Nessuna recensione disponibile per questo hotel.",
         anonymous: "Anonimo",
-        backButton: "CHIUDI RISULTATI"
+        searchTitle: "Hotel a",
+        results: "risultati",
+        clickHint: "👆 Clicca su qualsiasi hotel per vedere tutte le recensioni",
+        ratingExcellent: "Eccellente, nessun problema",
+        ratingGood: "Buono, reclami minori",
+        ratingRegular: "Medio, alcuni problemi",
+        ratingBad: "Cattivo, molteplici reclami",
+        ratingCritical: "Critico, da evitare",
+        clickForReviews: "👆 Clicca per le recensioni",
+        closeButton: "CHIUDI RISULTATI"
     },
     pt: {
         loading: "Carregando avaliações do hotel...",
@@ -1008,7 +1057,16 @@ const reviewModalTranslations = {
         positiveExperiences: "✅ Experiências positivas",
         noReviews: "Nenhuma avaliação disponível para este hotel.",
         anonymous: "Anônimo",
-        backButton: "FECHAR RESULTADOS"
+        searchTitle: "Hotéis em",
+        results: "resultados",
+        clickHint: "👆 Clique em qualquer hotel para ver todas as avaliações",
+        ratingExcellent: "Excelente, sem problemas",
+        ratingGood: "Bom, reclamações menores",
+        ratingRegular: "Regular, alguns problemas",
+        ratingBad: "Ruim, múltiplas reclamações",
+        ratingCritical: "Crítico, evitar",
+        clickForReviews: "👆 Clique para avaliações",
+        closeButton: "FECHAR RESULTADOS"
     },
     ja: {
         loading: "ホテルのレビューを読み込み中...",
@@ -1019,7 +1077,16 @@ const reviewModalTranslations = {
         positiveExperiences: "✅ 良い体験",
         noReviews: "このホテルのレビューはありません。",
         anonymous: "匿名",
-        backButton: "結果を閉じる"
+        searchTitle: "のホテル",
+        results: "件",
+        clickHint: "👆 ホテルをクリックして詳細なレビューを表示",
+        ratingExcellent: "優秀、問題なし",
+        ratingGood: "良好、軽微な苦情",
+        ratingRegular: "普通、いくつかの問題",
+        ratingBad: "悪い、複数の苦情",
+        ratingCritical: "重大、避けるべき",
+        clickForReviews: "👆 レビューを表示",
+        closeButton: "結果を閉じる"
     },
     ko: {
         loading: "호텔 리뷰 로딩 중...",
@@ -1030,7 +1097,16 @@ const reviewModalTranslations = {
         positiveExperiences: "✅ 긍정적인 경험",
         noReviews: "이 호텔에 대한 리뷰가 없습니다.",
         anonymous: "익명",
-        backButton: "결과 닫기"
+        searchTitle: "의 호텔",
+        results: "개 결과",
+        clickHint: "👆 호텔을 클릭하면 전체 리뷰를 볼 수 있습니다",
+        ratingExcellent: "훌륭함, 문제 없음",
+        ratingGood: "좋음, 사소한 불만",
+        ratingRegular: "보통, 약간의 문제",
+        ratingBad: "나쁨, 여러 불만",
+        ratingCritical: "심각함, 피해야 함",
+        clickForReviews: "👆 리뷰 보기",
+        closeButton: "결과 닫기"
     },
     zh: {
         loading: "正在加载酒店评论...",
@@ -1041,7 +1117,16 @@ const reviewModalTranslations = {
         positiveExperiences: "✅ 积极体验",
         noReviews: "此酒店没有可用的评论。",
         anonymous: "匿名",
-        backButton: "关闭结果"
+        searchTitle: "的酒店",
+        results: "个结果",
+        clickHint: "👆 点击任何酒店查看完整评论",
+        ratingExcellent: "优秀，无问题",
+        ratingGood: "良好，轻微投诉",
+        ratingRegular: "一般，有些问题",
+        ratingBad: "差，多重投诉",
+        ratingCritical: "严重，应避免",
+        clickForReviews: "👆 点击查看评论",
+        closeButton: "关闭结果"
     }
 };
     const translations = {
