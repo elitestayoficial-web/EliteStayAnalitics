@@ -1163,8 +1163,12 @@ const reviewModalTranslations = {
         });
     }
 
-    // ========== FUNCIÓN PARA MOSTRAR RESULTADOS CON HOTELES CLICKABLES ==========
+    // ========== FUNCIÓN PARA MOSTRAR RESULTADOS CON HOTELES CLICKABLES (VERSIÓN MULTI-IDIOMA) ==========
 window.mostrarResultadosGoogle = function(hoteles, query) {
+    // Obtener idioma actual
+    const lang = currentLanguage || 'en';
+    const t = reviewModalTranslations[lang] || reviewModalTranslations.en;
+    
     const existente = document.getElementById('resultados-busqueda');
     if (existente) existente.remove();
 
@@ -1193,6 +1197,14 @@ window.mostrarResultadosGoogle = function(hoteles, query) {
                            hotel.puntuacion >= 3.5 ? '#ffd700' :
                            hotel.puntuacion >= 3.0 ? '#ff8c00' : '#ff4444';
 
+        // Determinar texto según puntuación usando traducciones
+        let ratingText;
+        if (hotel.puntuacion >= 4.5) ratingText = t.ratingExcellent;
+        else if (hotel.puntuacion >= 4.0) ratingText = t.ratingGood;
+        else if (hotel.puntuacion >= 3.5) ratingText = t.ratingRegular;
+        else if (hotel.puntuacion >= 3.0) ratingText = t.ratingBad;
+        else ratingText = t.ratingCritical;
+
         html += `
             <div style="margin-bottom: 15px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 4px solid ${colorAlerta}; cursor: pointer; transition: transform 0.2s;" 
                  onclick="verResenasHotel('${hotel.id}', '${hotel.nombre}')"
@@ -1211,11 +1223,8 @@ window.mostrarResultadosGoogle = function(hoteles, query) {
                         </div>
                         <div style="color: #aaa; font-size: 0.95rem; margin-bottom: 8px;">📍 ${hotel.direccion || hotel.ciudad}</div>
                         <div style="color: ${colorAlerta}; font-size: 0.9rem;">
-    ⚠️ ${hotel.puntuacion >= 4.5 ? t.ratingExcellent :
-        hotel.puntuacion >= 4.0 ? t.ratingGood :
-        hotel.puntuacion >= 3.5 ? t.ratingRegular :
-        hotel.puntuacion >= 3.0 ? t.ratingBad : t.ratingCritical}
-</div>
+                            ⚠️ ${ratingText}
+                        </div>
                     </div>
                     <div style="text-align: right; background: #1a1a1a; padding: 10px; border-radius: 8px; min-width: 120px;">
                         <div style="color: #00ff88; font-size: 2rem; font-weight: bold; line-height: 1;">${hotel.puntuacion || 'N/A'}</div>
