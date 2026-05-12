@@ -1140,7 +1140,123 @@ const reviewModalTranslations = {
     ko: { hero_subtitle: '고급 호텔 업계를 위한 고급 분석. 경험적 데이터, 전략적 비전.' },
     zh: { hero_subtitle: '针对高端酒店业的高级分析。经验数据，战略愿景。' }
 };
-
+function setLanguage(lang) {
+    currentLanguage = lang;
+    
+    // Actualizar botones activos
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.includes(lang.toUpperCase()));
+    });
+    
+    // Obtener traducciones del idioma seleccionado
+    const t = pageTranslations[lang] || pageTranslations.en;
+    
+    // Actualizar textos de la página principal
+    // Status badge
+    const statusBadge = document.querySelector('.status-badge');
+    if (statusBadge) statusBadge.innerHTML = `<span class="status-dot"></span> ${t.systemOnline}`;
+    
+    // Hero title (mantiene la estructura con span)
+    const mainTitle = document.getElementById('mainTitle');
+    if (mainTitle) mainTitle.innerHTML = `${t.heroTitle} <span class="italic-sophistication">${t.heroTitleItalic}</span>`;
+    
+    // Hero subtitle
+    const subtitle = document.querySelector('.subtitle');
+    if (subtitle) subtitle.textContent = t.heroSubtitle;
+    
+    // Search input placeholder
+    const searchInput = document.getElementById('hotelSearch');
+    if (searchInput) searchInput.placeholder = t.searchPlaceholder;
+    
+    // Search button
+    const searchBtn = document.querySelector('.search-btn');
+    if (searchBtn) searchBtn.textContent = t.searchBtn;
+    
+    // Search hint
+    const searchHint = document.querySelector('.search-hint');
+    if (searchHint) searchHint.innerHTML = `${t.searchHint} <span id="currentDate"></span> UTC`;
+    
+    // Stats labels
+    const statLabels = document.querySelectorAll('.stat-label');
+    if (statLabels[0]) statLabels[0].textContent = t.statHotels;
+    if (statLabels[1]) statLabels[1].textContent = t.statAccuracy;
+    if (statLabels[2]) statLabels[2].textContent = t.statReviews;
+    if (statLabels[3]) statLabels[3].textContent = t.statAlerts;
+    
+    // Semaphore section
+    const semaphoreTitle = document.querySelector('#semaphore .section-header h2');
+    if (semaphoreTitle) semaphoreTitle.innerHTML = `${t.semaphoreTitle} <span class="italic-sophistication">Semaphore</span>`;
+    
+    const semaphoreSubtitle = document.querySelector('#semaphore .section-header p');
+    if (semaphoreSubtitle) semaphoreSubtitle.textContent = t.semaphoreSubtitle;
+    
+    const semaphoreTitles = document.querySelectorAll('.semaphore-title');
+    if (semaphoreTitles[0]) semaphoreTitles[0].textContent = t.semaphoreAlert;
+    if (semaphoreTitles[1]) semaphoreTitles[1].textContent = t.semaphoreIncident;
+    if (semaphoreTitles[2]) semaphoreTitles[2].textContent = t.semaphoreCrisis;
+    
+    // Gauge
+    const gaugeTitle = document.querySelector('.gauge-title');
+    if (gaugeTitle) gaugeTitle.textContent = t.gaugeTitle;
+    
+    const gaugeText = document.querySelector('.gauge-container p');
+    if (gaugeText) gaugeText.innerHTML = `87% ${t.gaugeText}`;
+    
+    // Rankings section
+    const performanceTitle = document.querySelector('#rankings .section-header h2');
+    if (performanceTitle) performanceTitle.innerHTML = `${t.performanceTitle} <span class="italic-sophistication">Performance</span> Index`;
+    
+    const performanceSubtitle = document.querySelector('#rankings .section-header p');
+    if (performanceSubtitle) performanceSubtitle.textContent = t.performanceSubtitle;
+    
+    const rankingHeaders = document.querySelectorAll('.ranking-header h3');
+    if (rankingHeaders[0]) rankingHeaders[0].textContent = t.topPerformers;
+    if (rankingHeaders[1]) rankingHeaders[1].textContent = t.underperforming;
+    
+    // Recently added section
+    const recentlyTitle = document.querySelector('.rankings-section[style*="padding-top: 0"] .section-header h2');
+    if (recentlyTitle) recentlyTitle.innerHTML = `${t.recentlyTitle} <span class="italic-sophistication">Added</span>`;
+    
+    const recentlySubtitle = document.querySelector('.rankings-section[style*="padding-top: 0"] .section-header p');
+    if (recentlySubtitle) recentlySubtitle.textContent = t.recentlySubtitle;
+    
+    // Pricing section
+    const pricingTitle = document.querySelector('#pricing .section-header h2');
+    if (pricingTitle) pricingTitle.innerHTML = `${t.pricingTitle} <span class="italic-sophistication">Plans</span>`;
+    
+    const pricingSubtitle = document.querySelector('#pricing .section-header p');
+    if (pricingSubtitle) pricingSubtitle.textContent = t.pricingSubtitle;
+    
+    const pricingCards = document.querySelectorAll('.pricing-header h3');
+    if (pricingCards[0]) pricingCards[0].textContent = t.basic;
+    if (pricingCards[1]) pricingCards[1].textContent = t.premium;
+    if (pricingCards[2]) pricingCards[2].textContent = t.enterprise;
+    
+    const priceSpans = document.querySelectorAll('.pricing-price span');
+    if (priceSpans[0]) priceSpans[0].textContent = t.perMonth;
+    if (priceSpans[1]) priceSpans[1].textContent = t.perMonth;
+    if (priceSpans[2]) priceSpans[2].textContent = t.perMonth;
+    
+    const subscribeBtns = document.querySelectorAll('.stripe-button, .stripe-button-gold');
+    if (subscribeBtns[0]) subscribeBtns[0].textContent = t.subscribeBasic;
+    if (subscribeBtns[1]) subscribeBtns[1].innerHTML = t.subscribePremium;
+    if (subscribeBtns[2]) subscribeBtns[2].textContent = t.contactSales;
+    
+    // Footer
+    const footer = document.querySelector('.footer');
+    if (footer) footer.innerHTML = `ELITESTAYANALYTICS.COM &copy; 2024 | ${t.footerText} | <a href="#">${t.privacy}</a>`;
+    
+    // Actualizar textos "Cargando..." en rankings
+    const loadingElements = document.querySelectorAll('.hotel-name');
+    loadingElements.forEach(el => {
+        if (el.textContent === 'Cargando...' || el.textContent === 'Loading...') {
+            el.textContent = t.loadingRankings;
+        }
+    });
+    
+    // Guardar preferencia en localStorage
+    localStorage.setItem('preferred-language', lang);
+}
     function toggleTheme() {
         darkMode = !darkMode;
         const body = document.body;
