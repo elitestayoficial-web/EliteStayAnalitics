@@ -1181,9 +1181,9 @@ window.mostrarResultadosGoogle = function(hoteles, query) {
     let html = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px;">
             <h2 style="color: #00ff88; margin: 0; font-size: 1.8rem;">🌍 ${t.searchTitle} ${query}</h2>
-            <span style="color: #888; background: #1a1a1a; padding: 5px 15px; border-radius: 20px;">${hoteles.length} resultados</span>
+            <span style="color: #888; background: #1a1a1a; padding: 5px 15px; border-radius: 20px;">${hoteles.length} ${t.results}</span>
         </div>
-        <p style="color: #aaa; margin-bottom: 15px; font-size: 0.9rem;">👆 Haz clic en cualquier hotel para ver sus reseñas completas</p>
+        <p style="color: #aaa; margin-bottom: 15px; font-size: 0.9rem;">${t.clickHint}</p>
     `;
 
     hoteles.forEach(hotel => {
@@ -1211,16 +1211,16 @@ window.mostrarResultadosGoogle = function(hoteles, query) {
                         </div>
                         <div style="color: #aaa; font-size: 0.95rem; margin-bottom: 8px;">📍 ${hotel.direccion || hotel.ciudad}</div>
                         <div style="color: ${colorAlerta}; font-size: 0.9rem;">
-                            ⚠️ ${hotel.puntuacion >= 4.5 ? 'Excelente, sin problemas' :
-                                hotel.puntuacion >= 4.0 ? 'Bueno, quejas menores' :
-                                hotel.puntuacion >= 3.5 ? 'Regular, hay problemas' :
-                                hotel.puntuacion >= 3.0 ? 'Malo, múltiples quejas' : 'Crítico, evitar'}
-                        </div>
+    ⚠️ ${hotel.puntuacion >= 4.5 ? t.ratingExcellent :
+        hotel.puntuacion >= 4.0 ? t.ratingGood :
+        hotel.puntuacion >= 3.5 ? t.ratingRegular :
+        hotel.puntuacion >= 3.0 ? t.ratingBad : t.ratingCritical}
+</div>
                     </div>
                     <div style="text-align: right; background: #1a1a1a; padding: 10px; border-radius: 8px; min-width: 120px;">
                         <div style="color: #00ff88; font-size: 2rem; font-weight: bold; line-height: 1;">${hotel.puntuacion || 'N/A'}</div>
-                        <div style="color: #666; font-size: 0.9rem;">📊 ${hotel.total_resenas || 0} reseñas</div>
-                        <div style="color: #00ff88; font-size: 0.8rem; margin-top: 5px;">👆 Click para reseñas</div>
+                        <div style="color: #666; font-size: 0.9rem;">📊 ${hotel.total_resenas || 0} ${t.reviews}</div>
+                        <div style="color: #00ff88; font-size: 0.8rem; margin-top: 5px;">${t.clickForReviews}</div>
                     </div>
                 </div>
             </div>
@@ -1231,7 +1231,7 @@ window.mostrarResultadosGoogle = function(hoteles, query) {
         background: #00ff88; color: #050505; border: none; padding: 15px;
         border-radius: 8px; margin-top: 20px; cursor: pointer; width: 100%;
         font-weight: bold; font-size: 1.1rem;
-    ">CERRAR RESULTADOS</button>`;
+    ">t.closeButton;
 
     contenedor.innerHTML = html;
     document.body.appendChild(contenedor);
