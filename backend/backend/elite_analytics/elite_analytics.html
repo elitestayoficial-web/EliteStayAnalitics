@@ -1166,7 +1166,10 @@ window.verResenasHotel = async function(placeId, nombreHotel) {
             padding: 25px; z-index: 10001; color: white; font-family: 'Montserrat', sans-serif;
             box-shadow: 0 0 40px rgba(0,255,136,0.5);
         `;
-        loadingMsg.innerHTML = '⏳ Cargando reseñas del hotel...';
+        // Obtener idioma para el mensaje de carga
+const loadLang = currentLanguage || 'es';
+const loadText = reviewModalTranslations[loadLang]?.loading || reviewModalTranslations.es.loading;
+loadingMsg.innerHTML = `⏳ ${loadText}`;
         document.body.appendChild(loadingMsg);
 
         // Llamar a la API para obtener detalles
