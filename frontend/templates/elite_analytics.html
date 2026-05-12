@@ -1252,7 +1252,7 @@ window.verResenasHotel = async function(placeId, nombreHotel) {
             box-shadow: 0 0 40px rgba(0,255,136,0.5);
         `;
        // Obtener idioma para el mensaje de carga
-const loadLang = currentLanguage || 'es';
+const loadLang = currentLanguage || 'en';
 const loadText = reviewModalTranslations[loadLang]?.loading || reviewModalTranslations.en.loading;
 loadingMsg.innerHTML = `⏳ ${loadText}`;
         document.body.appendChild(loadingMsg);
