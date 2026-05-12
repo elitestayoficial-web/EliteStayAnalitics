@@ -1148,42 +1148,39 @@ function setLanguage(lang) {
         btn.classList.toggle('active', btn.textContent.includes(lang.toUpperCase()));
     });
     
-    // Obtener traducciones del idioma seleccionado
+    // Obtener traducciones
     const t = pageTranslations[lang] || pageTranslations.en;
     
-    // Actualizar textos de la página principal
-    // Status badge
+    // 1. NAVBAR - Estado del sistema
     const statusBadge = document.querySelector('.status-badge');
     if (statusBadge) statusBadge.innerHTML = `<span class="status-dot"></span> ${t.systemOnline}`;
     
-    // Hero title (mantiene la estructura con span)
+    // 2. TÍTULO PRINCIPAL
     const mainTitle = document.getElementById('mainTitle');
     if (mainTitle) mainTitle.innerHTML = `${t.heroTitle} <span class="italic-sophistication">${t.heroTitleItalic}</span>`;
     
-    // Hero subtitle
+    // 3. SUBTÍTULO
     const subtitle = document.querySelector('.subtitle');
     if (subtitle) subtitle.textContent = t.heroSubtitle;
     
-    // Search input placeholder
+    // 4. BUSCADOR
     const searchInput = document.getElementById('hotelSearch');
     if (searchInput) searchInput.placeholder = t.searchPlaceholder;
     
-    // Search button
     const searchBtn = document.querySelector('.search-btn');
     if (searchBtn) searchBtn.textContent = t.searchBtn;
     
-    // Search hint
     const searchHint = document.querySelector('.search-hint');
     if (searchHint) searchHint.innerHTML = `${t.searchHint} <span id="currentDate"></span> UTC`;
     
-    // Stats labels
+    // 5. TARJETAS DE ESTADÍSTICAS
     const statLabels = document.querySelectorAll('.stat-label');
     if (statLabels[0]) statLabels[0].textContent = t.statHotels;
     if (statLabels[1]) statLabels[1].textContent = t.statAccuracy;
     if (statLabels[2]) statLabels[2].textContent = t.statReviews;
     if (statLabels[3]) statLabels[3].textContent = t.statAlerts;
     
-    // Semaphore section
+    // 6. SEMÁFORO DE RIESGO
     const semaphoreTitle = document.querySelector('#semaphore .section-header h2');
     if (semaphoreTitle) semaphoreTitle.innerHTML = `${t.semaphoreTitle} <span class="italic-sophistication">Semaphore</span>`;
     
@@ -1195,14 +1192,14 @@ function setLanguage(lang) {
     if (semaphoreTitles[1]) semaphoreTitles[1].textContent = t.semaphoreIncident;
     if (semaphoreTitles[2]) semaphoreTitles[2].textContent = t.semaphoreCrisis;
     
-    // Gauge
+    // 7. GRÁFICO GAUGE
     const gaugeTitle = document.querySelector('.gauge-title');
     if (gaugeTitle) gaugeTitle.textContent = t.gaugeTitle;
     
     const gaugeText = document.querySelector('.gauge-container p');
     if (gaugeText) gaugeText.innerHTML = `87% ${t.gaugeText}`;
     
-    // Rankings section
+    // 8. RANKINGS
     const performanceTitle = document.querySelector('#rankings .section-header h2');
     if (performanceTitle) performanceTitle.innerHTML = `${t.performanceTitle} <span class="italic-sophistication">Performance</span> Index`;
     
@@ -1213,14 +1210,24 @@ function setLanguage(lang) {
     if (rankingHeaders[0]) rankingHeaders[0].textContent = t.topPerformers;
     if (rankingHeaders[1]) rankingHeaders[1].textContent = t.underperforming;
     
-    // Recently added section
-    const recentlyTitle = document.querySelector('.rankings-section[style*="padding-top: 0"] .section-header h2');
-    if (recentlyTitle) recentlyTitle.innerHTML = `${t.recentlyTitle} <span class="italic-sophistication">Added</span>`;
+    // 9. SECCIÓN RECIENTEMENTE AGREGADOS
+    const recentlyContainers = document.querySelectorAll('.rankings-section');
+    let recentlySection = null;
+    for (let i = 0; i < recentlyContainers.length; i++) {
+        if (recentlyContainers[i].querySelector('.section-header h2') && 
+            recentlyContainers[i].querySelector('.section-header h2').innerText.includes('Recently')) {
+            recentlySection = recentlyContainers[i];
+            break;
+        }
+    }
+    if (recentlySection) {
+        const recentlyTitle = recentlySection.querySelector('.section-header h2');
+        if (recentlyTitle) recentlyTitle.innerHTML = `${t.recentlyTitle} <span class="italic-sophistication">Added</span>`;
+        const recentlySubtitle = recentlySection.querySelector('.section-header p');
+        if (recentlySubtitle) recentlySubtitle.textContent = t.recentlySubtitle;
+    }
     
-    const recentlySubtitle = document.querySelector('.rankings-section[style*="padding-top: 0"] .section-header p');
-    if (recentlySubtitle) recentlySubtitle.textContent = t.recentlySubtitle;
-    
-    // Pricing section
+    // 10. SECCIÓN DE PRECIOS
     const pricingTitle = document.querySelector('#pricing .section-header h2');
     if (pricingTitle) pricingTitle.innerHTML = `${t.pricingTitle} <span class="italic-sophistication">Plans</span>`;
     
@@ -1242,19 +1249,20 @@ function setLanguage(lang) {
     if (subscribeBtns[1]) subscribeBtns[1].innerHTML = t.subscribePremium;
     if (subscribeBtns[2]) subscribeBtns[2].textContent = t.contactSales;
     
-    // Footer
+    // 11. FOOTER
     const footer = document.querySelector('.footer');
     if (footer) footer.innerHTML = `ELITESTAYANALYTICS.COM &copy; 2024 | ${t.footerText} | <a href="#">${t.privacy}</a>`;
     
-    // Actualizar textos "Cargando..." en rankings
+    // 12. ACTUALIZAR TEXTOS DE CARGA
     const loadingElements = document.querySelectorAll('.hotel-name');
     loadingElements.forEach(el => {
-        if (el.textContent === 'Cargando...' || el.textContent === 'Loading...') {
+        const text = el.textContent;
+        if (text === 'Cargando...' || text === 'Loading...' || text === '読み込み中...' || text === '加载中...') {
             el.textContent = t.loadingRankings;
         }
     });
     
-    // Guardar preferencia en localStorage
+    // Guardar preferencia
     localStorage.setItem('preferred-language', lang);
 }
     function toggleTheme() {
