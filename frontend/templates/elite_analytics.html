@@ -1180,7 +1180,7 @@ window.mostrarResultadosGoogle = function(hoteles, query) {
 
     let html = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px;">
-            <h2 style="color: #00ff88; margin: 0; font-size: 1.8rem;">🌍 Hoteles en ${query}</h2>
+            <h2 style="color: #00ff88; margin: 0; font-size: 1.8rem;">🌍 ${t.searchTitle} ${query}</h2>
             <span style="color: #888; background: #1a1a1a; padding: 5px 15px; border-radius: 20px;">${hoteles.length} resultados</span>
         </div>
         <p style="color: #aaa; margin-bottom: 15px; font-size: 0.9rem;">👆 Haz clic en cualquier hotel para ver sus reseñas completas</p>
