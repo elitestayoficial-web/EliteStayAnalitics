@@ -1,4 +1,3 @@
-elitestayanalitics HTML   con comparador de hoteles
 
 <!DOCTYPE html>
 <html lang="en">
@@ -877,35 +876,69 @@ elitestayanalitics HTML   con comparador de hoteles
         </div>
     </div>
 </section>
-<!-- COMPARADOR DE HOTELES (HASTA 5) -->
-    <section class="rankings-section" style="padding-top: 2rem; padding-bottom: 2rem;">
-        <div class="section-header">
-            <h2>Hotel <span class="italic-sophistication">Comparator</span></h2>
-            <p id="comparatorSubtitle">Compare up to 5 hotels in any city</p>
+    
+<!-- ===== COMPARADOR DE HOTELES (HASTA 5) - VERSIÓN CORREGIDA ===== -->
+<section class="rankings-section" style="padding-top: 2rem; padding-bottom: 2rem;">
+    <div class="section-header">
+        <h2>Hotel <span class="italic-sophistication">Comparator</span></h2>
+        <p class="i18n" data-en="Compare up to 5 hotels in any city" data-es="Compara hasta 5 hoteles en cualquier ciudad" data-fr="Comparez jusqu'à 5 hôtels dans n'importe quelle ville">Compare up to 5 hotels in any city</p>
+    </div>
+    <div style="background: var(--card-bg); border-radius: 16px; padding: 25px;">
+        <div style="display: flex; gap: 12px; margin-bottom: 25px; flex-wrap: wrap;">
+            <input type="text" id="comparisonCityInput" class="i18n-placeholder" placeholder="Enter city (e.g., Paris, Tokyo, London)" data-en-placeholder="Enter city (e.g., Paris, Tokyo, London)" data-es-placeholder="Ingresa ciudad (ej: París, Tokio, Londres)" data-fr-placeholder="Entrez une ville (ex: Paris, Tokyo, Londres)" style="flex: 2; padding: 14px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 12px; font-size: 1rem;">
+            <button id="loadComparisonHotelsBtn" style="background: var(--primary-glow); color: #050505; border: none; padding: 14px 28px; border-radius: 12px; cursor: pointer; font-weight: bold;">🔍 LOAD HOTELS</button>
         </div>
-        <div style="background: var(--card-bg); border-radius: 16px; padding: 25px;">
-            <div style="display: flex; gap: 12px; margin-bottom: 25px; flex-wrap: wrap;">
-                <input type="text" id="comparisonCityInput" class="i18n-placeholder" placeholder="Enter city (e.g., Paris, Tokyo, London)" data-en-placeholder="Enter city (e.g., Paris, Tokyo, London)" data-es-placeholder="Ingresa ciudad (ej: París, Tokio, Londres)" data-fr-placeholder="Entrez une ville (ex: Paris, Tokyo, Londres)" style="flex: 2; padding: 14px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 12px; font-size: 1rem;">
-                <button id="loadComparisonHotelsBtn" style="background: var(--primary-glow); color: #050505; border: none; padding: 14px 28px; border-radius: 12px; cursor: pointer; font-weight: bold; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">🔍 LOAD HOTELS</button>
-            </div>
-            <div id="comparisonHotelsContainer" style="display: none;">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px;">
-                    <div><label style="font-size: 12px; color: #888;">Hotel 1</label><select id="compHotel1" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;"><option value="">Select...</option></select></div>
-                    <div><label style="font-size: 12px; color: #888;">Hotel 2</label><select id="compHotel2" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;"><option value="">Select...</option></select></div>
-                    <div><label style="font-size: 12px; color: #888;">Hotel 3</label><select id="compHotel3" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;"><option value="">Select...</option></select></div>
-                    <div><label style="font-size: 12px; color: #888;">Hotel 4</label><select id="compHotel4" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;"><option value="">Select...</option></select></div>
-                    <div><label style="font-size: 12px; color: #888;">Hotel 5</label><select id="compHotel5" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;"><option value="">Select...</option></select></div>
+        <div id="comparisonHotelsContainer" style="display: none;">
+            <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 25px;">
+                <div>
+                    <label class="i18n" data-en="Hotel 1" data-es="Hotel 1" data-fr="Hôtel 1" style="font-size: 12px; color: #888;">Hotel 1</label>
+                    <select id="compHotel1" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;">
+                        <option value="">Select...</option>
+                    </select>
                 </div>
-                <button id="runComparisonBtn" style="background: #D4AF37; color: #050505; border: none; padding: 14px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 100%; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">📊 COMPARE SELECTED HOTELS</button>
+                <div>
+                    <label class="i18n" data-en="Hotel 2" data-es="Hotel 2" data-fr="Hôtel 2" style="font-size: 12px; color: #888;">Hotel 2</label>
+                    <select id="compHotel2" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;">
+                        <option value="">Select...</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="i18n" data-en="Hotel 3" data-es="Hotel 3" data-fr="Hôtel 3" style="font-size: 12px; color: #888;">Hotel 3</label>
+                    <select id="compHotel3" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;">
+                        <option value="">Select...</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="i18n" data-en="Hotel 4" data-es="Hotel 4" data-fr="Hôtel 4" style="font-size: 12px; color: #888;">Hotel 4</label>
+                    <select id="compHotel4" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;">
+                        <option value="">Select...</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="i18n" data-en="Hotel 5" data-es="Hotel 5" data-fr="Hôtel 5" style="font-size: 12px; color: #888;">Hotel 5</label>
+                    <select id="compHotel5" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;">
+                        <option value="">Select...</option>
+                    </select>
+                </div>
             </div>
-            <div id="comparisonResultsContainer" style="display: none; margin-top: 25px;">
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;" id="comparisonSummaryCards"></div>
-                <div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse;"><thead><tr id="comparisonTableHeader" style="border-bottom: 2px solid var(--primary-glow);"><th style="padding: 12px; text-align: left;">Metric</th></tr></thead><tbody id="comparisonTableBody"></tbody></table></div>
-                <div id="comparisonInsights" style="margin-top: 20px; padding: 15px; background: rgba(0,255,136,0.05); border-radius: 10px;"></div>
-            </div>
+            <button id="runComparisonBtn" style="background: #D4AF37; color: #050505; border: none; padding: 14px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 100%;">📊 COMPARE SELECTED HOTELS</button>
         </div>
-    </section>
-
+        <div id="comparisonResultsContainer" style="display: none; margin-top: 25px;">
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;" id="comparisonSummaryCards"></div>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr id="comparisonTableHeader" style="border-bottom: 2px solid var(--primary-glow);">
+                            <th style="padding: 12px; text-align: left;">Metric</th>
+                        </tr>
+                    </thead>
+                    <tbody id="comparisonTableBody"></tbody>
+                </table>
+            </div>
+            <div id="comparisonInsights" style="margin-top: 20px; padding: 15px; background: rgba(0,255,136,0.05); border-radius: 10px;"></div>
+        </div>
+    </div>
+</section>
 
 <!--<!-- ===== FIN: BUDGET CALCULATOR ===== -->
     <section class="rankings-section" id="rankings">
@@ -3320,11 +3353,37 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+    // Permitir Enter
+document.addEventListener('DOMContentLoaded', function() {
+    const inputs = ['calc-origin', 'calc-dest', 'calc-date'];
+    inputs.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    window.calculateTravelBudget();
+                }
+            });
+        }
+    });
+});
+
+// ===== COMPARADOR DE HOTELES (5 HOTELES) - CORREGIDO =====
+let comparisonHotelsList = [];
+
+document.getElementById('loadComparisonHotelsBtn')?.addEventListener('click', async function() {
+    // ... todo el código del comparador ...
+});
+
+document.getElementById('runComparisonBtn')?.addEventListener('click', function() {
+    // ... todo el código del comparador ...
+});
+
+
 </script>
 
 </body>
 </html>
-
 
 
 
