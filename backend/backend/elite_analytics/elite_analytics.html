@@ -761,7 +761,7 @@
     <div style="max-width: 700px; margin: 0 auto; text-align: center;">
         <div style="display: flex; gap: 10px; background: var(--card-bg); border: 1px solid var(--primary-glow); border-radius: 60px; padding: 5px; box-shadow: 0 0 20px rgba(0,255,136,0.1);">
             <input type="text" id="globalCityInput" class="i18n-placeholder" placeholder="Search any city or town worldwide..." data-en-placeholder="Search any city or town worldwide..." data-es-placeholder="Busca cualquier ciudad o pueblo del mundo..." data-fr-placeholder="Recherchez n'importe quelle ville dans le monde..." style="flex: 1; background: transparent; border: none; padding: 18px 25px; color: var(--text-main); font-family: 'Montserrat', sans-serif; font-size: 1rem; outline: none;">
-            <button id="globalCitySearchBtn" style="background: var(--primary-glow); border: none; padding: 0 35px; border-radius: 50px; font-weight: 800; cursor: pointer; color: #050505; text-transform: uppercase; letter-spacing: 1px; transition: transform 0.2s, background 0.2s;" 
+           <button id="globalCitySearchBtn" style="background: var(--primary-glow); border: none; padding: 0 35px; border-radius: 50px; font-weight: 800; cursor: pointer; color: #050505; text-transform: uppercase; letter-spacing: 1px; transition: transform 0.2s, background 0.2s;" 
         onmouseover="this.style.transform='scale(1.05)'; this.style.background='#00e67a';" 
         onmouseout="this.style.transform='scale(1)'; this.style.background='var(--primary-glow)';"
         onmousedown="this.style.transform='scale(0.98)';"
@@ -770,6 +770,14 @@
         <div id="globalCityDisplay" style="margin-top: 15px; font-size: 0.9rem; color: var(--primary-glow);">
             🌍 <span class="i18n" data-en="Current analysis:" data-es="Análisis actual:" data-fr="Analyse actuelle:">Current analysis:</span> <strong id="currentCityName">London</strong> <span id="hotelCountDisplay"></span>
         </div>
+        <!-- Botón de exportar PDF (oculto hasta que se verifique suscripción) -->
+<div id="pdfExportContainer" style="margin-top: 15px; display: none;">
+    <button id="exportPdfBtn" style="background: #ff4444; color: white; border: none; padding: 10px 25px; border-radius: 50px; font-weight: 700; cursor: pointer; transition: transform 0.2s;" 
+            onmouseover="this.style.transform='scale(1.05)'" 
+            onmouseout="this.style.transform='scale(1)'">
+        📄 EXPORT TO PDF (Premium Feature)
+    </button>
+</div>
     </div>
 </section>
 
@@ -2135,23 +2143,62 @@ async function loadRealData() {
     };
 
     // ========== FUNCIONES DE PAGO ==========
-    function showPaymentModal(plan) {
-        currentPlan = plan;
-        const titles = { basic: 'Subscribe to Basic Plan - $49/month', premium: 'Subscribe to Premium Plan - $199/month', enterprise: 'Contact Sales - Enterprise Plan' };
-        document.getElementById('modalTitle').textContent = titles[plan] || 'Subscribe';
-        document.getElementById('paymentModal').style.display = 'block';
-        const elements = stripe.elements();
-        const card = elements.create('card', { style: { base: { color: '#ffffff', backgroundColor: '#2a2a2a', '::placeholder': { color: '#666' } } } });
-        card.mount('#card-element');
-        document.getElementById('paymentForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true; btn.textContent = 'Processing...';
-            setTimeout(() => { alert(`✅ Payment successful! Welcome to the ${currentPlan} plan.`); closeModal(); btn.disabled = false; btn.textContent = 'Pay with Stripe'; }, 2000);
-        };
-    }
+   // ===== FUNCIONES DE PAGO MODIFICADAS (CON SOPORTE PARA PDF PREMIUM) =====
+// ===== FUNCIONES DE PAGO MODIFICADAS (PASO 6) =====
+function showPaymentModal(plan) {
+    currentPlan = plan;
+    const titles = { 
+        basic: 'Subscribe to Basic Plan - $49/month', 
+        premium: 'Subscribe to Premium Plan - $199/month (Includes PDF Reports)', 
+        enterprise: 'Contact Sales - Enterprise Plan (Includes PDF Reports)' 
+    };
+    document.getElementById('modalTitle').textContent = titles[plan] || 'Subscribe';
+    document.getElementById('paymentModal').style.display = 'block';
+    
+    const elements = stripe.elements();
+    const card = elements.create('card', { 
+        style: { 
+            base: { color: '#ffffff', backgroundColor: '#2a2a2a', '::placeholder': { color: '#666' } } 
+        } 
+    });
+    card.mount('#card-element');
+    
+    document.getElementById('paymentForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        const email = document.getElementById('managerEmail')?.value;
+        const hotelName = document.getElementById('hotelName')?.value;
+        
+        btn.disabled = true;
+        btn.textContent = 'Processing...';
+        
+        // Simular pago exitoso (aquí iría tu lógica real de Stripe)
+        setTimeout(() => {
+            // Solo PREMIUM y ENTERPRISE tienen acceso a PDF
+            if (currentPlan === 'premium' || currentPlan === 'enterprise') {
+                if (typeof setUserAsPremium === 'function') {
+                    setUserAsPremium(email, currentPlan);
+                }
+                alert(`✅ Payment successful! Welcome to the ${currentPlan.toUpperCase()} plan.\n\n📄 You now have access to PDF Export feature.\n\n📧 Confirmation sent to: ${email}`);
+            } else {
+                alert(`✅ Payment successful! Welcome to the ${currentPlan.toUpperCase()} plan.\n\n⚠️ PDF Export is available for PREMIUM and ENTERPRISE plans only.`);
+            }
+            
+            closeModal();
+            btn.disabled = false;
+            btn.textContent = 'Pay with Stripe';
+            
+            // Limpiar formulario
+            document.getElementById('hotelName').value = '';
+            document.getElementById('managerEmail').value = '';
+            document.getElementById('hotelId').value = '';
+        }, 2000);
+    };
+}
 
-    function closeModal() { document.getElementById('paymentModal').style.display = 'none'; }
+function closeModal() { 
+    document.getElementById('paymentModal').style.display = 'none'; 
+}
 // ========== FUNCIÓN PRINCIPAL: ANALIZAR CIUDAD COMPLETO ==========
 let currentAnalyzingCity = 'London';
 
@@ -2355,6 +2402,175 @@ function getCountryFlag(cityName) {
     }
     return '🌍';
 }
+    // ===== VERIFICAR SUSCRIPCIÓN DEL USUARIO =====
+async function checkUserSubscription() {
+    // Verificar en localStorage si el usuario es premium
+    const isSubscribed = localStorage.getItem('isPremiumUser') === 'true';
+    const plan = localStorage.getItem('premiumPlan');
+    
+    // Solo PREMIUM y ENTERPRISE tienen acceso a PDF
+    return isSubscribed && plan !== 'basic' && plan !== null;
+}
+
+// Mostrar/ocultar botón de PDF según suscripción
+async function updatePdfButtonVisibility() {
+    const isSubscribed = await checkUserSubscription();
+    const pdfContainer = document.getElementById('pdfExportContainer');
+    
+    if (pdfContainer) {
+        pdfContainer.style.display = isSubscribed ? 'block' : 'none';
+        console.log('📄 PDF button visibility:', isSubscribed ? 'VISIBLE (Premium User)' : 'HIDDEN (Free/Basic User)');
+    }
+}
+
+// Función para guardar suscripción después del pago (SOLO PARA PREMIUM Y ENTERPRISE)
+function setUserAsPremium(email, plan) {
+    if (plan === 'basic') {
+        console.log('Basic plan does not include PDF export');
+        return;
+    }
+    localStorage.setItem('isPremiumUser', 'true');
+    localStorage.setItem('premiumEmail', email);
+    localStorage.setItem('premiumPlan', plan);
+    localStorage.setItem('premiumSince', new Date().toISOString());
+    updatePdfButtonVisibility();
+    console.log(`✅ Premium user saved: ${email} (${plan})`);
+}
+
+// Función para cerrar sesión/cancelar suscripción
+function clearPremiumAccess() {
+    localStorage.removeItem('isPremiumUser');
+    localStorage.removeItem('premiumEmail');
+    localStorage.removeItem('premiumPlan');
+    localStorage.removeItem('premiumSince');
+    updatePdfButtonVisibility();
+    console.log('👋 Premium access removed');
+}
+
+// ===== FUNCIÓN PARA EXPORTAR A PDF (SOLO PREMIUM) =====
+async function exportToPDF() {
+    // Verificar suscripción nuevamente por seguridad
+    const isSubscribed = await checkUserSubscription();
+    const plan = localStorage.getItem('premiumPlan');
+    
+    if (!isSubscribed || plan === 'basic') {
+        alert('⚠️ PDF Export is available for PREMIUM and ENTERPRISE plans only.\n\nUpgrade your plan to access this feature.');
+        document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+        return;
+    }
+    
+    const currentCity = document.getElementById('currentCityName')?.innerText || 'London';
+    const hotelCount = document.getElementById('hotelCountDisplay')?.innerText || '';
+    
+    const exportBtn = document.getElementById('exportPdfBtn');
+    const originalText = exportBtn?.innerText;
+    if (exportBtn) {
+        exportBtn.innerText = '⏳ GENERATING PDF...';
+        exportBtn.disabled = true;
+    }
+    
+    try {
+        const exportContainer = document.createElement('div');
+        exportContainer.style.cssText = `
+            padding: 30px;
+            background: white;
+            font-family: 'Montserrat', sans-serif;
+            color: #212529;
+            max-width: 1000px;
+            margin: 0 auto;
+        `;
+        
+        const premiumEmail = localStorage.getItem('premiumEmail') || 'Premium User';
+        
+        exportContainer.innerHTML = `
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h1 style="color: #00aa55; margin: 0;">ELITESTAY ANALYTICS</h1>
+                <p style="color: #666; margin-top: 5px;">Premium Hotel Performance Report</p>
+                <hr style="border: 1px solid #00aa55;">
+                <h2 style="color: #333;">📍 ${currentCity} ${hotelCount}</h2>
+                <p style="color: #666;">Report generated: ${new Date().toLocaleString()}</p>
+                <p style="color: #888; font-size: 10px;">Authorized for: ${premiumEmail}</p>
+            </div>
+        `;
+        
+        const semaphoreSection = document.getElementById('semaphore');
+        const rankingsSection = document.getElementById('rankings');
+        
+        if (semaphoreSection) {
+            const semaphoreClone = semaphoreSection.cloneNode(true);
+            semaphoreClone.querySelectorAll('.ranking-item, .semaphore-item').forEach(el => {
+                el.removeAttribute('onclick');
+            });
+            exportContainer.appendChild(semaphoreClone);
+        }
+        
+        if (rankingsSection) {
+            const rankingsClone = rankingsSection.cloneNode(true);
+            rankingsClone.querySelectorAll('.ranking-item').forEach(el => {
+                el.removeAttribute('onclick');
+            });
+            exportContainer.appendChild(rankingsClone);
+        }
+        
+        exportContainer.innerHTML += `
+            <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; color: #999; font-size: 10px;">
+                ELITESTAY ANALYTICS - Confidential Hotel Intelligence Report<br>
+                Premium Subscription - ${localStorage.getItem('premiumPlan')?.toUpperCase()} Plan
+            </div>
+        `;
+        
+        const opt = {
+            margin: [0.5, 0.5, 0.5, 0.5],
+            filename: `elitestay_premium_report_${currentCity}_${new Date().toISOString().slice(0, 19)}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, logging: false },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+        };
+        
+        await html2pdf().set(opt).from(exportContainer).save();
+        
+    } catch (error) {
+        console.error('Error generando PDF:', error);
+        alert('Error generating PDF. Please try again.');
+    } finally {
+        if (exportBtn) {
+            exportBtn.innerText = originalText;
+            exportBtn.disabled = false;
+        }
+    }
+}
+    // ===== VERIFICAR SUSCRIPCIÓN DEL USUARIO =====
+// Esta función debería verificar en tu backend si el email está suscrito
+async function checkUserSubscription() {
+    // Opción 1: Verificar en localStorage (temporal)
+    const isSubscribed = localStorage.getItem('isPremiumUser') === 'true';
+    
+    // Opción 2: Verificar con tu backend (recomendado)
+    // const response = await fetch('/api/user/subscription-status');
+    // const data = await response.json();
+    // return data.isSubscribed;
+    
+    return isSubscribed;
+}
+
+// Mostrar/ocultar botón de PDF según suscripción
+async function updatePdfButtonVisibility() {
+    const isSubscribed = await checkUserSubscription();
+    const pdfContainer = document.getElementById('pdfExportContainer');
+    
+    if (pdfContainer) {
+        pdfContainer.style.display = isSubscribed ? 'block' : 'none';
+    }
+}
+
+// Función para guardar suscripción después del pago
+function setUserAsPremium(email, plan) {
+    localStorage.setItem('isPremiumUser', 'true');
+    localStorage.setItem('premiumEmail', email);
+    localStorage.setItem('premiumPlan', plan);
+    localStorage.setItem('premiumSince', new Date().toISOString());
+    updatePdfButtonVisibility();
+}
 // ========== FIN DE LAS NUEVAS FUNCIONES ==========
     
   // ========== INICIALIZACIÓN ==========
@@ -2424,7 +2640,21 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    // ===== PASO 5: VERIFICAR SUSCRIPCIÓN Y MOSTRAR BOTÓN PDF =====
+    if (typeof updatePdfButtonVisibility === 'function') {
+        updatePdfButtonVisibility();
+    }
     
+    // ===== BOTÓN EXPORTAR PDF =====
+    const exportBtn = document.getElementById('exportPdfBtn');
+    if (exportBtn) {
+        exportBtn.onclick = function(e) {
+            e.preventDefault();
+            if (typeof exportToPDF === 'function') {
+                exportToPDF();
+            }
+        };
+    }
     console.log("✅ Página inicializada. Buscador de ciudades listo.");
 });
 // ===== ÚNICO SCRIPT PARA LA CALCULADORA (MULTI-IDIOMA) =====
