@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital@1&family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
     <script src="https://js.stripe.com/v3/"></script>
     <style>
-        /* ===== ESTILOS ORIGINALES - NO TOCAR ===== */
         :root {
             --primary-glow: #00ff88;
             --science-blue: #00ccff;
@@ -21,20 +20,14 @@
             --semaphore-red: #ff4444;
             --semaphore-green: #00ff88;
         }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Montserrat', sans-serif;
             background: var(--dark-bg);
             color: var(--text-main);
             line-height: 1.6;
             transition: background 0.3s, color 0.3s;
-            background-image: 
-                linear-gradient(rgba(0, 255, 136, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 136, 0.03) 1px, transparent 1px);
+            background-image: linear-gradient(rgba(0, 255, 136, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 136, 0.03) 1px, transparent 1px);
             background-size: 50px 50px;
         }
         body.light-mode {
@@ -42,651 +35,121 @@
             --card-bg: #ffffff;
             --text-main: #212529;
             --text-muted: #6c757d;
-            background-image: 
-                linear-gradient(rgba(0, 170, 85, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 170, 85, 0.05) 1px, transparent 1px);
-        }
-        body.light-mode .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        }
-        body.light-mode .logo {
-            color: #000;
-        }
-        body.light-mode .ranking-card {
-            background: #ffffff;
-            border: 1px solid #dee2e6;
-        }
-        body.light-mode .ranking-item {
-            border-bottom: 1px solid #e9ecef;
-        }
-        body.light-mode .hotel-rank-badge {
-            color: #adb5bd;
-        }
-        body.light-mode .footer {
-            border-top: 1px solid #dee2e6;
-            color: #6c757d;
-        }
-        body.light-mode .search-wrapper {
-            background: rgba(0, 0, 0, 0.02);
-            border: 1px solid #dee2e6;
-        }
-        body.light-mode .search-input {
-            color: #212529;
-        }
-        body.light-mode .search-input::placeholder {
-            color: #adb5bd;
-        }
-        body.light-mode .lang-btn {
-            border-color: #dee2e6;
-            color: #6c757d;
-        }
-        body.light-mode .lang-btn.active {
-            border-color: var(--primary-glow);
-            color: #00aa55;
-        }
-        body.light-mode .pricing-card {
-            background: #ffffff;
-            border-color: #dee2e6;
-        }
-        body.light-mode .pricing-card.premium {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-            border-color: #00aa55;
-        }
-        h1, h2, h3 {
-            font-weight: 900;
-            letter-spacing: -1px;
-            text-transform: uppercase;
-        }
-        .italic-sophistication {
-            font-family: var(--accent-font);
-            text-transform: none;
-            font-weight: 400;
-            letter-spacing: 0;
-            color: var(--primary-glow);
-        }
-        .navbar {
-            background: rgba(5, 5, 5, 0.95);
-            padding: 1.5rem 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        .logo {
-            font-size: 2rem;
-            font-weight: 900;
-            letter-spacing: 2px;
-            color: #fff;
-        }
-        .logo-highlight {
-            font-weight: 300;
-            color: var(--primary-glow);
-        }
-        .nav-controls {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        .theme-btn {
-            background: transparent;
-            border: 1px solid #333;
-            color: #666;
-            padding: 5px 12px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            border-radius: 3px;
-            transition: all 0.3s;
-        }
-        .theme-btn:hover {
-            border-color: var(--primary-glow);
-            color: var(--primary-glow);
-        }
-        .lang-selector {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-        .lang-btn {
-            background: transparent;
-            border: 1px solid #333;
-            color: #666;
-            padding: 5px 8px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            border-radius: 3px;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .lang-btn:hover {
-            border-color: var(--primary-glow);
-            color: var(--primary-glow);
-        }
-        .lang-btn.active {
-            border-color: var(--primary-glow);
-            color: var(--primary-glow);
-            background: rgba(0, 255, 136, 0.1);
-        }
-        .status-badge {
-            font-size: 0.8rem;
-            opacity: 0.6;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--primary-glow);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.2); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-        .hero {
-            text-align: center;
-            padding: 8rem 5% 4rem;
-        }
-        h1 {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(180deg, #fff 0%, #888 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .subtitle {
-            font-size: 1.1rem;
-            font-weight: 300;
-            color: #aaa;
-            max-width: 600px;
-            margin: 0 auto 3rem;
-        }
-        .search-container {
-            max-width: 800px;
-            margin: 0 auto 4rem;
-            position: relative;
-        }
-        .search-wrapper {
-            display: flex;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50px;
-            padding: 8px;
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-        }
-        .search-wrapper:focus-within {
-            border-color: var(--primary-glow);
-            box-shadow: 0 0 30px rgba(0, 255, 136, 0.2);
-            background: rgba(255, 255, 255, 0.08);
-        }
-        .search-input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            padding: 15px 25px;
-            color: white;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1rem;
-            outline: none;
-        }
-        .search-input::placeholder {
-            color: #444;
-            font-weight: 300;
-        }
-        .search-btn {
-            background: var(--primary-glow);
-            border: none;
-            padding: 0 30px;
-            border-radius: 40px;
-            font-weight: 700;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            transition: transform 0.2s;
-            color: #050505;
-        }
-        .search-btn:hover {
-            transform: scale(1.02);
-            background: #00e67a;
-        }
-        .search-hint {
-            margin-top: 15px;
-            font-size: 0.7rem;
-            color: #444;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-        .stat-card {
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 2rem;
-            background: rgba(15, 15, 15, 0.5);
-            border-radius: 4px;
-            transition: transform 0.3s;
-        }
-        .stat-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary-glow);
-        }
-        .stat-number {
-            font-size: 2rem;
-            color: var(--primary-glow);
-            display: block;
-        }
-        .stat-label {
-            font-size: 0.7rem;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .semaphore-section {
-            padding: 4rem 5%;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .semaphore-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-        .semaphore-card {
-            background: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 2rem;
-            border-radius: 4px;
-            transition: transform 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-        .semaphore-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-        }
-        .semaphore-card.yellow::before {
-            background: var(--semaphore-yellow);
-            box-shadow: 0 0 20px var(--semaphore-yellow);
-        }
-        .semaphore-card.orange::before {
-            background: var(--semaphore-orange);
-            box-shadow: 0 0 20px var(--semaphore-orange);
-        }
-        .semaphore-card.red::before {
-            background: var(--semaphore-red);
-            box-shadow: 0 0 20px var(--semaphore-red);
-        }
-        .semaphore-card:hover {
-            transform: translateY(-5px);
-        }
-        .semaphore-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        .semaphore-icon {
-            font-size: 2rem;
-        }
-        .semaphore-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-        }
-        .semaphore-count {
-            font-size: 2.5rem;
-            font-weight: 900;
-            margin: 1rem 0;
-        }
-        .semaphore-list {
-            list-style: none;
-        }
-        .semaphore-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.8rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 0.9rem;
-        }
-        .semaphore-item:last-child {
-            border-bottom: none;
-        }
-        .semaphore-badge {
-            padding: 2px 8px;
-            border-radius: 3px;
-            font-size: 0.7rem;
-            font-weight: 700;
-        }
-        .semaphore-badge.yellow {
-            background: var(--semaphore-yellow);
-            color: #000;
-        }
-        .semaphore-badge.orange {
-            background: var(--semaphore-orange);
-            color: #000;
-        }
-        .semaphore-badge.red {
-            background: var(--semaphore-red);
-            color: #fff;
-        }
-        .rankings-section {
-            padding: 6rem 5%;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .section-header {
-            margin-bottom: 3rem;
-            text-align: center;
-        }
-        .section-header h2 {
-            font-size: 2rem;
-        }
-        .section-header p {
-            color: #666;
-            font-size: 0.9rem;
-        }
-        .rankings-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 2rem;
-        }
-        .ranking-card {
-            background: #0a0a0a;
-            border: 1px solid #1a1a1a;
-            padding: 2rem;
-            border-radius: 2px;
-        }
-        .ranking-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            border-bottom: 1px solid #1a1a1a;
-            padding-bottom: 1rem;
-        }
-        .ranking-icon {
-            font-size: 1.5rem;
-        }
-        .ranking-header h3 {
-            font-size: 1.1rem;
-            letter-spacing: 2px;
-            font-weight: 400;
-        }
-        .ranking-list {
-            list-style: none;
-        }
-        .ranking-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-            border-bottom: 1px solid #151515;
-            font-size: 0.9rem;
-            transition: background 0.3s, opacity 0.3s;
-            cursor: pointer;
-        }
-        .ranking-item:hover {
-            background: rgba(0, 255, 136, 0.05);
-        }
-        .ranking-item.highlighted {
-            background: rgba(0, 255, 136, 0.15);
-            border-left: 3px solid var(--primary-glow);
-            padding-left: 1rem;
-        }
-        .hotel-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex: 1;
-        }
-        .hotel-rank-badge {
-            color: #555;
-            font-weight: 300;
-            width: 30px;
-            text-align: right;
-        }
-        .hotel-name {
-            font-weight: 500;
-        }
-        .hotel-name a {
-            color: inherit;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        .hotel-name a:hover {
-            color: var(--primary-glow);
-        }
-        .hotel-city {
-            font-size: 0.7rem;
-            color: #666;
-            margin-top: 2px;
-        }
-        .hotel-score {
-            font-family: monospace;
-            color: var(--primary-glow);
-            font-size: 1rem;
-        }
-        .worst .hotel-score {
-            color: var(--semaphore-red);
-        }
-        .hotel-semaphore {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-right: 8px;
-        }
-        .hotel-semaphore.yellow { background: var(--semaphore-yellow); box-shadow: 0 0 10px var(--semaphore-yellow); }
-        .hotel-semaphore.orange { background: var(--semaphore-orange); box-shadow: 0 0 10px var(--semaphore-orange); }
-        .hotel-semaphore.red { background: var(--semaphore-red); box-shadow: 0 0 10px var(--semaphore-red); }
-        .hotel-semaphore.green { background: var(--semaphore-green); box-shadow: 0 0 10px var(--semaphore-green); }
-        .gauge-container {
-            text-align: center;
-            margin: 2rem 0;
-        }
-        .gauge-title {
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-        }
-        .gauge-chart {
-            width: 200px;
-            height: 100px;
-            margin: 0 auto;
-        }
-        .pricing-section {
-            padding: 6rem 5%;
-            background: linear-gradient(135deg, #0a0a0a 0%, #050505 100%);
-        }
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 3rem auto;
-        }
-        .pricing-card {
-            background: #0f0f0f;
-            border: 1px solid #1a1a1a;
-            padding: 2rem;
-            border-radius: 4px;
-            text-align: center;
-            transition: transform 0.3s;
-        }
-        .pricing-card:hover {
-            transform: translateY(-10px);
-            border-color: var(--primary-glow);
-        }
-        .pricing-card.premium {
-            background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
-            border: 2px solid var(--primary-glow);
-            transform: scale(1.05);
-        }
-        .pricing-card.premium:hover {
-            transform: scale(1.05) translateY(-10px);
-        }
-        .pricing-header {
-            margin-bottom: 2rem;
-        }
-        .pricing-header h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-        .pricing-price {
-            font-size: 3rem;
-            font-weight: 900;
-            color: var(--primary-glow);
-        }
-        .pricing-price span {
-            font-size: 1rem;
-            color: #666;
-        }
-        .pricing-features {
-            list-style: none;
-            margin: 2rem 0;
-        }
-        .pricing-features li {
-            padding: 0.5rem 0;
-            color: #aaa;
-        }
-        .pricing-features li::before {
-            content: "✓ ";
-            color: var(--primary-glow);
-        }
-        .stripe-button {
-            background: linear-gradient(135deg, #6772e5, #555abf);
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 4px;
-            font-weight: 700;
-            cursor: pointer;
-            width: 100%;
-            transition: transform 0.3s;
-        }
-        .stripe-button:hover {
-            transform: translateY(-2px);
-        }
-        .stripe-button-gold {
-            background: linear-gradient(135deg, #CFB53B, #FFD700);
-            color: #0a0a0a;
-            font-weight: 700;
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            transition: transform 0.3s;
-            font-size: 1.1rem;
-        }
-        .stripe-button-gold:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3);
-        }
-        .footer {
-            padding: 4rem 5%;
-            border-top: 1px solid #1a1a1a;
-            text-align: center;
-            font-size: 0.8rem;
-            color: #555;
-            letter-spacing: 2px;
-        }
-        .footer a {
-            color: #555;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        .footer a:hover {
-            color: var(--primary-glow);
-        }
-        .loading {
-            text-align: center;
-            padding: 2rem;
-            color: #666;
-        }
-        .no-data {
-            text-align: center;
-            padding: 2rem;
-            color: #666;
-            font-style: italic;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-        }
-        .modal-content {
-            background: var(--card-bg);
-            margin: 5% auto;
-            padding: 2rem;
-            border: 1px solid #333;
-            width: 90%;
-            max-width: 500px;
-            border-radius: 8px;
-        }
-        .close {
-            color: #666;
-            float: right;
-            font-size: 28px;
-            cursor: pointer;
-        }
-        .close:hover {
-            color: var(--primary-glow);
-        }
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #aaa;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 0.75rem;
-            background: #2a2a2a;
-            border: 1px solid #3a3a3a;
-            border-radius: 4px;
-            color: white;
-        }
-        #card-element {
-            background: #2a2a2a;
-            padding: 0.75rem;
-            border-radius: 4px;
-            border: 1px solid #3a3a3a;
-            margin-bottom: 1rem;
-        }
-        .submit-btn {
-            background: var(--primary-glow);
-            color: #0a0a0a;
-            padding: 1rem;
-            border: none;
-            border-radius: 4px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-        }
+            background-image: linear-gradient(rgba(0, 170, 85, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 170, 85, 0.05) 1px, transparent 1px);
+        }
+        body.light-mode .navbar { background: rgba(255, 255, 255, 0.95); border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
+        body.light-mode .logo { color: #000; }
+        body.light-mode .ranking-card { background: #ffffff; border: 1px solid #dee2e6; }
+        body.light-mode .ranking-item { border-bottom: 1px solid #e9ecef; }
+        body.light-mode .hotel-rank-badge { color: #adb5bd; }
+        body.light-mode .footer { border-top: 1px solid #dee2e6; color: #6c757d; }
+        body.light-mode .search-wrapper { background: rgba(0, 0, 0, 0.02); border: 1px solid #dee2e6; }
+        body.light-mode .search-input { color: #212529; }
+        body.light-mode .lang-btn { border-color: #dee2e6; color: #6c757d; }
+        body.light-mode .lang-btn.active { border-color: var(--primary-glow); color: #00aa55; }
+        body.light-mode .pricing-card { background: #ffffff; border-color: #dee2e6; }
+        body.light-mode .pricing-card.premium { background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border-color: #00aa55; }
+        h1, h2, h3 { font-weight: 900; letter-spacing: -1px; text-transform: uppercase; }
+        .italic-sophistication { font-family: 'Libre Baskerville', serif; text-transform: none; font-weight: 400; letter-spacing: 0; color: var(--primary-glow); }
+        .navbar { background: rgba(5, 5, 5, 0.95); padding: 1.5rem 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 1000; }
+        .logo { font-size: 2rem; font-weight: 900; letter-spacing: 2px; color: #fff; }
+        .logo-highlight { font-weight: 300; color: var(--primary-glow); }
+        .nav-controls { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+        .theme-btn { background: transparent; border: 1px solid #333; color: #666; padding: 5px 12px; font-size: 0.8rem; cursor: pointer; border-radius: 3px; transition: all 0.3s; }
+        .theme-btn:hover { border-color: var(--primary-glow); color: var(--primary-glow); }
+        .lang-selector { display: flex; gap: 5px; flex-wrap: wrap; }
+        .lang-btn { background: transparent; border: 1px solid #333; color: #666; padding: 5px 8px; font-size: 0.8rem; cursor: pointer; border-radius: 3px; transition: all 0.3s; display: flex; align-items: center; gap: 4px; }
+        .lang-btn:hover { border-color: var(--primary-glow); color: var(--primary-glow); }
+        .lang-btn.active { border-color: var(--primary-glow); color: var(--primary-glow); background: rgba(0, 255, 136, 0.1); }
+        .status-badge { font-size: 0.8rem; opacity: 0.6; display: flex; align-items: center; gap: 5px; }
+        .status-dot { width: 8px; height: 8px; background: var(--primary-glow); border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
+        .hero { text-align: center; padding: 8rem 5% 4rem; }
+        h1 { font-size: 4rem; margin-bottom: 1rem; background: linear-gradient(180deg, #fff 0%, #888 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { font-size: 1.1rem; font-weight: 300; color: #aaa; max-width: 600px; margin: 0 auto 3rem; }
+        .search-container { max-width: 800px; margin: 0 auto 4rem; position: relative; }
+        .search-wrapper { display: flex; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 50px; padding: 8px; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); }
+        .search-wrapper:focus-within { border-color: var(--primary-glow); box-shadow: 0 0 30px rgba(0, 255, 136, 0.2); background: rgba(255, 255, 255, 0.08); }
+        .search-input { flex: 1; background: transparent; border: none; padding: 15px 25px; color: white; font-family: 'Montserrat', sans-serif; font-size: 1rem; outline: none; }
+        .search-input::placeholder { color: #444; font-weight: 300; }
+        .search-btn { background: var(--primary-glow); border: none; padding: 0 30px; border-radius: 40px; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; transition: transform 0.2s; color: #050505; }
+        .search-btn:hover { transform: scale(1.02); background: #00e67a; }
+        .search-hint { margin-top: 15px; font-size: 0.7rem; color: #444; text-transform: uppercase; letter-spacing: 2px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 1100px; margin: 0 auto; }
+        .stat-card { border: 1px solid rgba(255, 255, 255, 0.05); padding: 2rem; background: rgba(15, 15, 15, 0.5); border-radius: 4px; transition: transform 0.3s; }
+        .stat-card:hover { transform: translateY(-5px); border-color: var(--primary-glow); }
+        .stat-number { font-size: 2rem; color: var(--primary-glow); display: block; }
+        .stat-label { font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+        .semaphore-section { padding: 4rem 5%; max-width: 1200px; margin: 0 auto; }
+        .semaphore-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 3rem; }
+        .semaphore-card { background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.1); padding: 2rem; border-radius: 4px; transition: transform 0.3s; position: relative; overflow: hidden; }
+        .semaphore-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; }
+        .semaphore-card.yellow::before { background: var(--semaphore-yellow); box-shadow: 0 0 20px var(--semaphore-yellow); }
+        .semaphore-card.orange::before { background: var(--semaphore-orange); box-shadow: 0 0 20px var(--semaphore-orange); }
+        .semaphore-card.red::before { background: var(--semaphore-red); box-shadow: 0 0 20px var(--semaphore-red); }
+        .semaphore-card:hover { transform: translateY(-5px); }
+        .semaphore-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+        .semaphore-icon { font-size: 2rem; }
+        .semaphore-title { font-size: 1.2rem; font-weight: 700; }
+        .semaphore-count { font-size: 2.5rem; font-weight: 900; margin: 1rem 0; }
+        .semaphore-list { list-style: none; }
+        .semaphore-item { display: flex; justify-content: space-between; padding: 0.8rem 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); font-size: 0.9rem; cursor: pointer; }
+        .semaphore-item:last-child { border-bottom: none; }
+        .semaphore-item:hover { background: rgba(0, 255, 136, 0.05); }
+        .semaphore-badge { padding: 2px 8px; border-radius: 3px; font-size: 0.7rem; font-weight: 700; }
+        .semaphore-badge.yellow { background: var(--semaphore-yellow); color: #000; }
+        .semaphore-badge.orange { background: var(--semaphore-orange); color: #000; }
+        .semaphore-badge.red { background: var(--semaphore-red); color: #fff; }
+        .rankings-section { padding: 6rem 5%; max-width: 1200px; margin: 0 auto; }
+        .section-header { margin-bottom: 3rem; text-align: center; }
+        .section-header h2 { font-size: 2rem; }
+        .section-header p { color: #666; font-size: 0.9rem; }
+        .rankings-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+        .ranking-card { background: #0a0a0a; border: 1px solid #1a1a1a; padding: 2rem; border-radius: 2px; }
+        .ranking-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid #1a1a1a; padding-bottom: 1rem; }
+        .ranking-icon { font-size: 1.5rem; }
+        .ranking-header h3 { font-size: 1.1rem; letter-spacing: 2px; font-weight: 400; }
+        .ranking-list { list-style: none; }
+        .ranking-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid #151515; font-size: 0.9rem; transition: background 0.3s; cursor: pointer; }
+        .ranking-item:hover { background: rgba(0, 255, 136, 0.05); }
+        .hotel-info { display: flex; align-items: center; gap: 1rem; flex: 1; }
+        .hotel-rank-badge { color: #555; font-weight: 300; width: 30px; text-align: right; }
+        .hotel-name { font-weight: 500; }
+        .hotel-city { font-size: 0.7rem; color: #666; margin-top: 2px; }
+        .hotel-score { font-family: monospace; color: var(--primary-glow); font-size: 1rem; }
+        .worst .hotel-score { color: var(--semaphore-red); }
+        .gauge-container { text-align: center; margin: 2rem 0; }
+        .gauge-title { font-size: 1.2rem; margin-bottom: 1rem; }
+        .gauge-chart { width: 200px; height: 100px; margin: 0 auto; }
+        .pricing-section { padding: 6rem 5%; background: linear-gradient(135deg, #0a0a0a 0%, #050505 100%); }
+        .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; max-width: 1200px; margin: 3rem auto; }
+        .pricing-card { background: #0f0f0f; border: 1px solid #1a1a1a; padding: 2rem; border-radius: 4px; text-align: center; transition: transform 0.3s; }
+        .pricing-card:hover { transform: translateY(-10px); border-color: var(--primary-glow); }
+        .pricing-card.premium { background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%); border: 2px solid var(--primary-glow); transform: scale(1.05); }
+        .pricing-card.premium:hover { transform: scale(1.05) translateY(-10px); }
+        .pricing-header { margin-bottom: 2rem; }
+        .pricing-header h3 { font-size: 1.5rem; margin-bottom: 1rem; }
+        .pricing-price { font-size: 3rem; font-weight: 900; color: var(--primary-glow); }
+        .pricing-price span { font-size: 1rem; color: #666; }
+        .pricing-features { list-style: none; margin: 2rem 0; }
+        .pricing-features li { padding: 0.5rem 0; color: #aaa; }
+        .pricing-features li::before { content: "✓ "; color: var(--primary-glow); }
+        .stripe-button { background: linear-gradient(135deg, #6772e5, #555abf); color: white; border: none; padding: 1rem 2rem; border-radius: 4px; font-weight: 700; cursor: pointer; width: 100%; transition: transform 0.3s; }
+        .stripe-button:hover { transform: translateY(-2px); }
+        .stripe-button-gold { background: linear-gradient(135deg, #CFB53B, #FFD700); color: #0a0a0a; font-weight: 700; padding: 1rem 2rem; border: none; border-radius: 4px; cursor: pointer; width: 100%; transition: transform 0.3s; font-size: 1.1rem; }
+        .stripe-button-gold:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255, 215, 0, 0.3); }
+        .footer { padding: 4rem 5%; border-top: 1px solid #1a1a1a; text-align: center; font-size: 0.8rem; color: #555; letter-spacing: 2px; }
+        .footer a { color: #555; text-decoration: none; transition: color 0.3s; }
+        .footer a:hover { color: var(--primary-glow); }
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); }
+        .modal-content { background: var(--card-bg); margin: 5% auto; padding: 2rem; border: 1px solid #333; width: 90%; max-width: 500px; border-radius: 8px; }
+        .close { color: #666; float: right; font-size: 28px; cursor: pointer; }
+        .close:hover { color: var(--primary-glow); }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: #aaa; }
+        .form-group input { width: 100%; padding: 0.75rem; background: #2a2a2a; border: 1px solid #3a3a3a; border-radius: 4px; color: white; }
+        #card-element { background: #2a2a2a; padding: 0.75rem; border-radius: 4px; border: 1px solid #3a3a3a; margin-bottom: 1rem; }
+        .submit-btn { background: var(--primary-glow); color: #0a0a0a; padding: 1rem; border: none; border-radius: 4px; font-weight: 600; cursor: pointer; width: 100%; }
         @media (max-width: 768px) {
             h1 { font-size: 2.5rem; }
             .logo { font-size: 1.5rem; }
@@ -718,45 +181,32 @@
             <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙 Dark</button>
             <div class="status-badge">
                 <span class="status-dot"></span>
-                SYSTEM ONLINE
+                <span class="status-text">SYSTEM ONLINE</span>
             </div>
         </div>
     </nav>
 
     <section class="hero">
         <h1 id="mainTitle">Intelligence <span class="italic-sophistication">Redefined</span></h1>
-        <p class="subtitle" data-i18n="hero_subtitle">Advanced analytics for the high-end hospitality industry. Empirical data, strategic vision.</p>
+        <p class="subtitle" id="heroSubtitle">Advanced analytics for the high-end hospitality industry. Empirical data, strategic vision.</p>
         <div class="search-container">
             <div class="search-wrapper">
                 <input type="text" id="hotelSearch" class="search-input" placeholder="Search by hotel name, city, or ID...">
-                <button class="search-btn">ANALYZE</button>
+                <button class="search-btn" id="hotelSearchBtn">ANALYZE</button>
             </div>
             <div class="search-hint">
                 DATABASE UPDATED: <span id="currentDate"></span> UTC
             </div>
         </div>
-
         <div class="stats-grid">
-            <div class="stat-card">
-                <span class="stat-number" id="statHotels">1,695</span>
-                <span class="stat-label">HOTELS ANALYZED</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-number" id="statAccuracy">99.9%</span>
-                <span class="stat-label">AI ACCURACY</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-number" id="statReviews">42,891</span>
-                <span class="stat-label">REVIEWS PROCESSED</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-number" id="statAlerts">1,284</span>
-                <span class="stat-label">ACTIVE ALERTS</span>
-            </div>
+            <div class="stat-card"><span class="stat-number" id="statHotels">1,695</span><span class="stat-label" id="statHotelsLabel">HOTELS ANALYZED</span></div>
+            <div class="stat-card"><span class="stat-number" id="statAccuracy">99.9%</span><span class="stat-label" id="statAccuracyLabel">AI ACCURACY</span></div>
+            <div class="stat-card"><span class="stat-number" id="statReviews">42,891</span><span class="stat-label" id="statReviewsLabel">REVIEWS PROCESSED</span></div>
+            <div class="stat-card"><span class="stat-number" id="statAlerts">1,284</span><span class="stat-label" id="statAlertsLabel">ACTIVE ALERTS</span></div>
         </div>
     </section>
 
-    <!-- ===== BUSCADOR DE CIUDAD UNIVERSAL ===== -->
+    <!-- BUSCADOR DE CIUDAD UNIVERSAL -->
     <section class="semaphore-section" id="citySearchSection" style="padding-bottom: 0;">
         <div style="max-width: 700px; margin: 0 auto; text-align: center;">
             <div style="display: flex; gap: 10px; background: var(--card-bg); border: 1px solid var(--primary-glow); border-radius: 60px; padding: 5px; box-shadow: 0 0 20px rgba(0,255,136,0.1);">
@@ -764,7 +214,7 @@
                 <button id="globalCitySearchBtn" style="background: var(--primary-glow); border: none; padding: 0 35px; border-radius: 50px; font-weight: 800; cursor: pointer; color: #050505; text-transform: uppercase; letter-spacing: 1px; transition: transform 0.2s, background 0.2s;" onmouseover="this.style.transform='scale(1.05)'; this.style.background='#00e67a';" onmouseout="this.style.transform='scale(1)'; this.style.background='var(--primary-glow)';" onmousedown="this.style.transform='scale(0.98)';" onmouseup="this.style.transform='scale(1.05)';">🔍 ANALYZE</button>
             </div>
             <div id="globalCityDisplay" style="margin-top: 15px; font-size: 0.9rem; color: var(--primary-glow);">
-                🌍 <span class="i18n" data-en="Current analysis:" data-es="Análisis actual:" data-fr="Analyse actuelle:">Current analysis:</span> <strong id="currentCityName">London</strong> <span id="hotelCountDisplay"></span>
+                🌍 <span id="currentAnalysisText">Current analysis:</span> <strong id="currentCityName">London</strong> <span id="hotelCountDisplay"></span>
             </div>
             <div id="pdfExportContainer" style="margin-top: 15px; display: none;">
                 <button id="exportPdfBtn" style="background: #ff4444; color: white; border: none; padding: 10px 25px; border-radius: 50px; font-weight: 700; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">📄 EXPORT TO PDF (Premium Feature)</button>
@@ -772,34 +222,25 @@
         </div>
     </section>
 
-    <!-- ===== RISK SEMAPHORE ===== -->
+    <!-- RISK SEMAPHORE -->
     <section class="semaphore-section" id="semaphore">
         <div class="section-header">
-            <h2>Risk <span class="italic-sophistication">Semaphore</span></h2>
-            <p class="i18n" data-en="Real-time hotel risk assessment based on guest reviews" data-es="Evaluación de riesgo hotelero en tiempo real basada en reseñas" data-fr="Évaluation des risques hôteliers en temps réel basée sur les avis">Real-time hotel risk assessment based on guest reviews</p>
+            <h2 id="semaphoreTitle">Risk <span class="italic-sophistication">Semaphore</span></h2>
+            <p id="semaphoreSubtitle" class="i18n">Real-time hotel risk assessment based on guest reviews</p>
         </div>
         <div class="semaphore-grid" id="semaphoreGrid">
             <div class="semaphore-card yellow">
-                <div class="semaphore-header">
-                    <span class="semaphore-icon">🟡</span>
-                    <span class="semaphore-title i18n" data-en="ALERT" data-es="ALERTA" data-fr="ALERTE">ALERT</span>
-                </div>
+                <div class="semaphore-header"><span class="semaphore-icon">🟡</span><span class="semaphore-title" id="alertTitle">ALERT</span></div>
                 <div class="semaphore-count" id="yellowCount">0</div>
                 <ul class="semaphore-list" id="yellowList"></ul>
             </div>
             <div class="semaphore-card orange">
-                <div class="semaphore-header">
-                    <span class="semaphore-icon">🟠</span>
-                    <span class="semaphore-title i18n" data-en="INCIDENT" data-es="INCIDENTE" data-fr="INCIDENT">INCIDENT</span>
-                </div>
+                <div class="semaphore-header"><span class="semaphore-icon">🟠</span><span class="semaphore-title" id="incidentTitle">INCIDENT</span></div>
                 <div class="semaphore-count" id="orangeCount">0</div>
                 <ul class="semaphore-list" id="orangeList"></ul>
             </div>
             <div class="semaphore-card red">
-                <div class="semaphore-header">
-                    <span class="semaphore-icon">🔴</span>
-                    <span class="semaphore-title i18n" data-en="CRISIS" data-es="CRISIS" data-fr="CRISE">CRISIS</span>
-                </div>
+                <div class="semaphore-header"><span class="semaphore-icon">🔴</span><span class="semaphore-title" id="crisisTitle">CRISIS</span></div>
                 <div class="semaphore-count" id="redCount">0</div>
                 <ul class="semaphore-list" id="redList"></ul>
             </div>
@@ -808,56 +249,38 @@
 
     <section class="rankings-section">
         <div class="gauge-container">
-            <h3 class="gauge-title">Brand Consistency Index</h3>
+            <h3 class="gauge-title" id="gaugeTitle">Brand Consistency Index</h3>
             <canvas id="gaugeChart" width="200" height="100" class="gauge-chart"></canvas>
-            <p style="color: #666; margin-top: 1rem;">87% alignment with brand standards</p>
+            <p style="color: #666; margin-top: 1rem;"><span id="gaugePercentage">87</span>% <span id="gaugeText">alignment with brand standards</span></p>
         </div>
     </section>
 
-    <!-- ===== BUDGET CALCULATOR ===== -->
+    <!-- BUDGET CALCULATOR -->
     <section class="rankings-section" style="padding-top: 2rem; padding-bottom: 2rem;">
         <div class="section-header">
-            <h2><span class="i18n" data-en="Budget" data-es="Calculadora" data-fr="Budget">Budget</span> <span class="italic-sophistication i18n" data-en="Calculator" data-es="de Presupuesto" data-fr="de Budget">Calculator</span></h2>
-            <p class="i18n" data-en="Estimate your total trip cost with real-time data" data-es="Estima el costo total de tu viaje con datos en tiempo real" data-fr="Estimez le coût total de votre voyage avec des données en temps réel">Estimate your total trip cost with real-time data</p>
+            <h2><span id="budgetTitle">Budget</span> <span class="italic-sophistication"><span id="calculatorTitle">Calculator</span></span></h2>
+            <p id="budgetSubtitle">Estimate your total trip cost with real-time data</p>
         </div>
         <div style="max-width: 800px; margin: 0 auto; background: var(--card-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 2rem;">
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
-                <div>
-                    <label class="i18n" data-en="Origin City" data-es="Ciudad Origen" data-fr="Ville de départ" style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Origin City</label>
-                    <input type="text" id="calc-origin" class="i18n-placeholder" placeholder="e.g. London, Paris, Madrid" data-en-placeholder="e.g. London, Paris, Madrid" data-es-placeholder="Ej: Londres, París, Madrid" data-fr-placeholder="Ex: Londres, Paris, Madrid" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #333; color: var(--text-main); padding: 0.8rem; border-radius: 4px;">
-                </div>
-                <div>
-                    <label class="i18n" data-en="Destination City" data-es="Ciudad Destino" data-fr="Ville de destination" style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Destination City</label>
-                    <input type="text" id="calc-dest" class="i18n-placeholder" placeholder="e.g. Tokyo, New York, Rome" data-en-placeholder="e.g. Tokyo, New York, Rome" data-es-placeholder="Ej: Tokio, Nueva York, Roma" data-fr-placeholder="Ex: Tokyo, New York, Rome" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #333; color: var(--text-main); padding: 0.8rem; border-radius: 4px;">
-                </div>
-                <div>
-                    <label class="i18n" data-en="Departure Date" data-es="Fecha de Salida" data-fr="Date de départ" style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Departure Date</label>
-                    <input type="date" id="calc-date" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #333; color: var(--text-main); padding: 0.8rem; border-radius: 4px;">
-                </div>
+                <div><label style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;" id="originLabel">Origin City</label><input type="text" id="calc-origin" class="i18n-placeholder" placeholder="e.g. London, Paris, Madrid" data-en-placeholder="e.g. London, Paris, Madrid" data-es-placeholder="Ej: Londres, París, Madrid" data-fr-placeholder="Ex: Londres, Paris, Madrid" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #333; color: var(--text-main); padding: 0.8rem; border-radius: 4px;"></div>
+                <div><label style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;" id="destLabel">Destination City</label><input type="text" id="calc-dest" class="i18n-placeholder" placeholder="e.g. Tokyo, New York, Rome" data-en-placeholder="e.g. Tokyo, New York, Rome" data-es-placeholder="Ej: Tokio, Nueva York, Roma" data-fr-placeholder="Ex: Tokyo, New York, Rome" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #333; color: var(--text-main); padding: 0.8rem; border-radius: 4px;"></div>
+                <div><label style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;" id="dateLabel">Departure Date</label><input type="date" id="calc-date" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #333; color: var(--text-main); padding: 0.8rem; border-radius: 4px;"></div>
             </div>
-            <button onclick="calculateTravelBudget()" style="background: var(--primary-glow); color: #050505; border: none; padding: 1rem 2rem; font-weight: 700; text-transform: uppercase; border-radius: 4px; cursor: pointer; width: 100%; margin-bottom: 1.5rem; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'"><span class="i18n" data-en="📊 CALCULATE BUDGET" data-es="📊 CALCULAR PRESUPUESTO" data-fr="📊 CALCULER LE BUDGET">📊 CALCULATE BUDGET</span></button>
+            <button id="calculateBudgetBtn" style="background: var(--primary-glow); color: #050505; border: none; padding: 1rem 2rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-radius: 4px; cursor: pointer; width: 100%; margin-bottom: 1.5rem; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'"><span id="calculateText">📊 CALCULATE BUDGET</span></button>
             <div id="budget-result" style="display: none; border-top: 1px solid #333; padding-top: 1.5rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <span class="i18n" data-en="Estimated budget:" data-es="Presupuesto estimado:" data-fr="Budget estimé:" style="color: var(--text-muted);">Estimated budget:</span>
-                    <span style="font-size: 2rem; font-weight: 900; color: var(--primary-glow);" id="budget-amount">0 €</span>
-                </div>
-                <a href="#" id="travel-link" target="_blank" style="background: #D4AF37; color: #050505; text-decoration: none; padding: 1rem; font-weight: 700; border-radius: 4px; display: block; text-align: center; margin-bottom: 1rem; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'"><span class="i18n" data-en="✈️ VIEW OFFERS ON ELITE STAY TRAVEL" data-es="✈️ VER OFERTAS EN ELITE STAY TRAVEL" data-fr="✈️ VOIR LES OFFRES SUR ELITE STAY TRAVEL">✈️ VIEW OFFERS ON ELITE STAY TRAVEL</span></a>
-                <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 4px;">
-                    <p class="i18n" data-en="📩 Want us to notify you if the price drops?" data-es="📩 ¿Quieres que te avisemos si el precio baja?" data-fr="📩 Voulez-vous être averti si le prix baisse?" style="color: var(--text-muted); margin-bottom: 0.5rem;">📩 Want us to notify you if the price drops?</p>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <input type="email" id="alert-email" class="i18n-placeholder" placeholder="your@email.com" data-en-placeholder="your@email.com" data-es-placeholder="tu@email.com" data-fr-placeholder="votre@email.com" style="flex: 1; background: rgba(0,0,0,0.3); border: 1px solid #333; color: var(--text-main); padding: 0.8rem; border-radius: 4px;">
-                        <button onclick="saveBudgetAlert()" style="background: #4895EF; color: white; border: none; padding: 0 1.5rem; border-radius: 4px; font-weight: 600; cursor: pointer;"><span class="i18n" data-en="Notify me" data-es="Avisarme" data-fr="M'avertir">Notify me</span></button>
-                    </div>
-                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;"><span style="color: var(--text-muted);" id="estimatedText">Estimated budget:</span><span style="font-size: 2rem; font-weight: 900; color: var(--primary-glow);" id="budget-amount">0 €</span></div>
+                <a href="#" id="travel-link" target="_blank" style="background: #D4AF37; color: #050505; text-decoration: none; padding: 1rem; font-weight: 700; border-radius: 4px; display: block; text-align: center; margin-bottom: 1rem; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'"><span id="travelText">✈️ VIEW OFFERS ON ELITE STAY TRAVEL</span></a>
+                <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 4px;"><p style="color: var(--text-muted); margin-bottom: 0.5rem;" id="notifyText">📩 Want us to notify you if the price drops?</p><div style="display: flex; gap: 0.5rem;"><input type="email" id="alert-email" class="i18n-placeholder" placeholder="your@email.com" data-en-placeholder="your@email.com" data-es-placeholder="tu@email.com" data-fr-placeholder="votre@email.com" style="flex: 1; background: rgba(0,0,0,0.3); border: 1px solid #333; color: var(--text-main); padding: 0.8rem; border-radius: 4px;"><button id="notifyBtn" style="background: #4895EF; color: white; border: none; padding: 0 1.5rem; border-radius: 4px; font-weight: 600; cursor: pointer;"><span id="notifyBtnText">Notify me</span></button></div></div>
             </div>
         </div>
     </section>
 
-    <!-- ===== COMPARADOR DE HOTELES (HASTA 5) - NUEVA FUNCIONALIDAD ===== -->
+    <!-- COMPARADOR DE HOTELES (HASTA 5) -->
     <section class="rankings-section" style="padding-top: 2rem; padding-bottom: 2rem;">
         <div class="section-header">
             <h2>Hotel <span class="italic-sophistication">Comparator</span></h2>
-            <p class="i18n" data-en="Compare up to 5 hotels in any city" data-es="Compara hasta 5 hoteles en cualquier ciudad" data-fr="Comparez jusqu'à 5 hôtels dans n'importe quelle ville">Compare up to 5 hotels in any city</p>
+            <p id="comparatorSubtitle">Compare up to 5 hotels in any city</p>
         </div>
         <div style="background: var(--card-bg); border-radius: 16px; padding: 25px;">
             <div style="display: flex; gap: 12px; margin-bottom: 25px; flex-wrap: wrap;">
@@ -866,68 +289,53 @@
             </div>
             <div id="comparisonHotelsContainer" style="display: none;">
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px;">
-                    <div><label class="i18n" data-en="Hotel 1" data-es="Hotel 1" data-fr="Hôtel 1" style="font-size: 12px; color: #888;">Hotel 1</label><select id="compHotel1" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;"><option value="">Select...</option></select></div>
-                    <div><label class="i18n" data-en="Hotel 2" data-es="Hotel 2" data-fr="Hôtel 2" style="font-size: 12px; color: #888;">Hotel 2</label><select id="compHotel2" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;"><option value="">Select...</option></select></div>
-                    <div><label class="i18n" data-en="Hotel 3" data-es="Hotel 3" data-fr="Hôtel 3" style="font-size: 12px; color: #888;">Hotel 3</label><select id="compHotel3" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;"><option value="">Select...</option></select></div>
-                    <div><label class="i18n" data-en="Hotel 4" data-es="Hotel 4" data-fr="Hôtel 4" style="font-size: 12px; color: #888;">Hotel 4</label><select id="compHotel4" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;"><option value="">Select...</option></select></div>
-                    <div><label class="i18n" data-en="Hotel 5" data-es="Hotel 5" data-fr="Hôtel 5" style="font-size: 12px; color: #888;">Hotel 5</label><select id="compHotel5" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;"><option value="">Select...</option></select></div>
+                    <div><label style="font-size: 12px; color: #888;">Hotel 1</label><select id="compHotel1" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;"><option value="">Select...</option></select></div>
+                    <div><label style="font-size: 12px; color: #888;">Hotel 2</label><select id="compHotel2" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;"><option value="">Select...</option></select></div>
+                    <div><label style="font-size: 12px; color: #888;">Hotel 3</label><select id="compHotel3" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;"><option value="">Select...</option></select></div>
+                    <div><label style="font-size: 12px; color: #888;">Hotel 4</label><select id="compHotel4" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;"><option value="">Select...</option></select></div>
+                    <div><label style="font-size: 12px; color: #888;">Hotel 5</label><select id="compHotel5" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;"><option value="">Select...</option></select></div>
                 </div>
                 <button id="runComparisonBtn" style="background: #D4AF37; color: #050505; border: none; padding: 14px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 100%; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">📊 COMPARE SELECTED HOTELS</button>
             </div>
             <div id="comparisonResultsContainer" style="display: none; margin-top: 25px;">
                 <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;" id="comparisonSummaryCards"></div>
-                <div style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead><tr id="comparisonTableHeader" style="border-bottom: 2px solid var(--primary-glow);"><th style="padding: 12px; text-align: left;">Metric</th></tr></thead>
-                        <tbody id="comparisonTableBody"></tbody>
-                    </table>
-                </div>
+                <div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse;"><thead><tr id="comparisonTableHeader" style="border-bottom: 2px solid var(--primary-glow);"><th style="padding: 12px; text-align: left;">Metric</th></tr></thead><tbody id="comparisonTableBody"></tbody></table></div>
                 <div id="comparisonInsights" style="margin-top: 20px; padding: 15px; background: rgba(0,255,136,0.05); border-radius: 10px;"></div>
             </div>
         </div>
     </section>
 
-    <!-- ===== GLOBAL PERFORMANCE INDEX ===== -->
+    <!-- GLOBAL PERFORMANCE INDEX -->
     <section class="rankings-section" id="rankings">
         <div class="section-header">
-            <h2>Global <span class="italic-sophistication">Performance</span> Index</h2>
-            <p class="i18n" data-en="Top 10 best and worst hotels by guest satisfaction" data-es="Los 10 mejores y peores hoteles según satisfacción de huéspedes" data-fr="Top 10 des meilleurs et pires hôtels selon la satisfaction des clients">Top 10 best and worst hotels by guest satisfaction</p>
+            <h2 id="performanceTitle">Global <span class="italic-sophistication">Performance</span> Index</h2>
+            <p id="performanceSubtitle">Top 10 best and worst hotels by guest satisfaction</p>
         </div>
         <div class="rankings-grid">
-            <div class="ranking-card">
-                <div class="ranking-header"><span class="ranking-icon">🏆</span><h3 class="i18n" data-en="TOP PERFORMERS" data-es="MEJORES RENDIMIENTOS" data-fr="MEILLEURES PERFORMANCES">TOP PERFORMERS</h3></div>
-                <div class="ranking-list" id="bestList"><div class="ranking-item"><div class="hotel-info"><span class="i18n" data-en="Select a city to see results" data-es="Selecciona una ciudad para ver resultados" data-fr="Sélectionnez une ville pour voir les résultats">Select a city to see results</span></div></div></div>
-            </div>
-            <div class="ranking-card worst">
-                <div class="ranking-header"><span class="ranking-icon">⚠️</span><h3 class="i18n" data-en="UNDERPERFORMING" data-es="BAJO RENDIMIENTO" data-fr="SOUS-PERFORMANCE">UNDERPERFORMING</h3></div>
-                <div class="ranking-list" id="worstList"><div class="ranking-item"><div class="hotel-info"><span class="i18n" data-en="Select a city to see results" data-es="Selecciona una ciudad para ver resultados" data-fr="Sélectionnez une ville pour voir les résultats">Select a city to see results</span></div></div></div>
-            </div>
+            <div class="ranking-card"><div class="ranking-header"><span class="ranking-icon">🏆</span><h3 id="topPerformersTitle">TOP PERFORMERS</h3></div><div class="ranking-list" id="bestList"><div class="ranking-item"><div class="hotel-info"><span id="selectCityText">Select a city to see results</span></div></div></div></div>
+            <div class="ranking-card worst"><div class="ranking-header"><span class="ranking-icon">⚠️</span><h3 id="underperformingTitle">UNDERPERFORMING</h3></div><div class="ranking-list" id="worstList"><div class="ranking-item"><div class="hotel-info"><span id="selectCityText2">Select a city to see results</span></div></div></div></div>
         </div>
     </section>
 
     <section class="rankings-section" style="padding-top: 0;">
-        <div class="section-header"><h2>Recently <span class="italic-sophistication">Added</span></h2><p>60 new luxury hotels just integrated into our system</p></div>
+        <div class="section-header"><h2 id="recentlyTitle">Recently <span class="italic-sophistication">Added</span></h2><p id="recentlySubtitle">60 new luxury hotels just integrated into our system</p></div>
         <div class="rankings-grid" style="grid-template-columns: repeat(3, 1fr);"><div class="ranking-card" style="grid-column: span 3;"><div class="ranking-list" id="newHotelsList" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;"></div></div></div>
     </section>
 
     <section class="pricing-section" id="pricing">
-        <div class="section-header"><h2>Enterprise <span class="italic-sophistication">Plans</span></h2><p>Scalable solutions for hotel chains and investment groups</p></div>
+        <div class="section-header"><h2 id="pricingTitle">Enterprise <span class="italic-sophistication">Plans</span></h2><p id="pricingSubtitle">Scalable solutions for hotel chains and investment groups</p></div>
         <div class="pricing-grid">
-            <div class="pricing-card"><div class="pricing-header"><h3>BASIC</h3><div class="pricing-price">$49<span>/month</span></div></div><ul class="pricing-features"><li>Monthly PDF reports</li><li>Email alerts</li><li>Basic rankings</li><li>5 hotel analysis</li><li>Email support</li></ul><button class="stripe-button" onclick="showPaymentModal('basic')">Subscribe with Stripe</button></div>
-            <div class="pricing-card premium"><div class="pricing-header"><h3>PREMIUM</h3><div class="pricing-price">$199<span>/month</span></div></div><ul class="pricing-features"><li>Weekly PDF reports</li><li>Real-time alerts</li><li>Competitor comparison</li><li>CO2/Sustainability analysis</li><li>25 hotel analysis</li><li>API access</li><li>Priority support</li></ul><button class="stripe-button-gold" onclick="showPaymentModal('premium')">⭐ Subscribe with Stripe ⭐</button></div>
-            <div class="pricing-card"><div class="pricing-header"><h3>ENTERPRISE</h3><div class="pricing-price">$499<span>/month</span></div></div><ul class="pricing-features"><li>Daily reports</li><li>Custom dashboards</li><li>Full API access</li><li>Unlimited hotels</li><li>Dedicated account manager</li><li>On-premise option</li><li>24/7 phone support</li></ul><button class="stripe-button" onclick="showPaymentModal('enterprise')">Contact Sales</button></div>
+            <div class="pricing-card"><div class="pricing-header"><h3 id="basicPlan">BASIC</h3><div class="pricing-price">$49<span id="basicPeriod">/month</span></div></div><ul class="pricing-features"><li>Monthly PDF reports</li><li>Email alerts</li><li>Basic rankings</li><li>5 hotel analysis</li><li>Email support</li></ul><button class="stripe-button" id="basicSubscribeBtn" onclick="showPaymentModal('basic')">Subscribe with Stripe</button></div>
+            <div class="pricing-card premium"><div class="pricing-header"><h3 id="premiumPlan">PREMIUM</h3><div class="pricing-price">$199<span id="premiumPeriod">/month</span></div></div><ul class="pricing-features"><li>Weekly PDF reports</li><li>Real-time alerts</li><li>Competitor comparison</li><li>CO2/Sustainability analysis</li><li>25 hotel analysis</li><li>API access</li><li>Priority support</li></ul><button class="stripe-button-gold" id="premiumSubscribeBtn" onclick="showPaymentModal('premium')">⭐ Subscribe with Stripe ⭐</button></div>
+            <div class="pricing-card"><div class="pricing-header"><h3 id="enterprisePlan">ENTERPRISE</h3><div class="pricing-price">$499<span id="enterprisePeriod">/month</span></div></div><ul class="pricing-features"><li>Daily reports</li><li>Custom dashboards</li><li>Full API access</li><li>Unlimited hotels</li><li>Dedicated account manager</li><li>On-premise option</li><li>24/7 phone support</li></ul><button class="stripe-button" id="enterpriseSubscribeBtn" onclick="showPaymentModal('enterprise')">Contact Sales</button></div>
         </div>
     </section>
 
-    <div id="paymentModal" class="modal">
-        <div class="modal-content"><span class="close" onclick="closeModal()">&times;</span><h2 id="modalTitle">Subscribe to Premium</h2>
-        <form id="paymentForm"><div class="form-group"><label>Hotel Name</label><input type="text" id="hotelName" required></div><div class="form-group"><label>Manager Email</label><input type="email" id="managerEmail" required></div><div class="form-group"><label>Hotel ID (optional)</label><input type="text" id="hotelId"></div><div id="card-element"></div><button type="submit" class="submit-btn" id="submitBtn">Pay with Stripe</button></form>
-        </div>
-    </div>
+    <div id="paymentModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal()">&times;</span><h2 id="modalTitle">Subscribe to Premium</h2><form id="paymentForm"><div class="form-group"><label>Hotel Name</label><input type="text" id="hotelName" required></div><div class="form-group"><label>Manager Email</label><input type="email" id="managerEmail" required></div><div class="form-group"><label>Hotel ID (optional)</label><input type="text" id="hotelId"></div><div id="card-element"></div><button type="submit" class="submit-btn" id="submitBtn">Pay with Stripe</button></form></div></div>
 
-    <footer class="footer">ELITESTAYANALYTICS.COM &copy; 2024 | DATA INTELLIGENCE DIVISION | <a href="#">PRIVACY POLICY</a></footer>
+    <footer class="footer" id="footer">ELITESTAYANALYTICS.COM &copy; 2024 | DATA INTELLIGENCE DIVISION | <a href="#" id="privacyLink">PRIVACY POLICY</a></footer>
 
-    <!-- ===== PANEL DE ADMINISTRADOR (CCO/MANAGER) ===== -->
+    <!-- ADMIN PANEL -->
     <div id="adminPanel" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 900px; max-height: 85vh; overflow-y: auto; background: #0a0a0a; border: 2px solid #00ff88; border-radius: 15px; padding: 25px; z-index: 10000; box-shadow: 0 0 50px rgba(0,255,136,0.5);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px;"><h2 style="color: #00ff88; margin: 0;">👑 ADMIN PANEL - CCO / MANAGER</h2><button id="closeAdminPanel" style="background: #ff4444; border: none; color: white; border-radius: 5px; padding: 8px 15px; cursor: pointer;">✕ CLOSE</button></div>
         <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
@@ -943,13 +351,7 @@
         <div id="adminTabSearches" class="adminTabContent" style="display: none;"><h3 style="color: #00ff88;">🔍 Recent User Searches</h3><div id="adminSearchesList" style="max-height: 400px; overflow-y: auto; margin-top: 15px;"><p style="color: #888;">Loading searches...</p></div><button id="adminClearSearches" style="background: #ff4444; color: white; border: none; padding: 10px 20px; border-radius: 8px; margin-top: 15px; cursor: pointer;">🗑 Clear History</button></div>
         <div id="adminTabHotels" class="adminTabContent" style="display: none;"><h3 style="color: #00ff88;">🏨 Hotels Analyzed by City</h3><div id="adminHotelsList" style="max-height: 400px; overflow-y: auto; margin-top: 15px;"><p style="color: #888;">Loading hotel data...</p></div><button id="adminExportHotels" style="background: #00aa55; color: white; border: none; padding: 10px 20px; border-radius: 8px; margin-top: 15px; cursor: pointer;">📥 Export Hotels to CSV</button></div>
         <div id="adminTabReports" class="adminTabContent" style="display: none;"><h3 style="color: #00ff88;">📄 Generate Executive Reports</h3><div style="background: #1a1a1a; padding: 20px; border-radius: 10px; margin-top: 15px;"><label style="color: #888;">Report Type:</label><select id="adminReportType" style="width: 100%; padding: 10px; margin: 10px 0; background: #333; color: white; border: none; border-radius: 5px;"><option value="weekly">📊 Weekly Summary Report</option><option value="monthly">📈 Monthly Performance Report</option><option value="subscribers">👥 Subscribers Growth Report</option><option value="hotels">🏨 Top Hotels Analysis</option></select><label style="color: #888;">Format:</label><select id="adminReportFormat" style="width: 100%; padding: 10px; margin: 10px 0; background: #333; color: white; border: none; border-radius: 5px;"><option value="pdf">📄 PDF Document</option><option value="csv">📊 CSV Data</option><option value="json">🔧 JSON Raw Data</option></select><button id="adminGenerateReport" style="background: #00ff88; color: #050505; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer;">🚀 GENERATE REPORT</button></div></div>
-        <div id="adminTabComparison" class="adminTabContent" style="display: none;">
-            <h3 style="color: #00ff88; margin-bottom: 15px;">📊 Hotel Comparator (CCO Access)</h3>
-            <div style="display: flex; gap: 12px; margin-bottom: 20px;"><input type="text" id="adminComparisonCity" placeholder="Enter city..." style="flex: 1; padding: 12px; background: #333; border: none; color: white; border-radius: 8px;"><button id="adminLoadHotelsBtn" style="background: #00ff88; color: #050505; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer;">LOAD</button></div>
-            <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 20px;" id="adminHotelSelectors"></div>
-            <button id="adminRunCompareBtn" style="background: #D4AF37; color: #050505; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold;">COMPARE</button>
-            <div id="adminCompareResults" style="margin-top: 20px; display: none;"></div>
-        </div>
+        <div id="adminTabComparison" class="adminTabContent" style="display: none;"><h3 style="color: #00ff88; margin-bottom: 15px;">📊 Hotel Comparator (CCO Access)</h3><div style="display: flex; gap: 12px; margin-bottom: 20px;"><input type="text" id="adminComparisonCity" placeholder="Enter city..." style="flex: 1; padding: 12px; background: #333; border: none; color: white; border-radius: 8px;"><button id="adminLoadHotelsBtn" style="background: #00ff88; color: #050505; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer;">LOAD</button></div><div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 20px;" id="adminHotelSelectors"></div><button id="adminRunCompareBtn" style="background: #D4AF37; color: #050505; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold;">COMPARE</button><div id="adminCompareResults" style="margin-top: 20px; display: none;"></div></div>
         <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #333; text-align: center; font-size: 11px; color: #555;">ELITESTAY ANALYTICS - Confidential Management Panel</div>
     </div>
 
@@ -963,53 +365,288 @@
     let currentLanguage = 'en';
     let gaugeChart = null;
     let comparisonHotelsList = [];
+    let adminComparisonHotels = [];
 
-    // ===== TRADUCCIONES (RESUMIDAS PARA ESPACIO) =====
+    // ===== TRADUCCIONES COMPLETAS 9 IDIOMAS =====
+    const pageTranslations = {
+        en: {
+            systemOnline: "SYSTEM ONLINE", heroTitle: "Intelligence", heroTitleItalic: "Redefined",
+            heroSubtitle: "Advanced analytics for the high-end hospitality industry. Empirical data, strategic vision.",
+            searchPlaceholder: "Search by hotel name, city, or ID...", searchBtn: "ANALYZE",
+            searchHint: "DATABASE UPDATED:", statHotels: "HOTELS ANALYZED", statAccuracy: "AI ACCURACY",
+            statReviews: "REVIEWS PROCESSED", statAlerts: "ACTIVE ALERTS",
+            semaphoreTitle: "Risk", semaphoreSubtitle: "Real-time hotel risk assessment and monitoring",
+            semaphoreAlert: "ALERT", semaphoreIncident: "INCIDENT", semaphoreCrisis: "CRISIS",
+            gaugeTitle: "Brand Consistency Index", gaugeText: "alignment with brand standards",
+            performanceTitle: "Global", performanceSubtitle: "Top 10 best and worst hotels by guest satisfaction",
+            topPerformers: "TOP PERFORMERS", underperforming: "UNDERPERFORMING",
+            recentlyTitle: "Recently", recentlySubtitle: "60 new luxury hotels just integrated into our system",
+            pricingTitle: "Enterprise", pricingSubtitle: "Scalable solutions for hotel chains and investment groups",
+            basic: "BASIC", premium: "PREMIUM", enterprise: "ENTERPRISE", perMonth: "/month",
+            subscribeBasic: "Subscribe with Stripe", subscribePremium: "⭐ Subscribe with Stripe ⭐",
+            contactSales: "Contact Sales", footerText: "DATA INTELLIGENCE DIVISION", privacy: "PRIVACY POLICY",
+            loadingRankings: "Loading...", currentAnalysis: "Current analysis:", selectCity: "Select a city to see results",
+            budgetTitle: "Budget", calculatorTitle: "Calculator", budgetSubtitle: "Estimate your total trip cost with real-time data",
+            originLabel: "Origin City", destLabel: "Destination City", dateLabel: "Departure Date",
+            calculateText: "📊 CALCULATE BUDGET", estimatedText: "Estimated budget:", travelText: "✈️ VIEW OFFERS ON ELITE STAY TRAVEL",
+            notifyText: "📩 Want us to notify you if the price drops?", notifyBtnText: "Notify me",
+            comparatorSubtitle: "Compare up to 5 hotels in any city"
+        },
+        es: {
+            systemOnline: "SISTEMA EN LÍNEA", heroTitle: "Inteligencia", heroTitleItalic: "Redefinida",
+            heroSubtitle: "Análisis avanzado para la industria hotelera de alto nivel. Datos empíricos, visión estratégica.",
+            searchPlaceholder: "Buscar por nombre de hotel, ciudad o ID...", searchBtn: "ANALIZAR",
+            searchHint: "BASE DE DATOS ACTUALIZADA:", statHotels: "HOTELES ANALIZADOS", statAccuracy: "PRECISIÓN IA",
+            statReviews: "RESEÑAS PROCESADAS", statAlerts: "ALERTAS ACTIVAS",
+            semaphoreTitle: "Riesgo", semaphoreSubtitle: "Evaluación y monitoreo de riesgo hotelero en tiempo real",
+            semaphoreAlert: "ALERTA", semaphoreIncident: "INCIDENTE", semaphoreCrisis: "CRISIS",
+            gaugeTitle: "Índice de Consistencia de Marca", gaugeText: "alineación con estándares de marca",
+            performanceTitle: "Rendimiento", performanceSubtitle: "Los 10 mejores y peores hoteles según satisfacción de huéspedes",
+            topPerformers: "MEJORES RENDIMIENTOS", underperforming: "BAJO RENDIMIENTO",
+            recentlyTitle: "Recientemente", recentlySubtitle: "60 nuevos hoteles de lujo integrados en nuestro sistema",
+            pricingTitle: "Planes", pricingSubtitle: "Soluciones escalables para cadenas hoteleras y grupos de inversión",
+            basic: "BÁSICO", premium: "PREMIUM", enterprise: "EMPRESA", perMonth: "/mes",
+            subscribeBasic: "Suscribir con Stripe", subscribePremium: "⭐ Suscribir con Stripe ⭐",
+            contactSales: "Contactar Ventas", footerText: "DIVISIÓN DE INTELIGENCIA DE DATOS", privacy: "POLÍTICA DE PRIVACIDAD",
+            loadingRankings: "Cargando...", currentAnalysis: "Análisis actual:", selectCity: "Selecciona una ciudad para ver resultados",
+            budgetTitle: "Calculadora", calculatorTitle: "de Presupuesto", budgetSubtitle: "Estima el costo total de tu viaje con datos en tiempo real",
+            originLabel: "Ciudad Origen", destLabel: "Ciudad Destino", dateLabel: "Fecha de Salida",
+            calculateText: "📊 CALCULAR PRESUPUESTO", estimatedText: "Presupuesto estimado:", travelText: "✈️ VER OFERTAS EN ELITE STAY TRAVEL",
+            notifyText: "📩 ¿Quieres que te avisemos si el precio baja?", notifyBtnText: "Avisarme",
+            comparatorSubtitle: "Compara hasta 5 hoteles en cualquier ciudad"
+        },
+        fr: {
+            systemOnline: "SYSTÈME EN LIGNE", heroTitle: "Intelligence", heroTitleItalic: "Redéfinie",
+            heroSubtitle: "Analyses avancées pour l'industrie hôtelière haut de gamme. Données empiriques, vision stratégique.",
+            searchPlaceholder: "Rechercher par nom d'hôtel, ville ou ID...", searchBtn: "ANALYSER",
+            searchHint: "BASE DE DONNÉES MISE À JOUR:", statHotels: "HÔTELS ANALYSÉS", statAccuracy: "PRÉCISION IA",
+            statReviews: "AVIS TRAITÉS", statAlerts: "ALERTES ACTIVES",
+            semaphoreTitle: "Risque", semaphoreSubtitle: "Évaluation et surveillance des risques hôteliers en temps réel",
+            semaphoreAlert: "ALERTE", semaphoreIncident: "INCIDENT", semaphoreCrisis: "CRISE",
+            gaugeTitle: "Indice de Cohérence de Marque", gaugeText: "alignement avec les normes de la marque",
+            performanceTitle: "Performance", performanceSubtitle: "Top 10 des meilleurs et pires hôtels selon la satisfaction des clients",
+            topPerformers: "MEILLEURES PERFORMANCES", underperforming: "SOUS-PERFORMANCE",
+            recentlyTitle: "Récemment", recentlySubtitle: "60 nouveaux hôtels de luxe intégrés dans notre système",
+            pricingTitle: "Entreprise", pricingSubtitle: "Solutions évolutives pour chaînes hôtelières et groupes d'investissement",
+            basic: "BASIQUE", premium: "PREMIUM", enterprise: "ENTREPRISE", perMonth: "/mois",
+            subscribeBasic: "S'abonner avec Stripe", subscribePremium: "⭐ S'abonner avec Stripe ⭐",
+            contactSales: "Contacter les ventes", footerText: "DIVISION INTELLIGENCE DES DONNÉES", privacy: "POLITIQUE DE CONFIDENTIALITÉ",
+            loadingRankings: "Chargement...", currentAnalysis: "Analyse actuelle:", selectCity: "Sélectionnez une ville pour voir les résultats",
+            budgetTitle: "Budget", calculatorTitle: "Calculator", budgetSubtitle: "Estimez le coût total de votre voyage avec des données en temps réel",
+            originLabel: "Ville de départ", destLabel: "Ville de destination", dateLabel: "Date de départ",
+            calculateText: "📊 CALCULER LE BUDGET", estimatedText: "Budget estimé:", travelText: "✈️ VOIR LES OFFRES SUR ELITE STAY TRAVEL",
+            notifyText: "📩 Voulez-vous être averti si le prix baisse?", notifyBtnText: "M'avertir",
+            comparatorSubtitle: "Comparez jusqu'à 5 hôtels dans n'importe quelle ville"
+        },
+        de: {
+            systemOnline: "SYSTEM ONLINE", heroTitle: "Intelligenz", heroTitleItalic: "Neu definiert",
+            heroSubtitle: "Erweiterte Analysen für die gehobene Hotellerie. Empirische Daten, strategische Vision.",
+            searchPlaceholder: "Suche nach Hotelname, Stadt oder ID...", searchBtn: "ANALYSIEREN",
+            searchHint: "DATENBANK AKTUALISIERT:", statHotels: "HOTELS ANALYSIERT", statAccuracy: "KI-GENAUIGKEIT",
+            statReviews: "BEWERTUNGEN VERARBEITET", statAlerts: "AKTIVE ALARME",
+            semaphoreTitle: "Risiko", semaphoreSubtitle: "Echtzeit-Hotelrisikobewertung und -überwachung",
+            semaphoreAlert: "ALARM", semaphoreIncident: "VORFALL", semaphoreCrisis: "KRISE",
+            gaugeTitle: "Markenkonsistenzindex", gaugeText: "Übereinstimmung mit Markenstandards",
+            performanceTitle: "Global", performanceSubtitle: "Top 10 der besten und schlechtesten Hotels nach Gästezufriedenheit",
+            topPerformers: "TOP-PERFORMER", underperforming: "UNTERDURCHSCHNITTLICH",
+            recentlyTitle: "Kürzlich", recentlySubtitle: "60 neue Luxushotels in unser System integriert",
+            pricingTitle: "Unternehmen", pricingSubtitle: "Skalierbare Lösungen für Hotelketten und Investmentgruppen",
+            basic: "BASIS", premium: "PREMIUM", enterprise: "UNTERNEHMEN", perMonth: "/Monat",
+            subscribeBasic: "Mit Stripe abonnieren", subscribePremium: "⭐ Mit Stripe abonnieren ⭐",
+            contactSales: "Vertrieb kontaktieren", footerText: "DATENINTELLIGENZ ABTEILUNG", privacy: "DATENSCHUTZRICHTLINIE",
+            loadingRankings: "Wird geladen...", currentAnalysis: "Aktuelle Analyse:", selectCity: "Wählen Sie eine Stadt, um Ergebnisse zu sehen",
+            budgetTitle: "Budget", calculatorTitle: "Rechner", budgetSubtitle: "Schätzen Sie Ihre Gesamtreisekosten mit Echtzeitdaten",
+            originLabel: "Abfahrtsort", destLabel: "Zielort", dateLabel: "Abreisedatum",
+            calculateText: "📊 BUDGET BERECHNEN", estimatedText: "Geschätztes Budget:", travelText: "✈️ ANGEBOTE AUF ELITE STAY TRAVEL ANSEHEN",
+            notifyText: "📩 Möchten Sie benachrichtigt werden, wenn der Preis fällt?", notifyBtnText: "Benachrichtigen",
+            comparatorSubtitle: "Vergleichen Sie bis zu 5 Hotels in jeder Stadt"
+        },
+        it: {
+            systemOnline: "SISTEMA ONLINE", heroTitle: "Intelligenza", heroTitleItalic: "Ridefinita",
+            heroSubtitle: "Analisi avanzate per l'industria alberghiera di lusso. Dati empirici, visione strategica.",
+            searchPlaceholder: "Cerca per nome hotel, città o ID...", searchBtn: "ANALIZZA",
+            searchHint: "DATABASE AGGIORNATO:", statHotels: "HOTEL ANALIZZATI", statAccuracy: "PRECISIONE IA",
+            statReviews: "RECENSIONI ELABORATE", statAlerts: "ALLERTE ATTIVE",
+            semaphoreTitle: "Rischio", semaphoreSubtitle: "Valutazione e monitoraggio del rischio alberghiero in tempo reale",
+            semaphoreAlert: "ALLERTA", semaphoreIncident: "INCIDENTE", semaphoreCrisis: "CRISI",
+            gaugeTitle: "Indice di Coerenza del Marchio", gaugeText: "allineamento con gli standard del marchio",
+            performanceTitle: "Globale", performanceSubtitle: "Top 10 migliori e peggiori hotel per soddisfazione degli ospiti",
+            topPerformers: "MIGLIORI PERFORMANCE", underperforming: "SCARSA PERFORMANCE",
+            recentlyTitle: "Recentemente", recentlySubtitle: "60 nuovi hotel di lusso integrati nel nostro sistema",
+            pricingTitle: "Aziendale", pricingSubtitle: "Soluzioni scalabili per catene alberghiere e gruppi di investimento",
+            basic: "BASE", premium: "PREMIUM", enterprise: "AZIENDALE", perMonth: "/mese",
+            subscribeBasic: "Abbonati con Stripe", subscribePremium: "⭐ Abbonati con Stripe ⭐",
+            contactSales: "Contatta le vendite", footerText: "DIVISIONE INTELLIGENZA DATI", privacy: "POLITICA SULLA PRIVACY",
+            loadingRankings: "Caricamento...", currentAnalysis: "Analisi attuale:", selectCity: "Seleziona una città per vedere i risultati",
+            budgetTitle: "Budget", calculatorTitle: "Calcolatore", budgetSubtitle: "Stima il costo totale del tuo viaggio con dati in tempo reale",
+            originLabel: "Città di Partenza", destLabel: "Città di Destinazione", dateLabel: "Data di Partenza",
+            calculateText: "📊 CALCOLA BUDGET", estimatedText: "Budget stimato:", travelText: "✈️ VEDI OFFERTE SU ELITE STAY TRAVEL",
+            notifyText: "📩 Vuoi essere avvisato se il prezzo scende?", notifyBtnText: "Avvisami",
+            comparatorSubtitle: "Confronta fino a 5 hotel in qualsiasi città"
+        },
+        pt: {
+            systemOnline: "SISTEMA ONLINE", heroTitle: "Inteligência", heroTitleItalic: "Redefinida",
+            heroSubtitle: "Análises avançadas para a indústria hoteleira de luxo. Dados empíricos, visão estratégica.",
+            searchPlaceholder: "Buscar por nome do hotel, cidade ou ID...", searchBtn: "ANALISAR",
+            searchHint: "BASE DE DADOS ATUALIZADA:", statHotels: "HOTÉIS ANALISADOS", statAccuracy: "PRECISÃO IA",
+            statReviews: "AVALIAÇÕES PROCESSADAS", statAlerts: "ALERTAS ATIVOS",
+            semaphoreTitle: "Risco", semaphoreSubtitle: "Avaliação e monitoramento de risco hoteleiro em tempo real",
+            semaphoreAlert: "ALERTA", semaphoreIncident: "INCIDENTE", semaphoreCrisis: "CRISE",
+            gaugeTitle: "Índice de Consistência da Marca", gaugeText: "alinhamento com os padrões da marca",
+            performanceTitle: "Global", performanceSubtitle: "Top 10 melhores e piores hotéis por satisfação dos hóspedes",
+            topPerformers: "MELHORES DESEMPENHOS", underperforming: "BAIXO DESEMPENHO",
+            recentlyTitle: "Recentemente", recentlySubtitle: "60 novos hotéis de luxo integrados ao nosso sistema",
+            pricingTitle: "Empresarial", pricingSubtitle: "Soluções escaláveis para redes de hotéis e grupos de investimento",
+            basic: "BÁSICO", premium: "PREMIUM", enterprise: "EMPRESARIAL", perMonth: "/mês",
+            subscribeBasic: "Assinar com Stripe", subscribePremium: "⭐ Assinar com Stripe ⭐",
+            contactSales: "Contatar Vendas", footerText: "DIVISÃO DE INTELIGÊNCIA DE DADOS", privacy: "POLÍTICA DE PRIVACIDADE",
+            loadingRankings: "Carregando...", currentAnalysis: "Análise atual:", selectCity: "Selecione uma cidade para ver os resultados",
+            budgetTitle: "Calculadora", calculatorTitle: "de Orçamento", budgetSubtitle: "Estime o custo total da sua viagem com dados em tempo real",
+            originLabel: "Cidade de Origem", destLabel: "Cidade de Destino", dateLabel: "Data de Partida",
+            calculateText: "📊 CALCULAR ORÇAMENTO", estimatedText: "Orçamento estimado:", travelText: "✈️ VER OFERTAS NO ELITE STAY TRAVEL",
+            notifyText: "📩 Quer que avisemos se o preço cair?", notifyBtnText: "Avisar-me",
+            comparatorSubtitle: "Compare até 5 hotéis em qualquer cidade"
+        },
+        ja: {
+            systemOnline: "システムオンライン", heroTitle: "インテリジェンス", heroTitleItalic: "再定義された",
+            heroSubtitle: "高級ホテル業界向けの高度な分析。経験データ、戦略的ビジョン。",
+            searchPlaceholder: "ホテル名、都市、IDで検索...", searchBtn: "分析する",
+            searchHint: "データベース更新日:", statHotels: "分析済みホテル", statAccuracy: "AI精度",
+            statReviews: "処理済みレビュー", statAlerts: "アクティブなアラート",
+            semaphoreTitle: "リスク", semaphoreSubtitle: "リアルタイムのホテルリスク評価と監視",
+            semaphoreAlert: "アラート", semaphoreIncident: "インシデント", semaphoreCrisis: "クライシス",
+            gaugeTitle: "ブランド一貫性指数", gaugeText: "ブランド基準との整合性",
+            performanceTitle: "グローバル", performanceSubtitle: "ゲスト満足度によるトップ10とワースト10のホテル",
+            topPerformers: "トップパフォーマー", underperforming: "低パフォーマンス",
+            recentlyTitle: "最近追加", recentlySubtitle: "60の新しい高級ホテルがシステムに統合されました",
+            pricingTitle: "エンタープライズ", pricingSubtitle: "ホテルチェーンと投資グループ向けの拡張可能なソリューション",
+            basic: "ベーシック", premium: "プレミアム", enterprise: "エンタープライズ", perMonth: "/月",
+            subscribeBasic: "Stripeで購読", subscribePremium: "⭐ Stripeで購読 ⭐",
+            contactSales: "営業にお問い合わせ", footerText: "データインテリジェンス部門", privacy: "プライバシーポリシー",
+            loadingRankings: "読み込み中...", currentAnalysis: "現在の分析:", selectCity: "結果を見るには都市を選択してください",
+            budgetTitle: "予算", calculatorTitle: "計算機", budgetSubtitle: "リアルタイムデータで旅行の総費用を估算",
+            originLabel: "出発都市", destLabel: "目的地都市", dateLabel: "出発日",
+            calculateText: "📊 予算を計算", estimatedText: "推定予算:", travelText: "✈️ ELITE STAY TRAVELでオファーを見る",
+            notifyText: "📩 価格が下がったら通知を受け取りますか？", notifyBtnText: "通知する",
+            comparatorSubtitle: "任意の都市で最大5つのホテルを比較"
+        },
+        ko: {
+            systemOnline: "시스템 온라인", heroTitle: "인텔리전스", heroTitleItalic: "재정의",
+            heroSubtitle: "고급 호텔 업계를 위한 고급 분석. 경험적 데이터, 전략적 비전.",
+            searchPlaceholder: "호텔 이름, 도시 또는 ID로 검색...", searchBtn: "분석",
+            searchHint: "데이터베이스 업데이트:", statHotels: "분석된 호텔", statAccuracy: "AI 정확도",
+            statReviews: "처리된 리뷰", statAlerts: "활성 알림",
+            semaphoreTitle: "위험", semaphoreSubtitle: "실시간 호텔 위험 평가 및 모니터링",
+            semaphoreAlert: "경보", semaphoreIncident: "사건", semaphoreCrisis: "위기",
+            gaugeTitle: "브랜드 일관성 지수", gaugeText: "브랜드 표준과의 정렬",
+            performanceTitle: "글로벌", performanceSubtitle: "고객 만족도 기준 상위 10개 및 하위 10개 호텔",
+            topPerformers: "최고 성과자", underperforming: "저성과",
+            recentlyTitle: "최근 추가", recentlySubtitle: "60개의 새로운 럭셔리 호텔이 시스템에 통합되었습니다",
+            pricingTitle: "엔터프라이즈", pricingSubtitle: "호텔 체인 및 투자 그룹을 위한 확장 가능한 솔루션",
+            basic: "기본", premium: "프리미엄", enterprise: "엔터프라이즈", perMonth: "/월",
+            subscribeBasic: "Stripe로 구독", subscribePremium: "⭐ Stripe로 구독 ⭐",
+            contactSales: "영업 문의", footerText: "데이터 인텔리전스 부서", privacy: "개인정보 보호정책",
+            loadingRankings: "로딩 중...", currentAnalysis: "현재 분석:", selectCity: "결과를 보려면 도시를 선택하세요",
+            budgetTitle: "예산", calculatorTitle: "계산기", budgetSubtitle: "실시간 데이터로 여행 총 비용 추정",
+            originLabel: "출발 도시", destLabel: "도착 도시", dateLabel: "출발 날짜",
+            calculateText: "📊 예산 계산", estimatedText: "예상 예산:", travelText: "✈️ ELITE STAY TRAVEL에서 제안 보기",
+            notifyText: "📩 가격이 하락하면 알려드릴까요?", notifyBtnText: "알림 받기",
+            comparatorSubtitle: "모든 도시에서 최대 5개 호텔 비교"
+        },
+        zh: {
+            systemOnline: "系统在线", heroTitle: "智能", heroTitleItalic: "重新定义",
+            heroSubtitle: "针对高端酒店业的高级分析。经验数据，战略愿景。",
+            searchPlaceholder: "按酒店名称、城市或ID搜索...", searchBtn: "分析",
+            searchHint: "数据库更新日期:", statHotels: "分析的酒店", statAccuracy: "AI准确性",
+            statReviews: "处理的评论", statAlerts: "活跃警报",
+            semaphoreTitle: "风险", semaphoreSubtitle: "实时酒店风险评估和监控",
+            semaphoreAlert: "警报", semaphoreIncident: "事件", semaphoreCrisis: "危机",
+            gaugeTitle: "品牌一致性指数", gaugeText: "与品牌标准的一致性",
+            performanceTitle: "全球", performanceSubtitle: "按客人满意度排名的前10名和最差10名酒店",
+            topPerformers: "表现最佳", underperforming: "表现不佳",
+            recentlyTitle: "最近添加", recentlySubtitle: "60家新豪华酒店刚刚集成到我们的系统中",
+            pricingTitle: "企业", pricingSubtitle: "为酒店连锁和投资集团提供可扩展的解决方案",
+            basic: "基础", premium: "高级", enterprise: "企业", perMonth: "/月",
+            subscribeBasic: "使用Stripe订阅", subscribePremium: "⭐ 使用Stripe订阅 ⭐",
+            contactSales: "联系销售", footerText: "数据智能部门", privacy: "隐私政策",
+            loadingRankings: "加载中...", currentAnalysis: "当前分析:", selectCity: "选择城市以查看结果",
+            budgetTitle: "预算", calculatorTitle: "计算器", budgetSubtitle: "使用实时数据估算您的旅行总费用",
+            originLabel: "出发城市", destLabel: "目的地城市", dateLabel: "出发日期",
+            calculateText: "📊 计算预算", estimatedText: "预计预算:", travelText: "✈️ 在ELITE STAY TRAVEL上查看优惠",
+            notifyText: "📩 价格下降时通知我？", notifyBtnText: "通知我",
+            comparatorSubtitle: "在任何城市比较最多5家酒店"
+        }
+    };
+
     const reviewModalTranslations = {
         en: { loading: "Loading hotel reviews...", close: "✕ CLOSE", reviews: "reviews", website: "Website", problemsReported: "⚠️ Problems reported", positiveExperiences: "✅ Positive experiences", noReviews: "No reviews available.", anonymous: "Anonymous", searchTitle: "Hotels in", results: "results", clickHint: "👆 Click on any hotel to see reviews", ratingExcellent: "Excellent", ratingGood: "Good", ratingRegular: "Average", ratingBad: "Bad", ratingCritical: "Critical", clickForReviews: "👆 Click for reviews", closeButton: "CLOSE RESULTS" },
         es: { loading: "Cargando reseñas...", close: "✕ CERRAR", reviews: "reseñas", website: "Sitio web", problemsReported: "⚠️ Problemas reportados", positiveExperiences: "✅ Experiencias positivas", noReviews: "No hay reseñas.", anonymous: "Anónimo", searchTitle: "Hoteles en", results: "resultados", clickHint: "👆 Haz clic para ver reseñas", ratingExcellent: "Excelente", ratingGood: "Bueno", ratingRegular: "Regular", ratingBad: "Malo", ratingCritical: "Crítico", clickForReviews: "👆 Click para reseñas", closeButton: "CERRAR" }
     };
     for(let lang of ['fr','de','it','pt','ja','ko','zh']) reviewModalTranslations[lang] = reviewModalTranslations.en;
 
-    const pageTranslations = {
-        en: { systemOnline: "SYSTEM ONLINE", heroTitle: "Intelligence", heroTitleItalic: "Redefined", heroSubtitle: "Advanced analytics for hospitality.", searchPlaceholder: "Search by hotel name, city, or ID...", searchBtn: "ANALYZE", searchHint: "DATABASE UPDATED:", statHotels: "HOTELS ANALYZED", statAccuracy: "AI ACCURACY", statReviews: "REVIEWS PROCESSED", statAlerts: "ACTIVE ALERTS", semaphoreTitle: "Risk", semaphoreSubtitle: "Real-time hotel risk assessment", semaphoreAlert: "ALERT", semaphoreIncident: "INCIDENT", semaphoreCrisis: "CRISIS", gaugeTitle: "Brand Consistency Index", gaugeText: "alignment with brand standards", performanceTitle: "Global", performanceSubtitle: "Satisfaction metrics", topPerformers: "TOP PERFORMERS", underperforming: "UNDERPERFORMING", recentlyTitle: "Recently", recentlySubtitle: "60 new luxury hotels", pricingTitle: "Enterprise", pricingSubtitle: "Scalable solutions", basic: "BASIC", premium: "PREMIUM", enterprise: "ENTERPRISE", perMonth: "/month", subscribeBasic: "Subscribe", subscribePremium: "⭐ Subscribe ⭐", contactSales: "Contact Sales", footerText: "DATA INTELLIGENCE DIVISION", privacy: "PRIVACY POLICY", loadingRankings: "Loading..." },
-        es: { systemOnline: "SISTEMA EN LÍNEA", heroTitle: "Inteligencia", heroTitleItalic: "Redefinida", heroSubtitle: "Análisis avanzado para hotelería.", searchPlaceholder: "Buscar hotel, ciudad o ID...", searchBtn: "ANALIZAR", searchHint: "BASE DATOS ACTUALIZADA:", statHotels: "HOTELES ANALIZADOS", statAccuracy: "PRECISIÓN IA", statReviews: "RESEÑAS PROCESADAS", statAlerts: "ALERTAS ACTIVAS", semaphoreTitle: "Riesgo", semaphoreSubtitle: "Evaluación de riesgo hotelero", semaphoreAlert: "ALERTA", semaphoreIncident: "INCIDENTE", semaphoreCrisis: "CRISIS", gaugeTitle: "Índice de Consistencia", gaugeText: "alineación con estándares", performanceTitle: "Rendimiento", performanceSubtitle: "Métricas de satisfacción", topPerformers: "MEJORES RENDIMIENTOS", underperforming: "BAJO RENDIMIENTO", recentlyTitle: "Recientemente", recentlySubtitle: "60 nuevos hoteles de lujo", pricingTitle: "Planes", pricingSubtitle: "Soluciones escalables", basic: "BÁSICO", premium: "PREMIUM", enterprise: "EMPRESA", perMonth: "/mes", subscribeBasic: "Suscribir", subscribePremium: "⭐ Suscribir ⭐", contactSales: "Contactar Ventas", footerText: "DIVISIÓN INTELIGENCIA DATOS", privacy: "POLÍTICA PRIVACIDAD", loadingRankings: "Cargando..." }
-    };
-    for(let lang of ['fr','de','it','pt','ja','ko','zh']) pageTranslations[lang] = pageTranslations.en;
-
-    // ===== FUNCIONES BASE =====
+    // ===== FUNCIÓN PRINCIPAL DE IDIOMAS =====
     function setLanguage(lang) {
         currentLanguage = lang;
         document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.toggle('active', btn.textContent.includes(lang.toUpperCase())));
-        const t = pageTranslations[lang] || pageTranslations.en;
-        document.querySelector('.status-badge').innerHTML = `<span class="status-dot"></span> ${t.systemOnline}`;
+        let t = pageTranslations[lang];
+        if (!t) t = pageTranslations.en;
+        document.querySelector('.status-text').textContent = t.systemOnline;
         document.getElementById('mainTitle').innerHTML = `${t.heroTitle} <span class="italic-sophistication">${t.heroTitleItalic}</span>`;
-        document.querySelector('.subtitle').textContent = t.heroSubtitle;
+        document.getElementById('heroSubtitle').textContent = t.heroSubtitle;
         document.getElementById('hotelSearch').placeholder = t.searchPlaceholder;
-        document.querySelector('.search-btn').textContent = t.searchBtn;
+        document.getElementById('hotelSearchBtn').textContent = t.searchBtn;
         document.querySelector('.search-hint').innerHTML = `${t.searchHint} <span id="currentDate"></span> UTC`;
-        document.querySelectorAll('.stat-label').forEach((el,i) => el.textContent = [t.statHotels, t.statAccuracy, t.statReviews, t.statAlerts][i]);
-        document.querySelector('#semaphore .section-header h2').innerHTML = `${t.semaphoreTitle} <span class="italic-sophistication">Semaphore</span>`;
-        document.querySelector('#semaphore .section-header p').textContent = t.semaphoreSubtitle;
-        document.querySelectorAll('.semaphore-title').forEach((el,i) => el.textContent = [t.semaphoreAlert, t.semaphoreIncident, t.semaphoreCrisis][i]);
-        document.querySelector('.gauge-title').textContent = t.gaugeTitle;
-        document.querySelector('.gauge-container p').innerHTML = `87% ${t.gaugeText}`;
-        document.querySelector('#rankings .section-header h2').innerHTML = `${t.performanceTitle} <span class="italic-sophistication">Performance</span> Index`;
-        document.querySelector('#rankings .section-header p').textContent = t.performanceSubtitle;
-        document.querySelectorAll('.ranking-header h3').forEach((el,i) => el.textContent = [t.topPerformers, t.underperforming][i]);
-        document.querySelector('#pricing .section-header h2').innerHTML = `${t.pricingTitle} <span class="italic-sophistication">Plans</span>`;
-        document.querySelector('#pricing .section-header p').textContent = t.pricingSubtitle;
-        document.querySelectorAll('.pricing-header h3').forEach((el,i) => el.textContent = [t.basic, t.premium, t.enterprise][i]);
-        document.querySelectorAll('.pricing-price span').forEach(el => el.textContent = t.perMonth);
-        document.querySelectorAll('.stripe-button, .stripe-button-gold').forEach((el,i) => el.textContent = [t.subscribeBasic, t.subscribePremium, t.contactSales][i]);
-        document.querySelector('.footer').innerHTML = `ELITESTAYANALYTICS.COM &copy; 2024 | ${t.footerText} | <a href="#">${t.privacy}</a>`;
+        document.getElementById('statHotelsLabel').textContent = t.statHotels;
+        document.getElementById('statAccuracyLabel').textContent = t.statAccuracy;
+        document.getElementById('statReviewsLabel').textContent = t.statReviews;
+        document.getElementById('statAlertsLabel').textContent = t.statAlerts;
+        document.getElementById('semaphoreTitle').innerHTML = `${t.semaphoreTitle} <span class="italic-sophistication">Semaphore</span>`;
+        document.getElementById('semaphoreSubtitle').textContent = t.semaphoreSubtitle;
+        document.getElementById('alertTitle').textContent = t.semaphoreAlert;
+        document.getElementById('incidentTitle').textContent = t.semaphoreIncident;
+        document.getElementById('crisisTitle').textContent = t.semaphoreCrisis;
+        document.getElementById('gaugeTitle').textContent = t.gaugeTitle;
+        document.getElementById('gaugeText').textContent = t.gaugeText;
+        document.getElementById('performanceTitle').innerHTML = `${t.performanceTitle} <span class="italic-sophistication">Performance</span> Index`;
+        document.getElementById('performanceSubtitle').textContent = t.performanceSubtitle;
+        document.getElementById('topPerformersTitle').textContent = t.topPerformers;
+        document.getElementById('underperformingTitle').textContent = t.underperforming;
+        document.getElementById('recentlyTitle').innerHTML = `${t.recentlyTitle} <span class="italic-sophistication">Added</span>`;
+        document.getElementById('recentlySubtitle').textContent = t.recentlySubtitle;
+        document.getElementById('pricingTitle').innerHTML = `${t.pricingTitle} <span class="italic-sophistication">Plans</span>`;
+        document.getElementById('pricingSubtitle').textContent = t.pricingSubtitle;
+        document.getElementById('basicPlan').textContent = t.basic;
+        document.getElementById('premiumPlan').textContent = t.premium;
+        document.getElementById('enterprisePlan').textContent = t.enterprise;
+        document.getElementById('basicPeriod').textContent = t.perMonth;
+        document.getElementById('premiumPeriod').textContent = t.perMonth;
+        document.getElementById('enterprisePeriod').textContent = t.perMonth;
+        document.getElementById('basicSubscribeBtn').textContent = t.subscribeBasic;
+        document.getElementById('premiumSubscribeBtn').innerHTML = t.subscribePremium;
+        document.getElementById('enterpriseSubscribeBtn').textContent = t.contactSales;
+        document.getElementById('footer').innerHTML = `ELITESTAYANALYTICS.COM &copy; 2024 | ${t.footerText} | <a href="#" id="privacyLink">${t.privacy}</a>`;
+        document.getElementById('currentAnalysisText').textContent = t.currentAnalysis;
+        document.getElementById('selectCityText').textContent = t.selectCity;
+        document.getElementById('selectCityText2').textContent = t.selectCity;
+        document.getElementById('budgetTitle').textContent = t.budgetTitle;
+        document.getElementById('calculatorTitle').textContent = t.calculatorTitle;
+        document.getElementById('budgetSubtitle').textContent = t.budgetSubtitle;
+        document.getElementById('originLabel').textContent = t.originLabel;
+        document.getElementById('destLabel').textContent = t.destLabel;
+        document.getElementById('dateLabel').textContent = t.dateLabel;
+        document.getElementById('calculateText').textContent = t.calculateText;
+        document.getElementById('estimatedText').textContent = t.estimatedText;
+        document.getElementById('travelText').textContent = t.travelText;
+        document.getElementById('notifyText').textContent = t.notifyText;
+        document.getElementById('notifyBtnText').textContent = t.notifyBtnText;
+        document.getElementById('comparatorSubtitle').textContent = t.comparatorSubtitle;
         localStorage.setItem('preferred-language', lang);
     }
 
     function toggleTheme() { darkMode = !darkMode; document.body.classList.toggle('light-mode', !darkMode); document.getElementById('themeBtn').textContent = darkMode ? '🌙 Dark' : '☀️ Light'; }
     function initGaugeChart() { const ctx = document.getElementById('gaugeChart')?.getContext('2d'); if(ctx){ if(gaugeChart) gaugeChart.destroy(); gaugeChart = new Chart(ctx, { type: 'doughnut', data: { datasets: [{ data: [87, 13], backgroundColor: ['#00ff88', '#ff4444'], borderWidth: 0, circumference: 180, rotation: 270 }] }, options: { cutout: '70%', responsive: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } } }); } }
 
-    // ===== FUNCIONES DE GOOGLE PLACES Y RANKINGS =====
+    // ===== FUNCIONES DE GOOGLE PLACES =====
     let cachedCityData = {};
     async function analyzeCityComplete(cityName) {
         if (!cityName) return;
@@ -1017,7 +654,7 @@
         const hotelCountDisplay = document.getElementById('hotelCountDisplay');
         const loadingIndicator = document.getElementById('globalCityDisplay');
         if (cityDisplay) cityDisplay.innerText = cityName;
-        if (loadingIndicator && hotelCountDisplay) loadingIndicator.innerHTML = `⏳ <span class="i18n" data-en="Loading data for" data-es="Cargando datos para" data-fr="Chargement des données pour">Loading data for</span> <strong>${cityName}</strong>... 🔍`;
+        if (loadingIndicator && hotelCountDisplay) loadingIndicator.innerHTML = `⏳ Loading data for <strong>${cityName}</strong>... 🔍`;
         try {
             const response = await fetch(`/api/google/places?q=hotels%20in%20${encodeURIComponent(cityName)}`);
             const hotels = await response.json();
@@ -1027,7 +664,7 @@
             updateRiskSemaphore(validHotels);
             updatePerformanceIndex(validHotels, cityName);
             const flag = getCountryFlag(cityName);
-            if (loadingIndicator && hotelCountDisplay) loadingIndicator.innerHTML = `${flag} <span class="i18n" data-en="Current analysis:" data-es="Análisis actual:" data-fr="Analyse actuelle:">Current analysis:</span> <strong>${cityName}</strong> <span style="color: #888;">(${validHotels.length} <span class="i18n" data-en="hotels" data-es="hoteles" data-fr="hôtels">hotels</span>)</span>`;
+            if (loadingIndicator && hotelCountDisplay) loadingIndicator.innerHTML = `${flag} Current analysis: <strong>${cityName}</strong> <span style="color: #888;">(${validHotels.length} hotels)</span>`;
         } catch(error) { console.error(error); showErrorStates(); }
     }
     function updateRiskSemaphore(hotels) {
@@ -1152,7 +789,7 @@
         finally { if(exportBtn) { exportBtn.innerText = original; exportBtn.disabled = false; } }
     }
 
-    // ===== COMPARADOR DE HOTELES (HASTA 5) =====
+    // ===== COMPARADOR DE HOTELES (PÚBLICO - 5 HOTELES) =====
     document.getElementById('loadComparisonHotelsBtn')?.addEventListener('click', async function() {
         const city = document.getElementById('comparisonCityInput')?.value.trim();
         if(!city) { alert('Please enter a city'); return; }
@@ -1206,9 +843,8 @@
         ];
         let table = '';
         metrics.forEach(m => {
-            table += '<tr>';
-            table += `<td style="padding:12px; font-weight:bold;">${m.name}</td>`;
-            selected.forEach(h => table += `<td style="padding:12px; text-align:center;">${m.get(h)}</td>`);
+            table += '<tr><td style="padding:12px; font-weight:bold;">'+m.name+'</td>';
+            selected.forEach(h => table += '<td style="padding:12px; text-align:center;">'+m.get(h)+'</td>');
             table += '</tr>';
         });
         document.getElementById('comparisonTableBody').innerHTML = table;
@@ -1302,8 +938,7 @@
     document.getElementById('adminGenerateReport')?.addEventListener('click', generateExecutiveReport);
     initAdminTabs();
 
-    // ===== ADMIN PANEL - COMPARATOR (CCO) =====
-    let adminComparisonHotels = [];
+    // ===== ADMIN PANEL - COMPARATOR =====
     document.getElementById('adminLoadHotelsBtn')?.addEventListener('click', async function() {
         const city = document.getElementById('adminComparisonCity')?.value.trim();
         if(!city) { alert('Enter city'); return; }
@@ -1346,9 +981,8 @@
             { name: '🏨 Class', get: h => { const r = h.puntuacion||0; return r>=4.5 ? 'Luxury' : r>=4.0 ? 'Premium' : r>=3.5 ? 'Standard' : 'Economy'; } }
         ];
         metrics.forEach(m => {
-            html += '<tr style="border-bottom:1px solid #222;">';
-            html += `<td style="padding:12px; font-weight:bold;">${m.name}</td>`;
-            selected.forEach(h => html += `<td style="padding:12px; text-align:center;">${m.get(h)}</td>中央`);
+            html += '<tr style="border-bottom:1px solid #222;"><td style="padding:12px; font-weight:bold;">'+m.name+'</td>';
+            selected.forEach(h => html += '<td style="padding:12px; text-align:center;">'+m.get(h)+'</td>');
             html += '</tr>';
         });
         html += '</tbody></table></div>';
@@ -1358,7 +992,7 @@
         document.getElementById('adminCompareResults').style.display = 'block';
     });
 
-    // ===== BUDGET CALCULATOR =====
+    // ===== BUDGET CALCULATOR CON REDIRECCIÓN CORREGIDA =====
     window.calculateTravelBudget = async function() {
         const origin = document.getElementById('calc-origin')?.value.trim();
         const dest = document.getElementById('calc-dest')?.value.trim();
@@ -1368,16 +1002,30 @@
         const original = btn?.innerText;
         if(btn) btn.innerText = '⏳ CALCULATING...';
         try {
-            const res = await fetch(`https://elitestaytravel.com/api/budget/calculate?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(dest)}&date=${date}&currency=USD`);
-            const data = await res.json();
-            let amount = (data.success && data.total) ? data.total : Math.floor(Math.random()*500)+400;
-            document.getElementById('budget-amount').innerText = amount + ' USD';
-            const travelUrl = `https://elitestaytravel.com/?origin=${encodeURIComponent(origin)}&dest=${encodeURIComponent(dest)}&date=${date}&budget=${amount}&currency=USD`;
+            const response = await fetch(`https://elitestaytravel.com/api/budget/calculate?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(dest)}&date=${date}&currency=USD`);
+            let budgetAmount = 0;
+            let data = null;
+            try { data = await response.json(); } catch(e) {}
+            if(data?.success && data?.total) { budgetAmount = data.total; }
+            else { budgetAmount = Math.floor(Math.random() * 500) + 400; }
+            document.getElementById('budget-amount').innerText = budgetAmount + ' USD';
+            const travelUrl = `https://elitestaytravel.com/?origin=${encodeURIComponent(origin)}&dest=${encodeURIComponent(dest)}&date=${date}`;
             const travelLink = document.getElementById('travel-link');
-            if(travelLink) { travelLink.href = travelUrl; travelLink.target = '_blank'; }
+            if(travelLink) { travelLink.href = travelUrl; travelLink.target = '_blank'; console.log('✅ Enlace actualizado:', travelUrl); }
             document.getElementById('budget-result').style.display = 'block';
-        } catch(e) { console.error(e); document.getElementById('budget-amount').innerText = '538 USD'; document.getElementById('budget-result').style.display = 'block'; }
-        finally { if(btn) btn.innerText = original; }
+            document.getElementById('budget-result').scrollIntoView({ behavior: 'smooth' });
+        } catch(error) {
+            console.error('Error:', error);
+            const fallbackBudget = 538;
+            document.getElementById('budget-amount').innerText = fallbackBudget + ' USD';
+            const travelLink = document.getElementById('travel-link');
+            if(travelLink) {
+                const travelUrl = `https://elitestaytravel.com/?origin=${encodeURIComponent(origin)}&dest=${encodeURIComponent(dest)}&date=${date}`;
+                travelLink.href = travelUrl;
+                travelLink.target = '_blank';
+            }
+            document.getElementById('budget-result').style.display = 'block';
+        } finally { if(btn) btn.innerText = original; }
     };
     window.saveBudgetAlert = function() {
         const email = document.getElementById('alert-email')?.value.trim();
@@ -1419,22 +1067,12 @@
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('currentDate').innerText = new Date().toISOString().split('T')[0];
         initGaugeChart();
+        setLanguage('en');
         analyzeCityComplete('London');
         const globalSearchBtn = document.getElementById('globalCitySearchBtn');
         const globalCityInput = document.getElementById('globalCityInput');
-        if(globalSearchBtn) {
-            globalSearchBtn.onclick = function(e) {
-                e.preventDefault();
-                const city = globalCityInput?.value.trim();
-                if(city) analyzeCityComplete(city);
-                else alert('Please enter a city');
-            };
-        }
-        if(globalCityInput) {
-            globalCityInput.addEventListener('keypress', function(e) {
-                if(e.key === 'Enter') { e.preventDefault(); const city = globalCityInput.value.trim(); if(city) analyzeCityComplete(city); }
-            });
-        }
+        if(globalSearchBtn) { globalSearchBtn.onclick = function(e) { e.preventDefault(); const city = globalCityInput?.value.trim(); if(city) analyzeCityComplete(city); else alert('Please enter a city'); }; }
+        if(globalCityInput) { globalCityInput.addEventListener('keypress', function(e) { if(e.key === 'Enter') { e.preventDefault(); const city = globalCityInput.value.trim(); if(city) analyzeCityComplete(city); } }); }
         const searchBtn = document.querySelector('.search-btn');
         const searchInput = document.getElementById('hotelSearch');
         if(searchBtn) searchBtn.onclick = (e) => { e.preventDefault(); window.buscarEnGoogle(); };
@@ -1442,7 +1080,7 @@
         updatePdfButtonVisibility();
         const exportBtn = document.getElementById('exportPdfBtn');
         if(exportBtn) exportBtn.onclick = (e) => { e.preventDefault(); exportToPDF(); };
-        console.log("✅ Página inicializada. Todo funcionando.");
+        console.log("✅ Página inicializada. Todos los sistemas funcionando.");
     });
     </script>
 </body>
