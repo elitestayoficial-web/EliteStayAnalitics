@@ -756,68 +756,52 @@
         </div>
     </section>
 
-    <section class="semaphore-section" id="semaphore">
-        <div class="section-header">
-            <h2>Risk <span class="italic-sophistication">Semaphore</span></h2>
-            <p>Real-time hotel risk assessment and monitoring</p>
+   <!-- ===== SECCIÓN: BUSCADOR DE CIUDAD UNIVERSAL ===== -->
+<section class="semaphore-section" id="citySearchSection" style="padding-bottom: 0;">
+    <div style="max-width: 700px; margin: 0 auto; text-align: center;">
+        <div style="display: flex; gap: 10px; background: var(--card-bg); border: 1px solid var(--primary-glow); border-radius: 60px; padding: 5px; box-shadow: 0 0 20px rgba(0,255,136,0.1);">
+            <input type="text" id="globalCityInput" class="i18n-placeholder" placeholder="Search any city or town worldwide..." data-en-placeholder="Search any city or town worldwide..." data-es-placeholder="Busca cualquier ciudad o pueblo del mundo..." data-fr-placeholder="Recherchez n'importe quelle ville dans le monde..." style="flex: 1; background: transparent; border: none; padding: 18px 25px; color: var(--text-main); font-family: 'Montserrat', sans-serif; font-size: 1rem; outline: none;">
+            <button id="globalCitySearchBtn" style="background: var(--primary-glow); border: none; padding: 0 35px; border-radius: 50px; font-weight: 800; cursor: pointer; color: #050505; text-transform: uppercase; letter-spacing: 1px;">🔍 ANALYZE</button>
         </div>
-        <!-- Selector de ciudad para filtrar por ciudad real -->
-<div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap;">
-    <select id="citySelector" style="background: var(--card-bg); border: 1px solid var(--primary-glow); color: var(--text-main); padding: 12px 20px; border-radius: 50px; font-family: 'Montserrat', sans-serif; font-weight: 500; cursor: pointer; outline: none;">
-        <option value="all">🌍 All Cities</option>
-        <option value="Las Vegas">🎲 Las Vegas</option>
-        <option value="New York">🗽 New York</option>
-        <option value="Los Angeles">🎬 Los Angeles</option>
-        <option value="Miami">🌴 Miami</option>
-        <option value="San Francisco">🌉 San Francisco</option>
-        <option value="London">🇬🇧 London</option>
-        <option value="Paris">🇫🇷 Paris</option>
-        <option value="Tokyo">🇯🇵 Tokyo</option>
-        <option value="Madrid">🇪🇸 Madrid</option>
-        <option value="Rome">🇮🇹 Rome</option>
-        <option value="Barcelona">🇪🇸 Barcelona</option>
-        <option value="Berlin">🇩🇪 Berlin</option>
-        <option value="Dubai">🇦🇪 Dubai</option>
-        <option value="Singapore">🇸🇬 Singapore</option>
-        <option value="Sydney">🇦🇺 Sydney</option>
-        <option value="Mexico City">🇲🇽 Mexico City</option>
-        <option value="Toronto">🇨🇦 Toronto</option>
-        <option value="Chicago">🌬️ Chicago</option>
-        <option value="Boston">⚾ Boston</option>
-        <option value="Seattle">☕ Seattle</option>
-    </select>
-    <div id="cityLoadingIndicator" style="display: none; color: var(--primary-glow);">
-        ⏳ Loading real hotel data...
+        <div id="globalCityDisplay" style="margin-top: 15px; font-size: 0.9rem; color: var(--primary-glow);">
+            🌍 <span class="i18n" data-en="Current analysis:" data-es="Análisis actual:" data-fr="Analyse actuelle:">Current analysis:</span> <strong id="currentCityName">London</strong> <span id="hotelCountDisplay"></span>
+        </div>
     </div>
-</div>
-        <div class="semaphore-grid" id="semaphoreGrid">
-            <div class="semaphore-card yellow">
-                <div class="semaphore-header">
-                    <span class="semaphore-icon">🟡</span>
-                    <span class="semaphore-title">ALERT</span>
-                </div>
-                <div class="semaphore-count" id="yellowCount">0</div>
-                <ul class="semaphore-list" id="yellowList"></ul>
-            </div>
-            <div class="semaphore-card orange">
-                <div class="semaphore-header">
-                    <span class="semaphore-icon">🟠</span>
-                    <span class="semaphore-title">INCIDENT</span>
-                </div>
-                <div class="semaphore-count" id="orangeCount">0</div>
-                <ul class="semaphore-list" id="orangeList"></ul>
-            </div>
-            <div class="semaphore-card red">
-                <div class="semaphore-header">
-                    <span class="semaphore-icon">🔴</span>
-                    <span class="semaphore-title">CRISIS</span>
-                </div>
-                <div class="semaphore-count" id="redCount">0</div>
-                <ul class="semaphore-list" id="redList"></ul>
-            </div>
-        </div>
-    </section>
+</section>
 
+<!-- ===== RISK SEMAPHORE ===== -->
+<section class="semaphore-section" id="semaphore">
+    <div class="section-header">
+        <h2>Risk <span class="italic-sophistication">Semaphore</span></h2>
+        <p class="i18n" data-en="Real-time hotel risk assessment based on guest reviews" data-es="Evaluación de riesgo hotelero en tiempo real basada en reseñas" data-fr="Évaluation des risques hôteliers en temps réel basée sur les avis">Real-time hotel risk assessment based on guest reviews</p>
+    </div>
+    <div class="semaphore-grid" id="semaphoreGrid">
+        <div class="semaphore-card yellow">
+            <div class="semaphore-header">
+                <span class="semaphore-icon">🟡</span>
+                <span class="semaphore-title i18n" data-en="ALERT" data-es="ALERTA" data-fr="ALERTE">ALERT</span>
+            </div>
+            <div class="semaphore-count" id="yellowCount">0</div>
+            <ul class="semaphore-list" id="yellowList"></ul>
+        </div>
+        <div class="semaphore-card orange">
+            <div class="semaphore-header">
+                <span class="semaphore-icon">🟠</span>
+                <span class="semaphore-title i18n" data-en="INCIDENT" data-es="INCIDENTE" data-fr="INCIDENT">INCIDENT</span>
+            </div>
+            <div class="semaphore-count" id="orangeCount">0</div>
+            <ul class="semaphore-list" id="orangeList"></ul>
+        </div>
+        <div class="semaphore-card red">
+            <div class="semaphore-header">
+                <span class="semaphore-icon">🔴</span>
+                <span class="semaphore-title i18n" data-en="CRISIS" data-es="CRISIS" data-fr="CRISE">CRISIS</span>
+            </div>
+            <div class="semaphore-count" id="redCount">0</div>
+            <ul class="semaphore-list" id="redList"></ul>
+        </div>
+    </div>
+</section>
     <section class="rankings-section">
         <div class="gauge-container">
             <h3 class="gauge-title">Brand Consistency Index</h3>
@@ -879,29 +863,29 @@
         </div>
     </div>
 </section>
-<!-- ===== FIN: BUDGET CALCULATOR ===== -->
+<!--<!-- ===== FIN: BUDGET CALCULATOR ===== -->
     <section class="rankings-section" id="rankings">
         <div class="section-header">
             <h2>Global <span class="italic-sophistication">Performance</span> Index</h2>
-            <p>Results based on satisfaction metrics and operational efficiency</p>
+            <p class="i18n" data-en="Top 10 best and worst hotels by guest satisfaction" data-es="Los 10 mejores y peores hoteles según satisfacción de huéspedes" data-fr="Top 10 des meilleurs et pires hôtels selon la satisfaction des clients">Top 10 best and worst hotels by guest satisfaction</p>
         </div>
         <div class="rankings-grid">
             <div class="ranking-card">
                 <div class="ranking-header">
                     <span class="ranking-icon">🏆</span>
-                    <h3>TOP PERFORMERS</h3>
+                    <h3 class="i18n" data-en="TOP PERFORMERS" data-es="MEJORES RENDIMIENTOS" data-fr="MEILLEURES PERFORMANCES">TOP PERFORMERS</h3>
                 </div>
                 <div class="ranking-list" id="bestList">
-                    <div class="ranking-item"><div class="hotel-info"><span class="hotel-rank-badge">--</span><div><div class="hotel-name">Cargando...</div><div class="hotel-city"></div></div></div><span class="hotel-score">--</span></div>
+                    <div class="ranking-item"><div class="hotel-info"><span class="i18n" data-en="Select a city to see results" data-es="Selecciona una ciudad para ver resultados" data-fr="Sélectionnez une ville pour voir les résultats">Select a city to see results</span></div></div>
                 </div>
             </div>
             <div class="ranking-card worst">
                 <div class="ranking-header">
                     <span class="ranking-icon">⚠️</span>
-                    <h3>UNDERPERFORMING</h3>
+                    <h3 class="i18n" data-en="UNDERPERFORMING" data-es="BAJO RENDIMIENTO" data-fr="SOUS-PERFORMANCE">UNDERPERFORMING</h3>
                 </div>
                 <div class="ranking-list" id="worstList">
-                    <div class="ranking-item"><div class="hotel-info"><span class="hotel-rank-badge">--</span><div><div class="hotel-name">Cargando...</div><div class="hotel-city"></div></div></div><span class="hotel-score">--</span></div>
+                    <div class="ranking-item"><div class="hotel-info"><span class="i18n" data-en="Select a city to see results" data-es="Selecciona una ciudad para ver resultados" data-fr="Sélectionnez une ville pour voir les résultats">Select a city to see results</span></div></div>
                 </div>
             </div>
         </div>
@@ -2164,42 +2148,280 @@ async function loadRealData() {
     }
 
     function closeModal() { document.getElementById('paymentModal').style.display = 'none'; }
+// ========== FUNCIÓN PRINCIPAL: ANALIZAR CIUDAD COMPLETO ==========
+let currentAnalyzingCity = 'London';
 
-   // ========== INICIALIZACIÓN ==========
+async function analyzeCityComplete(cityName) {
+    if (!cityName || cityName.trim() === '') return;
+    
+    const cityDisplay = document.getElementById('currentCityName');
+    const hotelCountDisplay = document.getElementById('hotelCountDisplay');
+    const loadingIndicator = document.getElementById('globalCityDisplay');
+    
+    if (cityDisplay) cityDisplay.innerText = cityName;
+    if (loadingIndicator && hotelCountDisplay) {
+        loadingIndicator.innerHTML = `⏳ <span class="i18n" data-en="Loading data for" data-es="Cargando datos para" data-fr="Chargement des données pour">Loading data for</span> <strong>${cityName}</strong>... 🔍`;
+    }
+    
+    showLoadingStates();
+    
+    try {
+        const searchQuery = `hotels in ${cityName}`;
+        const response = await fetch(`/api/google/places?q=${encodeURIComponent(searchQuery)}`);
+        const hotels = await response.json();
+        
+        if (!hotels || hotels.length === 0) {
+            showNoResults(cityName);
+            return;
+        }
+        
+        const validHotels = hotels.filter(h => h.puntuacion && h.puntuacion > 0);
+        
+        if (validHotels.length === 0) {
+            showNoResults(cityName);
+            return;
+        }
+        
+        updateRiskSemaphore(validHotels);
+        updatePerformanceIndex(validHotels, cityName);
+        
+        const flag = getCountryFlag(cityName);
+        if (loadingIndicator && hotelCountDisplay) {
+            loadingIndicator.innerHTML = `${flag} <span class="i18n" data-en="Current analysis:" data-es="Análisis actual:" data-fr="Analyse actuelle:">Current analysis:</span> <strong>${cityName}</strong> <span style="color: #888;">(${validHotels.length} <span class="i18n" data-en="hotels" data-es="hoteles" data-fr="hôtels">hotels</span>)</span>`;
+        }
+        
+    } catch (error) {
+        console.error("Error analyzing city:", error);
+        const loadingIndicator = document.getElementById('globalCityDisplay');
+        if (loadingIndicator) loadingIndicator.innerHTML = `❌ <span class="i18n" data-en="Error loading data for" data-es="Error cargando datos para" data-fr="Erreur de chargement des données pour">Error loading data for</span> ${cityName}. <span class="i18n" data-en="Please try again" data-es="Intenta de nuevo" data-fr="Veuillez réessayer">Please try again</span>.`;
+        showErrorStates();
+    }
+}
+
+function showLoadingStates() {
+    const yellowList = document.getElementById('yellowList');
+    const orangeList = document.getElementById('orangeList');
+    const redList = document.getElementById('redList');
+    const bestList = document.getElementById('bestList');
+    const worstList = document.getElementById('worstList');
+    
+    const loadingText = '⏳ Loading...';
+    
+    if (yellowList) yellowList.innerHTML = `<li class="semaphore-item">${loadingText}</li>`;
+    if (orangeList) orangeList.innerHTML = `<li class="semaphore-item">${loadingText}</li>`;
+    if (redList) redList.innerHTML = `<li class="semaphore-item">${loadingText}</li>`;
+    if (bestList) bestList.innerHTML = `<div class="ranking-item"><div class="hotel-info">${loadingText}</div></div>`;
+    if (worstList) worstList.innerHTML = `<div class="ranking-item"><div class="hotel-info">${loadingText}</div></div>`;
+    
+    if (document.getElementById('yellowCount')) document.getElementById('yellowCount').innerText = '...';
+    if (document.getElementById('orangeCount')) document.getElementById('orangeCount').innerText = '...';
+    if (document.getElementById('redCount')) document.getElementById('redCount').innerText = '...';
+}
+
+function updateRiskSemaphore(hotels) {
+    const crisis = hotels.filter(h => h.puntuacion < 3.0).sort((a,b) => a.puntuacion - b.puntuacion);
+    const incident = hotels.filter(h => h.puntuacion >= 3.0 && h.puntuacion < 3.5).sort((a,b) => a.puntuacion - b.puntuacion);
+    const alert = hotels.filter(h => h.puntuacion >= 3.5 && h.puntuacion < 4.0).sort((a,b) => a.puntuacion - b.puntuacion);
+    
+    if (document.getElementById('yellowCount')) document.getElementById('yellowCount').innerText = alert.length;
+    if (document.getElementById('orangeCount')) document.getElementById('orangeCount').innerText = incident.length;
+    if (document.getElementById('redCount')) document.getElementById('redCount').innerText = crisis.length;
+    
+    const yellowList = document.getElementById('yellowList');
+    const orangeList = document.getElementById('orangeList');
+    const redList = document.getElementById('redList');
+    
+    if (yellowList) {
+        yellowList.innerHTML = alert.length > 0 ? alert.slice(0,5).map(hotel => `
+            <li class="semaphore-item" onclick="autoSearch('${escapeHtml(hotel.nombre || hotel.name)}')" style="cursor: pointer;">
+                <span>${escapeHtml(hotel.nombre || hotel.name)}</span>
+                <span class="semaphore-badge yellow">${(hotel.puntuacion).toFixed(1)}⭐</span>
+            </li>
+        `).join('') : '<li class="semaphore-item">No hotels in this range</li>';
+    }
+    
+    if (orangeList) {
+        orangeList.innerHTML = incident.length > 0 ? incident.slice(0,5).map(hotel => `
+            <li class="semaphore-item" onclick="autoSearch('${escapeHtml(hotel.nombre || hotel.name)}')" style="cursor: pointer;">
+                <span>${escapeHtml(hotel.nombre || hotel.name)}</span>
+                <span class="semaphore-badge orange">${(hotel.puntuacion).toFixed(1)}⭐</span>
+            </li>
+        `).join('') : '<li class="semaphore-item">No hotels in this range</li>';
+    }
+    
+    if (redList) {
+        redList.innerHTML = crisis.length > 0 ? crisis.slice(0,5).map(hotel => `
+            <li class="semaphore-item" onclick="autoSearch('${escapeHtml(hotel.nombre || hotel.name)}')" style="cursor: pointer;">
+                <span>${escapeHtml(hotel.nombre || hotel.name)}</span>
+                <span class="semaphore-badge red">${(hotel.puntuacion).toFixed(1)}⭐</span>
+            </li>
+        `).join('') : '<li class="semaphore-item">No hotels in crisis</li>';
+    }
+}
+
+function updatePerformanceIndex(hotels, cityName) {
+    const sortedByScore = [...hotels].sort((a, b) => b.puntuacion - a.puntuacion);
+    const top10 = sortedByScore.slice(0, 10);
+    const worst10 = [...hotels].sort((a, b) => a.puntuacion - b.puntuacion).slice(0, 10);
+    
+    const bestList = document.getElementById('bestList');
+    const worstList = document.getElementById('worstList');
+    
+    if (bestList) {
+        bestList.innerHTML = top10.map((hotel, i) => {
+            const hotelName = escapeHtml(hotel.nombre || hotel.name || 'Unknown');
+            const score = hotel.puntuacion || 0;
+            const hotelCity = hotel.ciudad || hotel.city || cityName;
+            return `
+                <div class="ranking-item" onclick="autoSearch('${hotelName.replace(/'/g, "\\'")}')">
+                    <div class="hotel-info">
+                        <span class="hotel-rank-badge">${String(i+1).padStart(2, '0')}</span>
+                        <div>
+                            <div class="hotel-name">${hotelName}</div>
+                            <div class="hotel-city">${escapeHtml(hotelCity)}</div>
+                        </div>
+                    </div>
+                    <span class="hotel-score">${score.toFixed(2)} ⭐</span>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    if (worstList) {
+        worstList.innerHTML = worst10.map((hotel, i) => {
+            const hotelName = escapeHtml(hotel.nombre || hotel.name || 'Unknown');
+            const score = hotel.puntuacion || 0;
+            const hotelCity = hotel.ciudad || hotel.city || cityName;
+            return `
+                <div class="ranking-item" onclick="autoSearch('${hotelName.replace(/'/g, "\\'")}')">
+                    <div class="hotel-info">
+                        <span class="hotel-rank-badge">${String(i+1).padStart(2, '0')}</span>
+                        <div>
+                            <div class="hotel-name" style="color: #ff6b6b;">${hotelName}</div>
+                            <div class="hotel-city">${escapeHtml(hotelCity)}</div>
+                        </div>
+                    </div>
+                    <span class="hotel-score" style="color: #ff6b6b;">${score.toFixed(2)} ⭐</span>
+                </div>
+            `;
+        }).join('');
+    }
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+
+function showNoResults(cityName) {
+    const loadingIndicator = document.getElementById('globalCityDisplay');
+    if (loadingIndicator) loadingIndicator.innerHTML = `❌ <span class="i18n" data-en="No hotels found in" data-es="No se encontraron hoteles en" data-fr="Aucun hôtel trouvé à">No hotels found in</span> <strong>${escapeHtml(cityName)}</strong>. <span class="i18n" data-en="Try another city" data-es="Prueba otra ciudad" data-fr="Essayez une autre ville">Try another city</span>.`;
+    
+    if (document.getElementById('yellowList')) document.getElementById('yellowList').innerHTML = '<li class="semaphore-item">No data</li>';
+    if (document.getElementById('orangeList')) document.getElementById('orangeList').innerHTML = '<li class="semaphore-item">No data</li>';
+    if (document.getElementById('redList')) document.getElementById('redList').innerHTML = '<li class="semaphore-item">No data</li>';
+    if (document.getElementById('bestList')) document.getElementById('bestList').innerHTML = '<div class="ranking-item"><div class="hotel-info">No results</div></div>';
+    if (document.getElementById('worstList')) document.getElementById('worstList').innerHTML = '<div class="ranking-item"><div class="hotel-info">No results</div></div>';
+    if (document.getElementById('yellowCount')) document.getElementById('yellowCount').innerText = '0';
+    if (document.getElementById('orangeCount')) document.getElementById('orangeCount').innerText = '0';
+    if (document.getElementById('redCount')) document.getElementById('redCount').innerText = '0';
+}
+
+function showErrorStates() {
+    if (document.getElementById('yellowList')) document.getElementById('yellowList').innerHTML = '<li class="semaphore-item">⚠️ Error</li>';
+    if (document.getElementById('orangeList')) document.getElementById('orangeList').innerHTML = '<li class="semaphore-item">⚠️ Error</li>';
+    if (document.getElementById('redList')) document.getElementById('redList').innerHTML = '<li class="semaphore-item">⚠️ Error</li>';
+}
+
+function getCountryFlag(cityName) {
+    const flags = {
+        'london': '🇬🇧', 'paris': '🇫🇷', 'madrid': '🇪🇸', 'barcelona': '🇪🇸',
+        'new york': '🇺🇸', 'los angeles': '🇺🇸', 'miami': '🇺🇸', 'chicago': '🇺🇸',
+        'tokyo': '🇯🇵', 'rome': '🇮🇹', 'berlin': '🇩🇪', 'dubai': '🇦🇪',
+        'singapore': '🇸🇬', 'sydney': '🇦🇺', 'cancun': '🇲🇽', 'bali': '🇮🇩'
+    };
+    const lowerCity = cityName.toLowerCase();
+    for (const [key, flag] of Object.entries(flags)) {
+        if (lowerCity.includes(key)) return flag;
+    }
+    return '🌍';
+}
+// ========== FIN DE LAS NUEVAS FUNCIONES ==========
+    
+  // ========== INICIALIZACIÓN ==========
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('currentDate').innerText = new Date().toISOString().split('T')[0];
     initGaugeChart();
-    loadRealData();
-
+    
+    // Cargar ciudad por defecto (London) para el semáforo y performance index
+    if (typeof analyzeCityComplete === 'function') {
+        analyzeCityComplete('London');
+    } else {
+        loadRealData(); // fallback si las nuevas funciones no están cargadas
+    }
+    
+    // ===== NUEVO: Buscador de ciudad (para Risk Semaphore y Performance Index) =====
+    const globalSearchBtn = document.getElementById('globalCitySearchBtn');
+    const globalCityInput = document.getElementById('globalCityInput');
+    
+    if (globalSearchBtn) {
+        globalSearchBtn.onclick = function(e) {
+            e.preventDefault();
+            const city = globalCityInput ? globalCityInput.value.trim() : '';
+            if (city) {
+                if (typeof analyzeCityComplete === 'function') {
+                    analyzeCityComplete(city);
+                }
+            } else {
+                const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
+                const msg = lang === 'es' ? 'Por favor ingresa una ciudad' : (lang === 'fr' ? 'Veuillez entrer une ville' : 'Please enter a city');
+                alert(msg);
+            }
+        };
+    }
+    
+    if (globalCityInput) {
+        globalCityInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const city = globalCityInput.value.trim();
+                if (city && typeof analyzeCityComplete === 'function') {
+                    analyzeCityComplete(city);
+                }
+            }
+        });
+    }
+    
+    // ===== Buscador de hoteles original (se mantiene) =====
     const searchBtn = document.querySelector('.search-btn');
+    const searchInput = document.getElementById('hotelSearch');
+    
     if (searchBtn) {
         searchBtn.onclick = function(e) {
             e.preventDefault();
-            window.buscarEnGoogle();
+            if (typeof window.buscarEnGoogle === 'function') {
+                window.buscarEnGoogle();
+            }
         };
     }
-
-    const searchInput = document.getElementById('hotelSearch');
+    
     if (searchInput) {
         searchInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                window.buscarEnGoogle();
+                if (typeof window.buscarEnGoogle === 'function') {
+                    window.buscarEnGoogle();
+                }
             }
         });
     }
-
-    // ===== NUEVO: Selector de ciudad para el Performance Index =====
-    const citySelector = document.getElementById('citySelector');
-    if (citySelector) {
-        citySelector.addEventListener('change', function(e) {
-            const selectedCity = e.target.value;
-            loadPerformanceByCity(selectedCity);
-        });
-    }
-    // ===== FIN del nuevo código =====
-
-    console.log("✅ Página inicializada. Buscador listo.");
+    
+    console.log("✅ Página inicializada. Buscador de ciudades listo.");
 });
 // ===== ÚNICO SCRIPT PARA LA CALCULADORA (MULTI-IDIOMA) =====
 
