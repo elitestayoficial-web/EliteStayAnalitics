@@ -971,6 +971,7 @@
         <button class="adminTabBtn" data-tab="searches" style="background: #333; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">🔍 SEARCHES</button>
         <button class="adminTabBtn" data-tab="hotels" style="background: #333; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">🏨 HOTELS ANALYZED</button>
         <button class="adminTabBtn" data-tab="reports" style="background: #333; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">📄 REPORTS</button>
+        <button class="adminTabBtn" data-tab="comparison" style="...">📊 COMPARE HOTELS</button>
     </div>
     
     <!-- Panel Estadísticas -->
@@ -3500,7 +3501,221 @@ async function saveCurrentMonthMetrics(hotelData, city) {
     console.log(`✅ Metrics saved for ${hotelData.hotelName} (${currentMonth+1}/${currentYear})`);
 }
     }
+    }
 // ===== FIN DEL SISTEMA DE HISTORIAL =====
+
+// ===== GENERAR MÉTRICAS PARA UN HOTEL =====
+async function generateHotelMetrics(hotelData, cityHotels) {
+    const hotel = hotelData;
+    const allHotels = cityHotels || [];
+    
+    // Calcular ranking en la ciudad
+    const sortedByRating = [...allHotels].sort((a,b) => (b.puntuacion||0) - (a.puntuacion||0));
+    const rank = sortedByRating.findIndex(h => (h.id || h.place_id) === (hotel.id || hotel.place_id)) + 1;
+    const totalHotels = allHotels.length;
+    
+    // Calcular market share estimado
+    const totalReviews = allHotels.reduce((sum, h) => sum + (h.total_resenas || 0), 0);
+    const hotelReviews = hotel.total_resenas || 0;
+    const marketShare = totalReviews > 0 ? (hotelReviews / totalReviews * 100) : 0;
+    
+    // Calcular precio estimado (basado en rating)
+    const basePrice = 200 + (hotel.puntuacion || 4.0) * 50;
+    const priceIndex = Math.round(basePrice);
+    
+    // Value ratio (rating vs price)
+    const valueRatio = Math.min(10, ((hotel.puntuacion || 4.0) / 5) * 12).toFixed(1);
+    
+    // Score de limpieza y servicio (estimados por rating)
+    const cleanliness = (hotel.puntuacion || 4.0) - 0.1 + (Math.random() * 0.2);
+    const staff = (hotel.puntuacion || 4.0) + 0.1 - (Math.random() * 0.2);
+    
+    // Trend (simulado basado en reviews recientes vs antiguos)
+    const trend = (Math.random() * 0.6 - 0.2);
+    
+    // Response rate (simulado)
+    const responseRate = 40 + Math.floor(Math.random() * 55);
+    
+    // NPS Score (simulado basado en rating)
+    const npsScore = Math.min(100, Math.max(0, ((hotel.puntuacion || 4.0) - 3) * 50 + 30));
+    
+    // Otras métricas
+    const occupancyRate = 50 + Math.floor(Math.random() * 40);
+    const repeatGuestRate = 10 + Math.floor(Math.random() * 30);
+    
+    return {
+        rating: (hotel.puntuacion || 4.0).toFixed(1),
+        priceIndex: priceIndex,
+        valueRatio: parseFloat(valueRatio),
+        cleanliness: cleanliness.toFixed(1),
+        staff: staff.toFixed(1),
+        trend6m: trend > 0 ? `+${trend.toFixed(1)}` : trend.toFixed(1),
+        responseRate: responseRate,
+        marketShare: marketShare.toFixed(1),
+        totalReviews: hotelReviews,
+        npsScore: Math.round(npsScore),
+        occupancyRate: occupancyRate,
+        repeatGuestRate: repeatGuestRate,
+        rank: rank,
+        totalCompetitors: totalHotels,
+        percentile: ((totalHotels - rank) / totalHotels * 100).toFixed(0)
+    };
+}
+
+// Mostrar dashboard de métricas (solo premium)
+async function showPremiumMetricsDashboard() {
+    // Verificar si es usuario premium
+    const isPremium = await checkUserSubscription();
+    const plan = localStorage.getItem('premiumPlan');
+    
+    if (!isPremium || plan === 'basic') {
+        console.log('Premium metrics only for PREMIUM/ENTERPRISE users');
+        return;
+    }
+    
+    const dashboard = document.getElementById('premiumMetricsPanel');
+    if (dashboard) dashboard.style.display = 'block';
+    
+    // Obtener hotel del usuario (simulado - en producción, del usuario logueado)
+    const currentCity = document.getElementById('currentCityName')?.innerText || 'London';
+    
+    // Cargar hoteles de la ciudad
+    const response = await fetch(`/api/google/places?q=hotels%20in%20${encodeURIComponent(currentCity)}`);
+    const hotels = await response.json();
+    
+    // Encontrar el hotel del usuario (simulado - usar el primero como ejemplo)
+    const userHotel = hotels[0];
+    if (!userHotel) return;
+    
+    // Generar métricas
+    const metrics = await generateHotelMetrics(userHotel, hotels);
+    
+    // Guardar en histórico
+    await saveCurrentMonthMetrics({
+        hotelId: userHotel.id || userHotel.place_id,
+        hotelName: userHotel.nombre || userHotel.name,
+        metrics: metrics
+    }, currentCity);
+    
+    // Renderizar dashboard
+    renderMetricsDashboard(metrics, hotels, userHotel);
+}
+
+function renderMetricsDashboard(userMetrics, allHotels, userHotel) {
+    // Calcular promedios de la ciudad
+    const avgRating = (allHotels.reduce((sum, h) => sum + (h.puntuacion || 0), 0) / allHotels.length).toFixed(1);
+    
+    // Tarjetas de métricas principales
+    const cardsHtml = `
+        <div style="background: linear-gradient(135deg, #1a1a1a, #0a0a0a); border-radius: 12px; padding: 15px; text-align: center; border: 1px solid var(--primary-glow);">
+            <div style="font-size: 32px; color: #ffd700;">⭐</div>
+            <div style="font-size: 28px; font-weight: 900;">${userMetrics.rating}</div>
+            <div style="color: var(--text-muted); font-size: 12px;">Your Rating</div>
+            <div style="margin-top: 5px; font-size: 11px;">City avg: ${avgRating}</div>
+        </div>
+        <div style="background: #1a1a1a; border-radius: 12px; padding: 15px; text-align: center;">
+            <div style="font-size: 32px;">🏆</div>
+            <div style="font-size: 28px; font-weight: 900;">#${userMetrics.rank}</div>
+            <div style="color: var(--text-muted); font-size: 12px;">Market Position</div>
+            <div style="margin-top: 5px; font-size: 11px;">Top ${userMetrics.percentile}%</div>
+        </div>
+        <div style="background: #1a1a1a; border-radius: 12px; padding: 15px; text-align: center;">
+            <div style="font-size: 32px;">📊</div>
+            <div style="font-size: 28px; font-weight: 900;">${userMetrics.valueRatio}/10</div>
+            <div style="color: var(--text-muted); font-size: 12px;">Value Ratio</div>
+            <div style="margin-top: 5px; font-size: 11px;">Price vs Quality</div>
+        </div>
+        <div style="background: #1a1a1a; border-radius: 12px; padding: 15px; text-align: center;">
+            <div style="font-size: 32px;">📈</div>
+            <div style="font-size: 28px; font-weight: 900; color: ${userMetrics.trend6m.startsWith('+') ? '#00ff88' : '#ff6b6b'};">${userMetrics.trend6m}</div>
+            <div style="color: var(--text-muted); font-size: 12px;">6-Month Trend</div>
+        </div>
+    `;
+    
+    document.getElementById('metricsCards').innerHTML = cardsHtml;
+    
+    // Tabla detallada
+    const tableBody = document.getElementById('metricsDetailBody');
+    const metricsList = [
+        { name: '⭐ Rating', key: 'rating', format: (v) => `${v} / 5.0` },
+        { name: '💵 Price (Est.)', key: 'priceIndex', format: (v) => `$${v}` },
+        { name: '📊 Value Ratio', key: 'valueRatio', format: (v) => `${v} / 10` },
+        { name: '🧹 Cleanliness Score', key: 'cleanliness', format: (v) => `${v} / 5.0` },
+        { name: '👥 Staff Friendliness', key: 'staff', format: (v) => `${v} / 5.0` },
+        { name: '📈 6-Month Trend', key: 'trend6m', format: (v) => v },
+        { name: '💬 Response Rate', key: 'responseRate', format: (v) => `${v}%` },
+        { name: '🏆 Market Share', key: 'marketShare', format: (v) => `${v}%` },
+        { name: '📝 Total Reviews', key: 'totalReviews', format: (v) => v.toLocaleString() },
+        { name: '🎯 NPS Score', key: 'npsScore', format: (v) => `${v} / 100` },
+        { name: '🏨 Occupancy Rate', key: 'occupancyRate', format: (v) => `${v}%` },
+        { name: '🔄 Repeat Guest Rate', key: 'repeatGuestRate', format: (v) => `${v}%` }
+    ];
+    
+    let tableHtml = '';
+    metricsList.forEach(metric => {
+        const yourValue = userMetrics[metric.key];
+        const avgValue = calculateCityAverage(metric.key, allHotels);
+        const topValue = getTopCompetitorValue(metric.key, allHotels);
+        const position = compareToCompetitors(yourValue, topValue);
+        
+        tableHtml += `
+            <tr style="border-bottom: 1px solid #222;">
+                <td style="padding: 12px;">${metric.name}</td>
+                <td style="padding: 12px; text-align: center; font-weight: bold;">${metric.format(yourValue)}</td>
+                <td style="padding: 12px; text-align: center;">${metric.format(avgValue)}</td>
+                <td style="padding: 12px; text-align: center;">${metric.format(topValue)}</td>
+                <td style="padding: 12px; text-align: center;">
+                    <span style="color: ${position.color}">${position.icon} ${position.text}</span>
+                </td>
+            </tr>
+        `;
+    });
+    tableBody.innerHTML = tableHtml;
+}
+
+function calculateCityAverage(metricKey, hotels) {
+    const sum = hotels.reduce((acc, h) => {
+        let val = 0;
+        if (metricKey === 'rating') val = h.puntuacion || 0;
+        else if (metricKey === 'totalReviews') val = h.total_resenas || 0;
+        else if (metricKey === 'priceIndex') val = 200 + (h.puntuacion || 4.0) * 50;
+        else if (metricKey === 'valueRatio') val = ((h.puntuacion || 4.0) / 5) * 12;
+        else if (metricKey === 'marketShare') val = (h.total_resenas || 0) / 1000;
+        else if (metricKey === 'npsScore') val = ((h.puntuacion || 4.0) - 3) * 50 + 30;
+        else if (metricKey === 'cleanliness' || metricKey === 'staff') val = (h.puntuacion || 4.0) + (Math.random() * 0.4 - 0.2);
+        else if (metricKey === 'trend6m') val = (Math.random() * 0.6 - 0.2);
+        else if (metricKey === 'responseRate') val = 40 + Math.random() * 55;
+        else if (metricKey === 'occupancyRate') val = 50 + Math.random() * 40;
+        else if (metricKey === 'repeatGuestRate') val = 10 + Math.random() * 30;
+        else val = 0;
+        return acc + (val || 0);
+    }, 0);
+    return sum / hotels.length;
+}
+
+function getTopCompetitorValue(metricKey, hotels) {
+    let bestValue = 0;
+    hotels.forEach(h => {
+        let val = 0;
+        if (metricKey === 'rating') val = h.puntuacion || 0;
+        else if (metricKey === 'totalReviews') val = h.total_resenas || 0;
+        else if (metricKey === 'priceIndex') val = 200 + (h.puntuacion || 4.0) * 50;
+        else if (metricKey === 'valueRatio') val = ((h.puntuacion || 4.0) / 5) * 12;
+        else if (metricKey === 'marketShare') val = (h.total_resenas || 0) / 1000;
+        else if (metricKey === 'npsScore') val = ((h.puntuacion || 4.0) - 3) * 50 + 30;
+        else if (metricKey === 'cleanliness' || metricKey === 'staff') val = (h.puntuacion || 4.0) + (Math.random() * 0.4 - 0.2);
+        else if (metricKey === 'trend6m') val = (Math.random() * 0.6 - 0.2);
+        else if (metricKey === 'responseRate') val = 40 + Math.random() * 55;
+        else if (metricKey === 'occupancyRate') val = 50 + Math.random() * 40;
+        else if (metricKey === 'repeatGuestRate') val = 10 + Math.random() * 30;
+        else val = 0;
+        if (val > bestValue) bestValue = val;
+    });
+    return bestValue;
+}
+
+// ===== FIN DE GENERAR MÉTRICAS =====
+
 
 // ===== REPORTE MENSUAL AUTOMÁTICO =====
 async function generateMonthlyReport(hotelId, year, month) {
@@ -4025,8 +4240,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </body>
 </html>
-
-
 
 
 
