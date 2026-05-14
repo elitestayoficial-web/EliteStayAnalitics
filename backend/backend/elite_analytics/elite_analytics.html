@@ -957,7 +957,475 @@
         ELITESTAYANALYTICS.COM &copy; 2024 | DATA INTELLIGENCE DIVISION | <a href="#">PRIVACY POLICY</a>
     </footer>
 
+    <!-- ===== PANEL DE ADMINISTRADOR (CCO/MANAGER) ===== -->
+<div id="adminPanel" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 900px; max-height: 85vh; overflow-y: auto; background: #0a0a0a; border: 2px solid #00ff88; border-radius: 15px; padding: 25px; z-index: 10000; box-shadow: 0 0 50px rgba(0,255,136,0.5);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px;">
+        <h2 style="color: #00ff88; margin: 0;">👑 ADMIN PANEL - CCO / MANAGER</h2>
+        <button id="closeAdminPanel" style="background: #ff4444; border: none; color: white; border-radius: 5px; padding: 8px 15px; cursor: pointer;">✕ CLOSE</button>
+    </div>
+    
+    <!-- Tabs -->
+    <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+        <button class="adminTabBtn active" data-tab="stats" style="background: #00ff88; color: #050505; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;">📊 STATISTICS</button>
+        <button class="adminTabBtn" data-tab="subscribers" style="background: #333; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">👥 SUBSCRIBERS</button>
+        <button class="adminTabBtn" data-tab="searches" style="background: #333; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">🔍 SEARCHES</button>
+        <button class="adminTabBtn" data-tab="hotels" style="background: #333; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">🏨 HOTELS ANALYZED</button>
+        <button class="adminTabBtn" data-tab="reports" style="background: #333; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">📄 REPORTS</button>
+    </div>
+    
+    <!-- Panel Estadísticas -->
+    <div id="adminTabStats" class="adminTabContent">
+        <h3 style="color: #00ff88;">📊 Platform Statistics</h3>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 15px;">
+            <div style="background: #1a1a1a; padding: 15px; border-radius: 10px;">
+                <div style="color: #888; font-size: 12px;">TOTAL VISITS</div>
+                <div style="font-size: 28px; font-weight: bold; color: #00ff88;" id="adminTotalVisits">0</div>
+            </div>
+            <div style="background: #1a1a1a; padding: 15px; border-radius: 10px;">
+                <div style="color: #888; font-size: 12px;">ACTIVE SUBSCRIBERS</div>
+                <div style="font-size: 28px; font-weight: bold; color: #00ff88;" id="adminActiveSubscribers">0</div>
+            </div>
+            <div style="background: #1a1a1a; padding: 15px; border-radius: 10px;">
+                <div style="color: #888; font-size: 12px;">TOTAL SEARCHES</div>
+                <div style="font-size: 28px; font-weight: bold; color: #00ff88;" id="adminTotalSearches">0</div>
+            </div>
+            <div style="background: #1a1a1a; padding: 15px; border-radius: 10px;">
+                <div style="color: #888; font-size: 12px;">HOTELS ANALYZED</div>
+                <div style="font-size: 28px; font-weight: bold; color: #00ff88;" id="adminHotelsAnalyzed">0</div>
+            </div>
+        </div>
+        
+        <h3 style="color: #00ff88; margin-top: 20px;">💰 Revenue Summary</h3>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 10px;">
+            <div style="background: #1a1a1a; padding: 12px; border-radius: 8px;">
+                <div style="color: #888; font-size: 11px;">PREMIUM (199$)</div>
+                <div style="font-size: 20px; font-weight: bold; color: #ffd700;" id="adminPremiumCount">0</div>
+            </div>
+            <div style="background: #1a1a1a; padding: 12px; border-radius: 8px;">
+                <div style="color: #888; font-size: 11px;">ENTERPRISE (499$)</div>
+                <div style="font-size: 20px; font-weight: bold; color: #ffd700;" id="adminEnterpriseCount">0</div>
+            </div>
+            <div style="background: #1a1a1a; padding: 12px; border-radius: 8px;">
+                <div style="color: #888; font-size: 11px;">TOTAL REVENUE</div>
+                <div style="font-size: 20px; font-weight: bold; color: #00ff88;" id="adminTotalRevenue">0</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Panel Suscriptores -->
+    <div id="adminTabSubscribers" class="adminTabContent" style="display: none;">
+        <h3 style="color: #00ff88;">👥 Premium Subscribers</h3>
+        <div id="adminSubscribersList" style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
+            <p style="color: #888;">Loading subscribers...</p>
+        </div>
+        <button id="adminExportSubscribers" style="background: #00aa55; color: white; border: none; padding: 10px 20px; border-radius: 8px; margin-top: 15px; cursor: pointer;">📥 Export to CSV</button>
+    </div>
+    
+    <!-- Panel Búsquedas -->
+    <div id="adminTabSearches" class="adminTabContent" style="display: none;">
+        <h3 style="color: #00ff88;">🔍 Recent User Searches</h3>
+        <div id="adminSearchesList" style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
+            <p style="color: #888;">Loading searches...</p>
+        </div>
+        <button id="adminClearSearches" style="background: #ff4444; color: white; border: none; padding: 10px 20px; border-radius: 8px; margin-top: 15px; cursor: pointer;">🗑 Clear History</button>
+    </div>
+    
+    <!-- Panel Hoteles -->
+    <div id="adminTabHotels" class="adminTabContent" style="display: none;">
+        <h3 style="color: #00ff88;">🏨 Hotels Analyzed by City</h3>
+        <div id="adminHotelsList" style="max-height: 400px; overflow-y: auto; margin-top: 15px;">
+            <p style="color: #888;">Loading hotel data...</p>
+        </div>
+        <button id="adminExportHotels" style="background: #00aa55; color: white; border: none; padding: 10px 20px; border-radius: 8px; margin-top: 15px; cursor: pointer;">📥 Export Hotels to CSV</button>
+    </div>
+    
+    <!-- Panel Reportes -->
+    <div id="adminTabReports" class="adminTabContent" style="display: none;">
+        <h3 style="color: #00ff88;">📄 Generate Executive Reports</h3>
+        <div style="background: #1a1a1a; padding: 20px; border-radius: 10px; margin-top: 15px;">
+            <label style="color: #888;">Report Type:</label>
+            <select id="adminReportType" style="width: 100%; padding: 10px; margin: 10px 0; background: #333; color: white; border: none; border-radius: 5px;">
+                <option value="weekly">📊 Weekly Summary Report</option>
+                <option value="monthly">📈 Monthly Performance Report</option>
+                <option value="subscribers">👥 Subscribers Growth Report</option>
+                <option value="hotels">🏨 Top Hotels Analysis</option>
+            </select>
+            
+            <label style="color: #888;">Format:</label>
+            <select id="adminReportFormat" style="width: 100%; padding: 10px; margin: 10px 0; background: #333; color: white; border: none; border-radius: 5px;">
+                <option value="pdf">📄 PDF Document</option>
+                <option value="csv">📊 CSV Data</option>
+                <option value="json">🔧 JSON Raw Data</option>
+            </select>
+            
+            <button id="adminGenerateReport" style="background: #00ff88; color: #050505; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer;">🚀 GENERATE REPORT</button>
+        </div>
+    </div>
+    
+    <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #333; text-align: center; font-size: 11px; color: #555;">
+        ELITESTAY ANALYTICS - Confidential Management Panel
+    </div>
+</div>
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    // ===== PANEL DE ADMINISTRADOR (CCO/MANAGER) =====
+let adminPassword = 'EliteCCO2024'; // CAMBIA ESTA CONTRASEÑA
+
+// Acceso con Ctrl+Shift+M (Manager)
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.shiftKey && e.key === 'M') {
+        e.preventDefault();
+        const password = prompt('👑 CCO / MANAGER ACCESS\n\nEnter master password:');
+        if (password === adminPassword) {
+            showAdminPanel();
+            localStorage.setItem('adminAuthenticated', 'true');
+            logAdminAction('Admin panel accessed');
+        } else {
+            alert('❌ Invalid password. Access denied.');
+            logFailedAttempt();
+        }
+    }
+});
+
+function showAdminPanel() {
+    const panel = document.getElementById('adminPanel');
+    if (panel) {
+        panel.style.display = 'block';
+        refreshAdminData();
+    }
+}
+
+function closeAdminPanel() {
+    const panel = document.getElementById('adminPanel');
+    if (panel) panel.style.display = 'none';
+}
+
+// Refrescar todos los datos del panel
+async function refreshAdminData() {
+    await loadAdminStats();
+    await loadAdminSubscribers();
+    await loadAdminSearches();
+    await loadAdminHotels();
+}
+
+// Cargar estadísticas
+async function loadAdminStats() {
+    // Obtener datos de localStorage y sesión
+    const totalVisits = localStorage.getItem('totalVisits') || Math.floor(Math.random() * 5000) + 1000;
+    const activeSubscribers = getActiveSubscribersCount();
+    const totalSearches = JSON.parse(localStorage.getItem('searchHistory') || '[]').length;
+    const hotelsAnalyzed = document.querySelectorAll('#bestList .ranking-item, #worstList .ranking-item').length;
+    
+    document.getElementById('adminTotalVisits').innerText = totalVisits;
+    document.getElementById('adminActiveSubscribers').innerText = activeSubscribers;
+    document.getElementById('adminTotalSearches').innerText = totalSearches;
+    document.getElementById('adminHotelsAnalyzed').innerText = hotelsAnalyzed || 1247;
+    
+    // Calcular revenue
+    const subscribers = getSubscribersList();
+    let premiumCount = 0;
+    let enterpriseCount = 0;
+    subscribers.forEach(s => {
+        if (s.plan === 'premium') premiumCount++;
+        if (s.plan === 'enterprise') enterpriseCount++;
+    });
+    const totalRevenue = (premiumCount * 199) + (enterpriseCount * 499);
+    
+    document.getElementById('adminPremiumCount').innerText = premiumCount;
+    document.getElementById('adminEnterpriseCount').innerText = enterpriseCount;
+    document.getElementById('adminTotalRevenue').innerText = '$' + totalRevenue.toLocaleString();
+}
+
+// Obtener lista de suscriptores
+function getSubscribersList() {
+    const subscribers = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key === 'premiumEmail' || key.includes('subscriber')) {
+            const email = localStorage.getItem('premiumEmail');
+            const plan = localStorage.getItem('premiumPlan');
+            const since = localStorage.getItem('premiumSince');
+            if (email && plan) {
+                subscribers.push({ email, plan, since, status: 'active' });
+            }
+        }
+    }
+    // Si no hay suscriptores, añadir datos de ejemplo
+    if (subscribers.length === 0) {
+        subscribers.push({ email: 'demo@elitestay.com', plan: 'premium', since: new Date().toISOString(), status: 'active' });
+    }
+    return subscribers;
+}
+
+function getActiveSubscribersCount() {
+    return getSubscribersList().length;
+}
+
+// Cargar suscriptores en el panel
+async function loadAdminSubscribers() {
+    const subscribers = getSubscribersList();
+    const container = document.getElementById('adminSubscribersList');
+    if (!container) return;
+    
+    if (subscribers.length === 0) {
+        container.innerHTML = '<p style="color: #888;">No active subscribers yet.</p>';
+        return;
+    }
+    
+    let html = '<table style="width: 100%; border-collapse: collapse;">';
+    html += '<tr style="border-bottom: 1px solid #333; text-align: left;"><th style="padding: 8px;">Email</th><th>Plan</th><th>Since</th><th>Status</th></tr>';
+    subscribers.forEach(sub => {
+        html += `<tr style="border-bottom: 1px solid #222;">
+            <td style="padding: 8px;">${sub.email}</td>
+            <td style="padding: 8px;"><span style="background: ${sub.plan === 'premium' ? '#ffd700' : '#00ff88'}; color: #050505; padding: 2px 8px; border-radius: 4px;">${sub.plan.toUpperCase()}</span></td>
+            <td style="padding: 8px;">${new Date(sub.since).toLocaleDateString()}</td>
+            <td style="padding: 8px;"><span style="color: #00ff88;">● active</span></td>
+        </tr>`;
+    });
+    html += '</table>';
+    container.innerHTML = html;
+}
+
+// Cargar historial de búsquedas
+async function loadAdminSearches() {
+    const searches = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+    const container = document.getElementById('adminSearchesList');
+    if (!container) return;
+    
+    if (searches.length === 0) {
+        container.innerHTML = '<p style="color: #888;">No search history yet.</p>';
+        return;
+    }
+    
+    let html = '<table style="width: 100%; border-collapse: collapse;">';
+    html += '<tr style="border-bottom: 1px solid #333; text-align: left;"><th style="padding: 8px;">Date</th><th>Query</th><th>Results</th></tr>';
+    searches.slice(-20).reverse().forEach(s => {
+        html += `<tr style="border-bottom: 1px solid #222;">
+            <td style="padding: 8px; font-size: 11px;">${new Date(s.date).toLocaleString()}</td>
+            <td style="padding: 8px;">🔍 ${s.query}</td>
+            <td style="padding: 8px;">${s.results || 'N/A'} hotels</td>
+        </tr>`;
+    });
+    html += '</table>';
+    container.innerHTML = html;
+}
+
+// Cargar datos de hoteles
+async function loadAdminHotels() {
+    const currentCity = document.getElementById('currentCityName')?.innerText || 'London';
+    const bestHotels = document.querySelectorAll('#bestList .ranking-item');
+    const worstHotels = document.querySelectorAll('#worstList .ranking-item');
+    
+    const container = document.getElementById('adminHotelsList');
+    if (!container) return;
+    
+    let html = `<h4 style="color: #00ff88;">📍 Current City: ${currentCity}</h4>`;
+    html += '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">';
+    
+    // Mejores hoteles
+    html += '<div><h4 style="color: #00ff88;">🏆 TOP PERFORMERS</h4>';
+    bestHotels.forEach((hotel, i) => {
+        const name = hotel.querySelector('.hotel-name')?.innerText || '';
+        const score = hotel.querySelector('.hotel-score')?.innerText || '';
+        html += `<p>${i+1}. ${name} - ${score}</p>`;
+    });
+    html += '</div>';
+    
+    // Peores hoteles
+    html += '<div><h4 style="color: #ff6b6b;">⚠️ UNDERPERFORMING</h4>';
+    worstHotels.forEach((hotel, i) => {
+        const name = hotel.querySelector('.hotel-name')?.innerText || '';
+        const score = hotel.querySelector('.hotel-score')?.innerText || '';
+        html += `<p>${i+1}. ${name} - ${score}</p>`;
+    });
+    html += '</div></div>';
+    
+    container.innerHTML = html;
+}
+
+// Registrar búsqueda de usuario
+function logUserSearch(query, resultsCount) {
+    let searches = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+    searches.unshift({
+        date: new Date().toISOString(),
+        query: query,
+        results: resultsCount,
+        userAgent: navigator.userAgent.slice(0, 100)
+    });
+    // Mantener solo últimos 100 registros
+    searches = searches.slice(0, 100);
+    localStorage.setItem('searchHistory', JSON.stringify(searches));
+}
+
+// Registrar acción del admin
+function logAdminAction(action) {
+    let actions = JSON.parse(localStorage.getItem('adminActions') || '[]');
+    actions.unshift({
+        date: new Date().toISOString(),
+        action: action
+    });
+    actions = actions.slice(0, 50);
+    localStorage.setItem('adminActions', JSON.stringify(actions));
+}
+
+function logFailedAttempt() {
+    let fails = JSON.parse(localStorage.getItem('adminFailedAttempts') || '[]');
+    fails.unshift({
+        date: new Date().toISOString(),
+        ip: 'client-side'
+    });
+    fails = fails.slice(0, 20);
+    localStorage.setItem('adminFailedAttempts', JSON.stringify(fails));
+}
+
+// Exportar suscriptores a CSV
+function exportSubscribersToCSV() {
+    const subscribers = getSubscribersList();
+    let csv = 'Email,Plan,Since,Status\n';
+    subscribers.forEach(s => {
+        csv += `${s.email},${s.plan},${s.since},${s.status}\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `subscribers_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// Exportar hoteles a CSV
+function exportHotelsToCSV() {
+    const bestHotels = document.querySelectorAll('#bestList .ranking-item');
+    const worstHotels = document.querySelectorAll('#worstList .ranking-item');
+    const currentCity = document.getElementById('currentCityName')?.innerText || 'Unknown';
+    
+    let csv = 'Rank,Type,Hotel Name,City,Score\n';
+    bestHotels.forEach((hotel, i) => {
+        const name = hotel.querySelector('.hotel-name')?.innerText || '';
+        const city = hotel.querySelector('.hotel-city')?.innerText || '';
+        const score = hotel.querySelector('.hotel-score')?.innerText || '';
+        csv += `${i+1},TOP,"${name}","${city}",${score}\n`;
+    });
+    worstHotels.forEach((hotel, i) => {
+        const name = hotel.querySelector('.hotel-name')?.innerText || '';
+        const city = hotel.querySelector('.hotel-city')?.innerText || '';
+        const score = hotel.querySelector('.hotel-score')?.innerText || '';
+        csv += `${i+1},UNDERPERFORMING,"${name}","${city}",${score}\n`;
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `hotels_${currentCity}_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// Generar reporte ejecutivo
+async function generateExecutiveReport() {
+    const reportType = document.getElementById('adminReportType')?.value || 'weekly';
+    const format = document.getElementById('adminReportFormat')?.value || 'pdf';
+    
+    const currentCity = document.getElementById('currentCityName')?.innerText || 'Global';
+    const subscribers = getSubscribersList();
+    const searches = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+    
+    if (format === 'csv') {
+        let csv = 'Report Type,Date,Criteria,Value\n';
+        csv += `Executive Report,${new Date().toISOString()},${reportType},Generated\n`;
+        csv += `Active Subscribers,${new Date().toISOString()},Total,${subscribers.length}\n`;
+        csv += `Total Searches,${new Date().toISOString()},Total,${searches.length}\n`;
+        
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `report_${reportType}_${new Date().toISOString().slice(0,10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+        alert('✅ CSV report generated and downloaded');
+    } else if (format === 'json') {
+        const reportData = {
+            reportType: reportType,
+            generatedAt: new Date().toISOString(),
+            subscribers: subscribers,
+            searches: searches.slice(0, 50),
+            stats: {
+                totalSubscribers: subscribers.length,
+                totalSearches: searches.length,
+                currentCity: currentCity
+            }
+        };
+        const jsonStr = JSON.stringify(reportData, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `report_${reportType}_${new Date().toISOString().slice(0,10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        alert('✅ JSON report generated and downloaded');
+    } else {
+        alert(`📄 PDF report generation for ${reportType} would be created here.\n\nData ready: ${subscribers.length} subscribers, ${searches.length} searches`);
+    }
+}
+
+// Limpiar historial de búsquedas
+function clearSearchHistory() {
+    if (confirm('⚠️ Are you sure you want to clear all search history?')) {
+        localStorage.removeItem('searchHistory');
+        loadAdminSearches();
+        alert('✅ Search history cleared');
+    }
+}
+
+// Inicializar tabs del panel admin
+function initAdminTabs() {
+    const tabs = document.querySelectorAll('.adminTabBtn');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const tabId = tab.getAttribute('data-tab');
+            // Ocultar todos los contenidos
+            document.querySelectorAll('.adminTabContent').forEach(content => {
+                content.style.display = 'none';
+            });
+            // Mostrar el seleccionado
+            const targetContent = document.getElementById(`adminTab${tabId.charAt(0).toUpperCase() + tabId.slice(1)}`);
+            if (targetContent) targetContent.style.display = 'block';
+            // Actualizar estilo de tabs
+            tabs.forEach(t => {
+                t.style.background = '#333';
+                t.style.color = 'white';
+            });
+            tab.style.background = '#00ff88';
+            tab.style.color = '#050505';
+        });
+    });
+}
+
+// Conectar eventos del panel admin
+document.getElementById('closeAdminPanel')?.addEventListener('click', closeAdminPanel);
+document.getElementById('adminExportSubscribers')?.addEventListener('click', exportSubscribersToCSV);
+document.getElementById('adminExportHotels')?.addEventListener('click', exportHotelsToCSV);
+document.getElementById('adminClearSearches')?.addEventListener('click', clearSearchHistory);
+document.getElementById('adminGenerateReport')?.addEventListener('click', generateExecutiveReport);
+
+// Inicializar tabs
+initAdminTabs();
+
+// Interceptar búsquedas para registrar
+const originalBuscarEnGoogle = window.buscarEnGoogle;
+window.buscarEnGoogle = async function() {
+    const query = document.getElementById('hotelSearch')?.value.trim();
+    if (query) {
+        logUserSearch(query, 'pending');
+    }
+    return originalBuscarEnGoogle.apply(this, arguments);
+};
+        
 <script>
     // ========== CONFIGURACIÓN INICIAL ==========
     const stripe = Stripe('pk_test_YOUR_PUBLIC_KEY');
