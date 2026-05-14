@@ -1074,7 +1074,7 @@ let adminPassword = 'EliteCCO2024'; // CAMBIA ESTA CONTRASEÑA
 
 // Acceso con Ctrl+Shift+M (Manager)
 document.addEventListener('keydown', function(e) {
-    if (e.ctrlKey && e.shiftKey && e.key === 'a') {
+    if (e.ctrlKey && e.altKey && e.key === 'a') {
         e.preventDefault();
         const password = prompt('👑 CCO / MANAGER ACCESS\n\nEnter master password:');
         if (password === adminPassword) {
