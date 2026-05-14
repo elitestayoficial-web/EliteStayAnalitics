@@ -761,7 +761,11 @@
     <div style="max-width: 700px; margin: 0 auto; text-align: center;">
         <div style="display: flex; gap: 10px; background: var(--card-bg); border: 1px solid var(--primary-glow); border-radius: 60px; padding: 5px; box-shadow: 0 0 20px rgba(0,255,136,0.1);">
             <input type="text" id="globalCityInput" class="i18n-placeholder" placeholder="Search any city or town worldwide..." data-en-placeholder="Search any city or town worldwide..." data-es-placeholder="Busca cualquier ciudad o pueblo del mundo..." data-fr-placeholder="Recherchez n'importe quelle ville dans le monde..." style="flex: 1; background: transparent; border: none; padding: 18px 25px; color: var(--text-main); font-family: 'Montserrat', sans-serif; font-size: 1rem; outline: none;">
-            <button id="globalCitySearchBtn" style="background: var(--primary-glow); border: none; padding: 0 35px; border-radius: 50px; font-weight: 800; cursor: pointer; color: #050505; text-transform: uppercase; letter-spacing: 1px;">🔍 ANALYZE</button>
+            <button id="globalCitySearchBtn" style="background: var(--primary-glow); border: none; padding: 0 35px; border-radius: 50px; font-weight: 800; cursor: pointer; color: #050505; text-transform: uppercase; letter-spacing: 1px; transition: transform 0.2s, background 0.2s;" 
+        onmouseover="this.style.transform='scale(1.05)'; this.style.background='#00e67a';" 
+        onmouseout="this.style.transform='scale(1)'; this.style.background='var(--primary-glow)';"
+        onmousedown="this.style.transform='scale(0.98)';"
+        onmouseup="this.style.transform='scale(1.05)';">🔍 ANALYZE</button>
         </div>
         <div id="globalCityDisplay" style="margin-top: 15px; font-size: 0.9rem; color: var(--primary-glow);">
             🌍 <span class="i18n" data-en="Current analysis:" data-es="Análisis actual:" data-fr="Analyse actuelle:">Current analysis:</span> <strong id="currentCityName">London</strong> <span id="hotelCountDisplay"></span>
