@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -876,70 +875,6 @@
         </div>
     </div>
 </section>
-    
-<!-- ===== COMPARADOR DE HOTELES (HASTA 5) - VERSIÓN CORREGIDA ===== -->
-<section class="rankings-section" style="padding-top: 2rem; padding-bottom: 2rem;">
-    <div class="section-header">
-        <h2>Hotel <span class="italic-sophistication">Comparator</span></h2>
-        <p class="i18n" data-en="Compare up to 5 hotels in any city" data-es="Compara hasta 5 hoteles en cualquier ciudad" data-fr="Comparez jusqu'à 5 hôtels dans n'importe quelle ville">Compare up to 5 hotels in any city</p>
-    </div>
-    <div style="background: var(--card-bg); border-radius: 16px; padding: 25px;">
-        <div style="display: flex; gap: 12px; margin-bottom: 25px; flex-wrap: wrap;">
-            <input type="text" id="comparisonCityInput" class="i18n-placeholder" placeholder="Enter city (e.g., Paris, Tokyo, London)" data-en-placeholder="Enter city (e.g., Paris, Tokyo, London)" data-es-placeholder="Ingresa ciudad (ej: París, Tokio, Londres)" data-fr-placeholder="Entrez une ville (ex: Paris, Tokyo, Londres)" style="flex: 2; padding: 14px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 12px; font-size: 1rem;">
-            <button id="loadComparisonHotelsBtn" style="background: var(--primary-glow); color: #050505; border: none; padding: 14px 28px; border-radius: 12px; cursor: pointer; font-weight: bold;">🔍 LOAD HOTELS</button>
-        </div>
-        <div id="comparisonHotelsContainer" style="display: none;">
-            <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 25px;">
-                <div>
-                    <label class="i18n" data-en="Hotel 1" data-es="Hotel 1" data-fr="Hôtel 1" style="font-size: 12px; color: #888;">Hotel 1</label>
-                    <select id="compHotel1" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;">
-                        <option value="">Select...</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="i18n" data-en="Hotel 2" data-es="Hotel 2" data-fr="Hôtel 2" style="font-size: 12px; color: #888;">Hotel 2</label>
-                    <select id="compHotel2" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;">
-                        <option value="">Select...</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="i18n" data-en="Hotel 3" data-es="Hotel 3" data-fr="Hôtel 3" style="font-size: 12px; color: #888;">Hotel 3</label>
-                    <select id="compHotel3" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;">
-                        <option value="">Select...</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="i18n" data-en="Hotel 4" data-es="Hotel 4" data-fr="Hôtel 4" style="font-size: 12px; color: #888;">Hotel 4</label>
-                    <select id="compHotel4" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;">
-                        <option value="">Select...</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="i18n" data-en="Hotel 5" data-es="Hotel 5" data-fr="Hôtel 5" style="font-size: 12px; color: #888;">Hotel 5</label>
-                    <select id="compHotel5" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;">
-                        <option value="">Select...</option>
-                    </select>
-                </div>
-            </div>
-            <button id="runComparisonBtn" style="background: #D4AF37; color: #050505; border: none; padding: 14px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 100%;">📊 COMPARE SELECTED HOTELS</button>
-        </div>
-        <div id="comparisonResultsContainer" style="display: none; margin-top: 25px;">
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;" id="comparisonSummaryCards"></div>
-            <div style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse;">
-                    <thead>
-                        <tr id="comparisonTableHeader" style="border-bottom: 2px solid var(--primary-glow);">
-                            <th style="padding: 12px; text-align: left;">Metric</th>
-                        </tr>
-                    </thead>
-                    <tbody id="comparisonTableBody"></tbody>
-                </table>
-            </div>
-            <div id="comparisonInsights" style="margin-top: 20px; padding: 15px; background: rgba(0,255,136,0.05); border-radius: 10px;"></div>
-        </div>
-    </div>
-</section>
-
 <!--<!-- ===== FIN: BUDGET CALCULATOR ===== -->
     <section class="rankings-section" id="rankings">
         <div class="section-header">
@@ -1036,18 +971,6 @@
         <button class="adminTabBtn" data-tab="searches" style="background: #333; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">🔍 SEARCHES</button>
         <button class="adminTabBtn" data-tab="hotels" style="background: #333; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">🏨 HOTELS ANALYZED</button>
         <button class="adminTabBtn" data-tab="reports" style="background: #333; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">📄 REPORTS</button>
-<button class="adminTabBtn" data-tab="comparison" style="background: #333; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">📊 HOTEL COMPARATOR</button>
-            <!-- Panel Comparador de Hoteles (CCO) -->
-    <div id="adminTabComparison" class="adminTabContent" style="display: none;">
-        <h3 style="color: #00ff88; margin-bottom: 15px;">📊 Hotel Comparator (CCO Access)</h3>
-        <div style="display: flex; gap: 12px; margin-bottom: 20px;">
-            <input type="text" id="adminComparisonCity" placeholder="Enter city..." style="flex: 1; padding: 12px; background: #333; border: none; color: white; border-radius: 8px;">
-            <button id="adminLoadHotelsBtn" style="background: #00ff88; color: #050505; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer;">LOAD</button>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 20px;" id="adminHotelSelectors"></div>
-        <button id="adminRunCompareBtn" style="background: #D4AF37; color: #050505; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold;">COMPARE</button>
-        <div id="adminCompareResults" style="margin-top: 20px; display: none;"></div>
-    </div>
     </div>
     
     <!-- Panel Estadísticas -->
@@ -1126,9 +1049,6 @@
                 <option value="monthly">📈 Monthly Performance Report</option>
                 <option value="subscribers">👥 Subscribers Growth Report</option>
                 <option value="hotels">🏨 Top Hotels Analysis</option>
-<div id="adminTabComparison" class="adminTabContent" style="display: none;"><h3 style="color: #00ff88; margin-bottom: 15px;">📊 Hotel Comparator (CCO Access)</h3><div style="display: flex; gap: 12px; margin-bottom: 20px;"><input type="text" id="adminComparisonCity" placeholder="Enter city..." style="flex: 1; padding: 12px; background: #333; border: none; color: white; border-radius: 8px;"><button id="adminLoadHotelsBtn" style="background: #00ff88; color: #050505; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer;">LOAD</button></div><div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 20px;" id="adminHotelSelectors"></div><button id="adminRunCompareBtn" style="background: #D4AF37; color: #050505; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold;">COMPARE</button><div id="adminCompareResults" style="margin-top: 20px; display: none;"></div></div>
-        <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #333; text-align: center; font-size: 11px; color: #555;">ELITESTAY ANALYTICS - Confidential Management Panel</div>
-
             </select>
             
             <label style="color: #888;">Format:</label>
@@ -3363,100 +3283,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
-});
-    // Permitir Enter
-document.addEventListener('DOMContentLoaded', function() {
-    const inputs = ['calc-origin', 'calc-dest', 'calc-date'];
-    inputs.forEach(id => {
-        const input = document.getElementById(id);
-        if (input) {
-            input.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    window.calculateTravelBudget();
-                }
-            });
-        }
-    });
-});
-
-// ===== COMPARADOR DE HOTELES (5 HOTELES) - CORREGIDO =====
-let comparisonHotelsList = [];
-
-document.getElementById('loadComparisonHotelsBtn')?.addEventListener('click', async function() {
-    // ... todo el código del comparador ...
-});
-
-document.getElementById('runComparisonBtn')?.addEventListener('click', function() {
-    // ... todo el código del comparador ...
-});
-
-    <!-- Panel Comparador de Hoteles (CCO) -->
-        
-    <div id="adminTabComparison" class="adminTabContent" style="display: none;">
-        <h3 style="color: #00ff88; margin-bottom: 15px;">📊 Hotel Comparator (CCO Access)</h3>
-        <div style="display: flex; gap: 12px; margin-bottom: 20px;">
-            <input type="text" id="adminComparisonCity" placeholder="Enter city..." style="flex: 1; padding: 12px; background: #333; border: none; color: white; border-radius: 8px;">
-            <button id="adminLoadHotelsBtn" style="background: #00ff88; color: #050505; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer;">LOAD</button>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 20px;" id="adminHotelSelectors"></div>
-        <button id="adminRunCompareBtn" style="background: #D4AF37; color: #050505; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold;">COMPARE</button>
-        <div id="adminCompareResults" style="margin-top: 20px; display: none;"></div>
-    </div>
-    // ===== ADMIN PANEL - COMPARATOR (CCO) =====
-let adminComparisonHotels = [];
-
-document.getElementById('adminLoadHotelsBtn')?.addEventListener('click', async function() {
-    const city = document.getElementById('adminComparisonCity')?.value.trim();
-    if(!city) { alert('Enter city'); return; }
-    this.innerText = '⏳...';
-    try {
-        const res = await fetch(`/api/google/places?q=hotels%20in%20${encodeURIComponent(city)}`);
-        const hotels = await res.json();
-        if(hotels?.length) {
-            adminComparisonHotels = hotels.filter(h => h.puntuacion && h.puntuacion > 0);
-            adminComparisonHotels.sort((a,b) => (b.puntuacion||0) - (a.puntuacion||0));
-            const container = document.getElementById('adminHotelSelectors');
-            let html = '';
-            for(let i=1; i<=5; i++) {
-                html += `<div><label style="font-size:11px; color:#888;">Hotel ${i}</label><select id="adminCompHotel${i}" style="width:100%; padding:8px; background:#333; color:white; border:none; border-radius:5px;"><option value="">Select...</option>`;
-                adminComparisonHotels.forEach(h => html += `<option value="${h.id || h.place_id || h.nombre}">${h.nombre || h.name} - ${h.puntuacion}⭐</option>`);
-                html += `</select></div>`;
-            }
-            container.innerHTML = html;
-        } else alert('No hotels found');
-    } catch(e) { console.error(e); alert('Error'); }
-    finally { this.innerText = 'LOAD'; }
-});
-
-document.getElementById('adminRunCompareBtn')?.addEventListener('click', function() {
-    const selected = [];
-    for(let i=1; i<=5; i++) {
-        const select = document.getElementById(`adminCompHotel${i}`);
-        const id = select?.value;
-        if(id) {
-            const hotel = adminComparisonHotels.find(h => (h.id || h.place_id || h.nombre) === id);
-            if(hotel) selected.push(hotel);
-        }
-    }
-    if(selected.length < 2) { alert('Select at least 2 hotels'); return; }
-    let html = '<div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse;"><thead><tr style="border-bottom:2px solid #00ff88;"><th style="padding:12px;">Metric</th>';
-    selected.forEach((h,i) => html += `<th style="padding:12px; text-align:center;">${i+1}. ${h.nombre || h.name}<br>${h.puntuacion}⭐</th>`);
-    html += '</tr></thead><tbody>';
-    const metrics = [
-        { name: '⭐ Rating', get: h => (h.puntuacion||0).toFixed(1) + ' / 5.0' },
-        { name: '📝 Reviews', get: h => (h.total_resenas||0).toLocaleString() },
-        { name: '🏨 Class', get: h => { const r = h.puntuacion||0; return r>=4.5 ? 'Luxury' : r>=4.0 ? 'Premium' : r>=3.5 ? 'Standard' : 'Economy'; } }
-    ];
-    metrics.forEach(m => {
-        html += '<tr style="border-bottom:1px solid #222;"><td style="padding:12px; font-weight:bold;">'+m.name+'</td>';
-        selected.forEach(h => html += '<td style="padding:12px; text-align:center;">'+m.get(h)+'</td>');
-        html += '</tr>';
-    });
-    html += '</tbody></table></div>';
-    const best = selected.reduce((a,b) => (a.puntuacion > b.puntuacion) ? a : b);
-    html += `<div style="margin-top:15px; padding:15px; background:rgba(0,255,136,0.1); border-radius:10px;"><strong>💡 Insight:</strong> ${best.nombre || best.name} leads with ${best.puntuacion}⭐</div>`;
-    document.getElementById('adminCompareResults').innerHTML = html;
-    document.getElementById('adminCompareResults').style.display = 'block';
 });
 </script>
 
