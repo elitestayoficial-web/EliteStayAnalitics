@@ -1068,12 +1068,220 @@
     </div>
 </div>
 
+        <!-- cierre de adminTabReports -->
+    
+    <!-- ===== NUEVA PESTAÑA: COMPARE HOTELS ===== -->
+    <div id="adminTabComparison" class="adminTabContent" style="display: none;">
+        <h3 style="color: #00ff88; margin-bottom: 15px;">📊 Compare Hotels (Up to 5)</h3>
+        
+        <!-- Selector de ciudad -->
+        <div style="background: #1a1a1a; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="ccoCityInput" placeholder="Enter city (e.g., Paris, Tokyo, London)" style="flex: 1; padding: 12px; background: #333; border: none; color: white; border-radius: 5px;">
+                <button id="ccoLoadCityBtn" style="background: #00ff88; color: #050505; border: none; padding: 12px 25px; border-radius: 5px; cursor: pointer; font-weight: bold;">🔍 LOAD HOTELS</button>
+            </div>
+            <div id="cityLoadStatus" style="margin-top: 10px; font-size: 12px; color: #888;"></div>
+        </div>
+        
+        <!-- 5 selectores para hoteles -->
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 20px;">
+            <div>
+                <label style="font-size: 11px; color: #888;">Hotel 1</label>
+                <select id="compareHotel1" style="width: 100%; padding: 10px; background: #333; color: white; border: none; border-radius: 5px;">
+                    <option value="">Select hotel...</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size: 11px; color: #888;">Hotel 2</label>
+                <select id="compareHotel2" style="width: 100%; padding: 10px; background: #333; color: white; border: none; border-radius: 5px;">
+                    <option value="">Select hotel...</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size: 11px; color: #888;">Hotel 3</label>
+                <select id="compareHotel3" style="width: 100%; padding: 10px; background: #333; color: white; border: none; border-radius: 5px;">
+                    <option value="">Select hotel...</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size: 11px; color: #888;">Hotel 4</label>
+                <select id="compareHotel4" style="width: 100%; padding: 10px; background: #333; color: white; border: none; border-radius: 5px;">
+                    <option value="">Select hotel...</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size: 11px; color: #888;">Hotel 5</label>
+                <select id="compareHotel5" style="width: 100%; padding: 10px; background: #333; color: white; border: none; border-radius: 5px;">
+                    <option value="">Select hotel...</option>
+                </select>
+            </div>
+        </div>
+        
+        <button id="runComparisonBtn" style="background: #D4AF37; color: #050505; border: none; padding: 12px 25px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%;">📊 COMPARE SELECTED HOTELS</button>
+        
+        <!-- Resultados -->
+        <div id="comparisonResults" style="display: none; margin-top: 25px;">
+            <h4 style="color: #00ff88; margin-bottom: 15px;">📈 Comparison Results</h4>
+            <div id="comparisonMetrics" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;"></div>
+            
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr id="comparisonHeaders" style="border-bottom: 2px solid #00ff88;"></tr>
+                    </thead>
+                    <tbody id="comparisonTableBody"></tbody>
+                20~
+            </div>
+            
+            <div id="strategicRecommendations" style="margin-top: 20px; padding: 15px; background: #1a1a1a; border-radius: 10px;"></div>
+        </div>
+    </div>
+    <!-- ===== FIN DE COMPARE HOTELS ===== -->
+    
+    <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #333; text-align: center; font-size: 11px; color: #555;">
+        ELITESTAY ANALYTICS - Confidential Management Panel
+    </div>
+</div>
+
     <!-- ===== COMPETITIVE METRICS DASHBOARD (PREMIUM ONLY) ===== -->
 <div id="premiumMetricsPanel" style="display: none; margin-top: 30px;">
     <div class="section-header">
         <h2>Competitive <span class="italic-sophistication">Metrics Dashboard</span></h2>
         <p>Your hotel vs competition - Real-time intelligence</p>
     </div>
+
+    // ===== COMPARACIÓN DE HASTA 5 HOTELES =====
+let currentHotelsList = [];
+
+async function loadHotelSelectors() {
+    const city = document.getElementById('ccoCityInput')?.value.trim();
+    if (!city) {
+        document.getElementById('cityLoadStatus').innerHTML = '⚠️ Please enter a city';
+        return;
+    }
+    
+    document.getElementById('cityLoadStatus').innerHTML = '⏳ Loading hotels...';
+    
+    try {
+        const response = await fetch(`/api/google/places?q=hotels%20in%20${encodeURIComponent(city)}`);
+        const hotels = await response.json();
+        
+        if (hotels && hotels.length) {
+            currentHotelsList = hotels.filter(h => h.puntuacion && h.puntuacion > 0);
+            populateHotelSelectors(currentHotelsList);
+            document.getElementById('cityLoadStatus').innerHTML = `✅ ${currentHotelsList.length} hotels loaded in ${city}`;
+        } else {
+            document.getElementById('cityLoadStatus').innerHTML = '❌ No hotels found';
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('cityLoadStatus').innerHTML = '❌ Error loading hotels';
+    }
+}
+
+function populateHotelSelectors(hotels) {
+    const selectors = ['compareHotel1', 'compareHotel2', 'compareHotel3', 'compareHotel4', 'compareHotel5'];
+    
+    selectors.forEach(selectorId => {
+        const select = document.getElementById(selectorId);
+        if (select) {
+            select.innerHTML = '<option value="">Select a hotel...</option>';
+            hotels.sort((a, b) => (b.puntuacion || 0) - (a.puntuacion || 0));
+            hotels.forEach(hotel => {
+                const option = document.createElement('option');
+                option.value = hotel.id || hotel.place_id || hotel.nombre;
+                option.textContent = `${hotel.nombre || hotel.name} - ${hotel.puntuacion}⭐ (${hotel.total_resenas || 0} reviews)`;
+                select.appendChild(option);
+            });
+        }
+    });
+}
+
+async function runComparison() {
+    const selectedHotels = [];
+    for (let i = 1; i <= 5; i++) {
+        const select = document.getElementById(`compareHotel${i}`);
+        const hotelId = select?.value;
+        if (hotelId) {
+            const hotel = currentHotelsList.find(h => (h.id || h.place_id || h.nombre) === hotelId);
+            if (hotel) selectedHotels.push(hotel);
+        }
+    }
+    
+    if (selectedHotels.length < 2) {
+        alert('Please select at least 2 hotels to compare');
+        return;
+    }
+    
+    // Mostrar resultados
+    document.getElementById('comparisonResults').style.display = 'block';
+    
+    // Generar headers de la tabla
+    let headersHtml = '<th style="padding: 12px; text-align: left;">Metric</th>';
+    selectedHotels.forEach((hotel, idx) => {
+        headersHtml += `<th style="padding: 12px; text-align: center;">${idx + 1}. ${hotel.nombre || hotel.name}<br><span style="color: #00ff88;">${hotel.puntuacion}⭐</span></th>`;
+    });
+    document.getElementById('comparisonHeaders').innerHTML = headersHtml;
+    
+    // Métricas a comparar
+    const metrics = [
+        { name: '⭐ Rating', getValue: (h) => (h.puntuacion || 0).toFixed(1) + ' / 5.0' },
+        { name: '📝 Total Reviews', getValue: (h) => (h.total_resenas || 0).toLocaleString() },
+        { name: '🏨 Hotel Class', getValue: (h) => {
+            const r = h.puntuacion || 0;
+            if (r >= 4.5) return '⭐⭐⭐⭐⭐ Luxury';
+            if (r >= 4.0) return '⭐⭐⭐⭐ Premium';
+            if (r >= 3.5) return '⭐⭐⭐ Standard';
+            return '⭐⭐ Economy';
+        }}
+    ];
+    
+    let tableHtml = '';
+    metrics.forEach(metric => {
+        tableHtml += '<tr style="border-bottom: 1px solid #222;">';
+        tableHtml += `<td style="padding: 12px; font-weight: bold;">${metric.name}</td>`;
+        selectedHotels.forEach(hotel => {
+            tableHtml += `<td style="padding: 12px; text-align: center;">${metric.getValue(hotel)}</td>`;
+        });
+        tableHtml += '</tr>';
+    });
+    document.getElementById('comparisonTableBody').innerHTML = tableHtml;
+    
+    // Tarjetas de resumen
+    const avgRating = (selectedHotels.reduce((s, h) => s + (h.puntuacion || 0), 0) / selectedHotels.length).toFixed(1);
+    const bestHotel = selectedHotels.reduce((a, b) => (a.puntuacion > b.puntuacion) ? a : b);
+    const totalReviews = selectedHotels.reduce((s, h) => s + (h.total_resenas || 0), 0);
+    
+    document.getElementById('comparisonMetrics').innerHTML = `
+        <div style="background: #1a1a1a; padding: 15px; text-align: center; border-radius: 10px;">
+            <div style="font-size: 11px; color: #888;">⭐ AVG RATING</div>
+            <div style="font-size: 24px; font-weight: bold;">${avgRating}</div>
+        </div>
+        <div style="background: #1a1a1a; padding: 15px; text-align: center; border-radius: 10px;">
+            <div style="font-size: 11px; color: #888;">🏆 BEST HOTEL</div>
+            <div style="font-size: 16px; font-weight: bold; color: #00ff88;">${bestHotel.nombre || bestHotel.name}</div>
+            <div>${bestHotel.puntuacion}⭐</div>
+        </div>
+        <div style="background: #1a1a1a; padding: 15px; text-align: center; border-radius: 10px;">
+            <div style="font-size: 11px; color: #888;">👥 TOTAL REVIEWS</div>
+            <div style="font-size: 24px; font-weight: bold;">${totalReviews.toLocaleString()}</div>
+        </div>
+        <div style="background: #1a1a1a; padding: 15px; text-align: center; border-radius: 10px;">
+            <div style="font-size: 11px; color: #888;">🏨 HOTELS</div>
+            <div style="font-size: 24px; font-weight: bold;">${selectedHotels.length}</div>
+        </div>
+    `;
+    
+    // Recomendación
+    document.getElementById('strategicRecommendations').innerHTML = `
+        <strong>💡 Strategic Insight:</strong> ${bestHotel.nombre || bestHotel.name} is the top performer with ${bestHotel.puntuacion}⭐ based on ${(bestHotel.total_resenas || 0).toLocaleString()} guest reviews.
+        ${bestHotel.puntuacion >= 4.5 ? ' This hotel qualifies as LUXURY category.' : bestHotel.puntuacion >= 4.0 ? ' This hotel is in PREMIUM category.' : ''}
+    `;
+}
+
+// Conectar eventos
+document.getElementById('ccoLoadCityBtn')?.addEventListener('click', loadHotelSelectors);
+document.getElementById('runComparisonBtn')?.addEventListener('click', runComparison);
     
     <!-- Selector de período -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
@@ -3220,10 +3428,10 @@ function setUserAsPremium(email, plan) {
     localStorage.setItem('premiumSince', new Date().toISOString());
     updatePdfButtonVisibility();
 }
-    // ===== COMPETITIVE INTELLIGENCE =====
+  // ===== COMPETITIVE INTELLIGENCE (VERSIÓN CORREGIDA) =====
 let currentHotelsList = [];
 
-// Cargar hoteles disponibles en el selector (después de cargar ciudad)
+// Cargar hoteles disponibles en el selector
 async function loadHotelSelectors() {
     const currentCity = document.getElementById('currentCityName')?.innerText || 'London';
     
@@ -3236,7 +3444,7 @@ async function loadHotelSelectors() {
             populateHotelSelectors(currentHotelsList);
         }
     } catch (error) {
-        console.error('Error loading hotels for comparison:', error);
+        console.error('Error loading hotels:', error);
     }
 }
 
@@ -3268,101 +3476,63 @@ function populateHotelSelectors(hotels) {
 async function runComparison() {
     const hotel1Id = document.getElementById('compareHotel1')?.value;
     const hotel2Id = document.getElementById('compareHotel2')?.value;
-    const hotel3Id = document.getElementById('compareHotel3')?.value;
     
     if (!hotel1Id || !hotel2Id) {
         alert('Please select at least two hotels to compare');
         return;
     }
     
-    // Buscar datos completos de cada hotel
     const hotel1 = currentHotelsList.find(h => (h.id || h.place_id || h.nombre) === hotel1Id);
     const hotel2 = currentHotelsList.find(h => (h.id || h.place_id || h.nombre) === hotel2Id);
+    const hotel3Id = document.getElementById('compareHotel3')?.value;
     const hotel3 = hotel3Id ? currentHotelsList.find(h => (h.id || h.place_id || h.nombre) === hotel3Id) : null;
     
     if (!hotel1 || !hotel2) {
-        alert('Hotel data not found. Please try again.');
+        alert('Hotel data not found');
         return;
     }
     
-    // Mostrar resultados
-    displayComparisonResults([hotel1, hotel2, hotel3].filter(h => h));
-    
-    // Actualizar headers de la tabla
-    document.getElementById('hotel1Header').innerHTML = `${hotel1.nombre || hotel1.name}<br><span style="font-size: 12px; color: #888;">${(hotel1.puntuacion || 0).toFixed(1)}⭐</span>`;
-    document.getElementById('hotel2Header').innerHTML = `${hotel2.nombre || hotel2.name}<br><span style="font-size: 12px; color: #888;">${(hotel2.puntuacion || 0).toFixed(1)}⭐</span>`;
-    if (hotel3) {
-        document.getElementById('hotel3Header').innerHTML = `${hotel3.nombre || hotel3.name}<br><span style="font-size: 12px; color: #888;">${(hotel3.puntuacion || 0).toFixed(1)}⭐</span>`;
-    } else {
-        document.getElementById('hotel3Header').innerHTML = '-';
-    }
-}
-
-function displayComparisonResults(hotels) {
     const resultsDiv = document.getElementById('comparisonResults');
     if (resultsDiv) resultsDiv.style.display = 'block';
     
-    // Calcular métricas de mercado
-    const avgRating = hotels.reduce((sum, h) => sum + (h.puntuacion || 0), 0) / hotels.length;
+    // Actualizar headers
+    document.getElementById('hotel1Header').innerHTML = `${hotel1.nombre || hotel1.name}<br><span style="font-size: 12px;">${(hotel1.puntuacion || 0).toFixed(1)}⭐</span>`;
+    document.getElementById('hotel2Header').innerHTML = `${hotel2.nombre || hotel2.name}<br><span style="font-size: 12px;">${(hotel2.puntuacion || 0).toFixed(1)}⭐</span>`;
+    document.getElementById('hotel3Header').innerHTML = hotel3 ? `${hotel3.nombre || hotel3.name}<br>${(hotel3.puntuacion || 0).toFixed(1)}⭐` : '—';
+    
+    const hotels = [hotel1, hotel2, hotel3].filter(h => h);
+    const avgRating = (hotels.reduce((sum, h) => sum + (h.puntuacion || 0), 0) / hotels.length).toFixed(1);
     const maxRating = Math.max(...hotels.map(h => h.puntuacion || 0));
     const minRating = Math.min(...hotels.map(h => h.puntuacion || 0));
     const totalReviews = hotels.reduce((sum, h) => sum + (h.total_resenas || 0), 0);
     
-    // Estimar porcentaje de reservas (basado en puntuación y número de reseñas)
-    const estimatedBookings = hotels.map(hotel => {
-        const score = hotel.puntuacion || 3.0;
-        const reviewCount = hotel.total_resenas || 100;
-        // Fórmula: (puntuación / 5) * 100 + (reviewCount / 1000) * 10
-        let marketShare = (score / 5) * 80 + Math.min(20, (reviewCount / 5000) * 20);
-        return Math.min(95, Math.max(5, Math.round(marketShare)));
-    });
-    
-    // Mostrar métricas principales
     const metricsHtml = `
-        <div style="background: var(--card-bg); border-radius: 10px; padding: 15px; text-align: center;">
-            <div style="color: var(--text-muted); font-size: 12px;">🏆 Market Leader</div>
-            <div style="font-size: 18px; font-weight: bold; color: var(--primary-glow);">${hotels[estimatedBookings.indexOf(Math.max(...estimatedBookings))].nombre || 'N/A'}</div>
-            <div style="font-size: 24px; font-weight: 900;">${Math.max(...estimatedBookings)}%</div>
-            <div style="font-size: 11px; color: #888;">estimated market share</div>
+        <div style="background: #1a1a1a; border-radius: 10px; padding: 15px; text-align: center;">
+            <div style="font-size: 12px; color: #888;">🏆 Best Rating</div>
+            <div style="font-size: 24px; font-weight: 900; color: #00ff88;">${maxRating}⭐</div>
         </div>
-        <div style="background: var(--card-bg); border-radius: 10px; padding: 15px; text-align: center;">
-            <div style="color: var(--text-muted); font-size: 12px;">⭐ Average Rating</div>
-            <div style="font-size: 28px; font-weight: 900; color: #ffd700;">${avgRating.toFixed(1)}</div>
-            <div style="font-size: 11px; color: #888;">out of 5.0</div>
+        <div style="background: #1a1a1a; border-radius: 10px; padding: 15px; text-align: center;">
+            <div style="font-size: 12px; color: #888;">⭐ Average Rating</div>
+            <div style="font-size: 24px; font-weight: 900; color: #ffd700;">${avgRating}</div>
         </div>
-        <div style="background: var(--card-bg); border-radius: 10px; padding: 15px; text-align: center;">
-            <div style="color: var(--text-muted); font-size: 12px;">📊 Rating Gap</div>
-            <div style="font-size: 28px; font-weight: 900; color: ${maxRating - minRating > 0.5 ? '#ff6b6b' : '#00ff88'};">${(maxRating - minRating).toFixed(1)}</div>
-            <div style="font-size: 11px; color: #888;">difference best vs worst</div>
+        <div style="background: #1a1a1a; border-radius: 10px; padding: 15px; text-align: center;">
+            <div style="font-size: 12px; color: #888;">📊 Rating Gap</div>
+            <div style="font-size: 24px; font-weight: 900; color: ${maxRating - minRating > 0.5 ? '#ff6b6b' : '#00ff88'};">${(maxRating - minRating).toFixed(1)}</div>
         </div>
-        <div style="background: var(--card-bg); border-radius: 10px; padding: 15px; text-align: center;">
-            <div style="color: var(--text-muted); font-size: 12px;">👥 Total Reviews</div>
-            <div style="font-size: 28px; font-weight: 900;">${totalReviews.toLocaleString()}</div>
-            <div style="font-size: 11px; color: #888;">combined user feedback</div>
+        <div style="background: #1a1a1a; border-radius: 10px; padding: 15px; text-align: center;">
+            <div style="font-size: 12px; color: #888;">👥 Total Reviews</div>
+            <div style="font-size: 24px; font-weight: 900;">${totalReviews.toLocaleString()}</div>
         </div>
     `;
     
     const metricsContainer = document.getElementById('comparisonMetrics');
     if (metricsContainer) metricsContainer.innerHTML = metricsHtml;
     
-    // Construir tabla comparativa detallada
     const tableBody = document.getElementById('comparisonTableBody');
     if (tableBody) {
         const metrics = [
-            { name: '⭐ Overall Rating', getValue: (h) => (h.puntuacion || 0).toFixed(1) + ' / 5.0' },
+            { name: '⭐ Rating', getValue: (h) => (h.puntuacion || 0).toFixed(1) + ' / 5.0' },
             { name: '👥 Total Reviews', getValue: (h) => (h.total_resenas || 0).toLocaleString() },
-            { name: '📈 Est. Market Share', getValue: (h, idx) => `${estimatedBookings[idx]}%` },
-            { name: '📍 Location Score', getValue: (h) => (h.ubicacion_score || 4.0).toFixed(1) + ' / 5.0' },
-            { name: '🧹 Cleanliness Score', getValue: (h) => (h.limpieza_score || 4.0).toFixed(1) + ' / 5.0' },
-            { name: '🛎️ Service Score', getValue: (h) => (h.servicio_score || 4.0).toFixed(1) + ' / 5.0' },
-            { name: '💵 Value for Money', getValue: (h) => (h.valor_score || 4.0).toFixed(1) + ' / 5.0' },
-            { name: '📊 Competitiveness', getValue: (h, idx) => {
-                const share = estimatedBookings[idx];
-                if (share > 40) return '🚀 Market Leader';
-                if (share > 25) return '📈 Strong Competitor';
-                if (share > 15) return '⚖️ Average Player';
-                return '⚠️ Needs Improvement';
-            }},
             { name: '🏨 Hotel Class', getValue: (h) => {
                 const rating = h.puntuacion || 0;
                 if (rating >= 4.5) return '⭐⭐⭐⭐⭐ Luxury';
@@ -3375,67 +3545,52 @@ function displayComparisonResults(hotels) {
         let tableHtml = '';
         metrics.forEach(metric => {
             tableHtml += `<tr style="border-bottom: 1px solid #222;">
-                <td style="padding: 12px; font-weight: 500;">${metric.name}</td>
-                <td style="padding: 12px; text-align: center;">${metric.getValue(hotels[0], 0)}</td>
-                <td style="padding: 12px; text-align: center;">${metric.getValue(hotels[1], 1)}</td>`;
-            if (hotels[2]) {
-                tableHtml += `<td style="padding: 12px; text-align: center;">${metric.getValue(hotels[2], 2)}</td>`;
+                <td style="padding: 12px;">${metric.name}</td>
+                <td style="padding: 12px; text-align: center;">${metric.getValue(hotel1)}</td>
+                <td style="padding: 12px; text-align: center;">${metric.getValue(hotel2)}</td>`;
+            if (hotel3) {
+                tableHtml += `<td style="padding: 12px; text-align: center;">${metric.getValue(hotel3)}</td>`;
             } else {
-                tableHtml += `<td style="padding: 12px; text-align: center;">-</td>`;
+                tableHtml += `<td style="padding: 12px; text-align: center;">—</td>`;
             }
             tableHtml += `</tr>`;
         });
         tableBody.innerHTML = tableHtml;
     }
     
-    // Recomendaciones estratégicas
-    const recommendations = generateRecommendations(hotels, estimatedBookings);
-    document.getElementById('strategicRecommendations').innerHTML = recommendations;
-    
-    // Scroll a los resultados
-    resultsDiv.scrollIntoView({ behavior: 'smooth' });
-}
-
-function generateRecommendations(hotels, marketShares) {
-    const leader = hotels[marketShares.indexOf(Math.max(...marketShares))];
-    const laggard = hotels[marketShares.indexOf(Math.min(...marketShares))];
-    
-    let html = '<ul style="margin: 0; padding-left: 20px;">';
-    
-    if (leader && laggard && leader !== laggard) {
-        html += `<li><strong>Market Analysis:</strong> ${leader.nombre || leader.name} leads with ${Math.max(...marketShares)}% market share, while ${laggard.nombre || laggard.name} is at ${Math.min(...marketShares)}%.</li>`;
-        
-        const ratingDiff = (leader.puntuacion || 0) - (laggard.puntuacion || 0);
-        if (ratingDiff > 0.5) {
-            html += `<li><strong>Quality Gap:</strong> There is a ${ratingDiff.toFixed(1)}-star gap between the leader and competitors. Focus on improving guest satisfaction scores.</li>`;
-        }
-        
-        const reviewDiff = (leader.total_resenas || 0) - (laggard.total_resenas || 0);
-        if (reviewDiff > 500) {
-            html += `<li><strong>Visibility Opportunity:</strong> The leader has ${reviewDiff.toLocaleString()} more reviews. Encourage guests to leave feedback to increase online presence.</li>`;
-        }
+    const insightsDiv = document.getElementById('strategicRecommendations');
+    if (insightsDiv) {
+        insightsDiv.innerHTML = `
+            <ul style="margin: 0; padding-left: 20px;">
+                <li><strong>🏆 Best Performer:</strong> ${hotel1.puntuacion > hotel2.puntuacion ? (hotel1.nombre || hotel1.name) : (hotel2.nombre || hotel2.name)} leads with ${Math.max(hotel1.puntuacion, hotel2.puntuacion)}⭐</li>
+                <li><strong>📊 Review Impact:</strong> ${hotel1.total_resenas > hotel2.total_resenas ? (hotel1.nombre || hotel1.name) : (hotel2.nombre || hotel2.name)} has ${Math.abs(hotel1.total_resenas - hotel2.total_resenas).toLocaleString()} more reviews</li>
+                <li><strong>💡 Recommendation:</strong> ${hotel1.puntuacion > hotel2.puntuacion ? (hotel2.nombre || hotel2.name) : (hotel1.nombre || hotel1.name)} should focus on service improvements to increase rating</li>
+            </ul>
+        `;
     }
     
-    html += `<li><strong>Strategic Action:</strong> ${laggard?.nombre || 'Underperforming hotels'} should focus on ${laggard?.puntuacion < 4.0 ? 'service quality improvements' : 'marketing and review generation'} to gain market share.</li>`;
-    html += `<li><strong>Pricing Strategy:</strong> Hotels with 4.2+ stars can justify 15-20% premium pricing compared to 3.5-star competitors.</li>`;
-    html += '</ul>';
-    
-    return html;
+    if (resultsDiv) resultsDiv.scrollIntoView({ behavior: 'smooth' });
 }
 
-// Conectar eventos
-document.getElementById('runComparisonBtn')?.addEventListener('click', runComparison);
-
-// Actualizar selectores cuando cambia la ciudad
-const originalAnalyzeCityComplete = window.analyzeCityComplete;
-window.analyzeCityComplete = async function(cityName) {
-    if (originalAnalyzeCityComplete) {
-        await originalAnalyzeCityComplete(cityName);
+// Conectar eventos (asegurar que no se dupliquen)
+document.addEventListener('DOMContentLoaded', function() {
+    const runBtn = document.getElementById('runComparisonBtn');
+    if (runBtn) {
+        runBtn.onclick = function(e) {
+            e.preventDefault();
+            runComparison();
+        };
     }
-    setTimeout(() => {
-        loadHotelSelectors();
-    }, 2000);
-};
+    
+    const loadBtn = document.getElementById('ccoLoadCityBtn');
+    if (loadBtn) {
+        loadBtn.onclick = function(e) {
+            e.preventDefault();
+            loadHotelSelectors();
+        };
+    }
+});
+// ===== FIN DE COMPETITIVE INTELLIGENCE =====
     // ===== SISTEMA DE HISTORIAL DE MÉTRICAS =====
 // Guardar métricas mensuales de hoteles
 
