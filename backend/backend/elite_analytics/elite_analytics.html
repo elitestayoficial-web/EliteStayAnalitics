@@ -1001,6 +1001,7 @@
         <button class="adminTabBtn" data-tab="searches" style="background: #333; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">🔍 SEARCHES</button>
         <button class="adminTabBtn" data-tab="hotels" style="background: #333; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">🏨 HOTELS ANALYZED</button>
         <button class="adminTabBtn" data-tab="reports" style="background: #333; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">📄 REPORTS</button>
+        <button class="adminTabBtn" data-tab="comparison" style="background: #333; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">📊 HOTEL COMPARATOR</button>
     </div>
     
     <!-- Panel Estadísticas -->
@@ -1090,6 +1091,17 @@
             
             <button id="adminGenerateReport" style="background: #00ff88; color: #050505; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer;">🚀 GENERATE REPORT</button>
         </div>
+    </div>
+        <!-- Panel Comparador de Hoteles (CCO) -->
+    <div id="adminTabComparison" class="adminTabContent" style="display: none;">
+        <h3 style="color: #00ff88; margin-bottom: 15px;">📊 Hotel Comparator (CCO Access)</h3>
+        <div style="display: flex; gap: 12px; margin-bottom: 20px;">
+            <input type="text" id="adminComparisonCity" placeholder="Enter city..." style="flex: 1; padding: 12px; background: #333; border: none; color: white; border-radius: 8px;">
+            <button id="adminLoadHotelsBtn" style="background: #00ff88; color: #050505; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer;">LOAD</button>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 20px;" id="adminHotelSelectors"></div>
+        <button id="adminRunCompareBtn" style="background: #D4AF37; color: #050505; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold;">COMPARE</button>
+        <div id="adminCompareResults" style="margin-top: 20px; display: none;"></div>
     </div>
     
     <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #333; text-align: center; font-size: 11px; color: #555;">
@@ -3383,6 +3395,62 @@ document.getElementById('runComparisonBtn')?.addEventListener('click', function(
         <div style="background:#1a1a1a; padding:15px; text-align:center; border-radius:10px;"><div style="font-size:11px; color:#888;">🏨 HOTELS</div><div style="font-size:24px; font-weight:bold;">${selected.length}</div></div>
     `;
     document.getElementById('comparisonInsights').innerHTML = `<strong>💡 Recommendation:</strong> ${best.nombre || best.name} is the top performer with ${best.puntuacion}⭐ based on ${(best.total_resenas||0).toLocaleString()} guest reviews.`;
+});
+    // ===== ADMIN PANEL - COMPARATOR (CCO) =====
+let adminComparisonHotels = [];
+
+document.getElementById('adminLoadHotelsBtn')?.addEventListener('click', async function() {
+    const city = document.getElementById('adminComparisonCity')?.value.trim();
+    if(!city) { alert('Enter city'); return; }
+    this.innerText = '⏳...';
+    try {
+        const res = await fetch(`/api/google/places?q=hotels%20in%20${encodeURIComponent(city)}`);
+        const hotels = await res.json();
+        if(hotels?.length) {
+            adminComparisonHotels = hotels.filter(h => h.puntuacion && h.puntuacion > 0);
+            adminComparisonHotels.sort((a,b) => (b.puntuacion||0) - (a.puntuacion||0));
+            const container = document.getElementById('adminHotelSelectors');
+            let html = '';
+            for(let i=1; i<=5; i++) {
+                html += `<div><label style="font-size:11px; color:#888;">Hotel ${i}</label><select id="adminCompHotel${i}" style="width:100%; padding:8px; background:#333; color:white; border:none; border-radius:5px;"><option value="">Select...</option>`;
+                adminComparisonHotels.forEach(h => html += `<option value="${h.id || h.place_id || h.nombre}">${h.nombre || h.name} - ${h.puntuacion}⭐</option>`);
+                html += `</select></div>`;
+            }
+            container.innerHTML = html;
+        } else alert('No hotels found');
+    } catch(e) { console.error(e); alert('Error'); }
+    finally { this.innerText = 'LOAD'; }
+});
+
+document.getElementById('adminRunCompareBtn')?.addEventListener('click', function() {
+    const selected = [];
+    for(let i=1; i<=5; i++) {
+        const select = document.getElementById(`adminCompHotel${i}`);
+        const id = select?.value;
+        if(id) {
+            const hotel = adminComparisonHotels.find(h => (h.id || h.place_id || h.nombre) === id);
+            if(hotel) selected.push(hotel);
+        }
+    }
+    if(selected.length < 2) { alert('Select at least 2 hotels'); return; }
+    let html = '<div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse;"><thead><tr style="border-bottom:2px solid #00ff88;"><th style="padding:12px;">Metric</th>';
+    selected.forEach((h,i) => html += `<th style="padding:12px; text-align:center;">${i+1}. ${h.nombre || h.name}<br>${h.puntuacion}⭐</th>`);
+    html += '</table></thead><tbody>';
+    const metrics = [
+        { name: '⭐ Rating', get: h => (h.puntuacion||0).toFixed(1) + ' / 5.0' },
+        { name: '📝 Reviews', get: h => (h.total_resenas||0).toLocaleString() },
+        { name: '🏨 Class', get: h => { const r = h.puntuacion||0; return r>=4.5 ? 'Luxury' : r>=4.0 ? 'Premium' : r>=3.5 ? 'Standard' : 'Economy'; } }
+    ];
+    metrics.forEach(m => {
+        html += '<tr style="border-bottom:1px solid #222;"><td style="padding:12px; font-weight:bold;">'+m.name+'</td>';
+        selected.forEach(h => html += '<td style="padding:12px; text-align:center;">'+m.get(h)+'</td>');
+        html += '</table>';
+    });
+    html += '</tbody></table></div>';
+    const best = selected.reduce((a,b) => (a.puntuacion > b.puntuacion) ? a : b);
+    html += `<div style="margin-top:15px; padding:15px; background:rgba(0,255,136,0.1); border-radius:10px;"><strong>💡 Insight:</strong> ${best.nombre || best.name} leads with ${best.puntuacion}⭐</div>`;
+    document.getElementById('adminCompareResults').innerHTML = html;
+    document.getElementById('adminCompareResults').style.display = 'block';
 });
 </script>
 
