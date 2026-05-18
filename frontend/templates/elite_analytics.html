@@ -876,36 +876,6 @@
     </div>
 </section>
 <!--<!-- ===== FIN: BUDGET CALCULATOR ===== -->
-
-    <!-- ===== COMPARADOR DE 5 HOTELES ===== -->
-<section class="rankings-section" style="padding-top: 2rem; padding-bottom: 2rem;">
-    <div class="section-header">
-        <h2>Hotel <span class="italic-sophistication">Comparator</span></h2>
-        <p class="i18n" data-en="Compare up to 5 hotels in any city" data-es="Compara hasta 5 hoteles en cualquier ciudad" data-fr="Comparez jusqu'à 5 hôtels dans n'importe quelle ville">Compare up to 5 hotels in any city</p>
-    </div>
-    <div style="background: var(--card-bg); border-radius: 16px; padding: 25px;">
-        <div style="display: flex; gap: 12px; margin-bottom: 25px; flex-wrap: wrap;">
-            <input type="text" id="comparisonCityInput" class="i18n-placeholder" placeholder="Enter city (e.g., Paris, Tokyo, London)" data-en-placeholder="Enter city (e.g., Paris, Tokyo, London)" data-es-placeholder="Ingresa ciudad (ej: París, Tokio, Londres)" data-fr-placeholder="Entrez une ville (ex: Paris, Tokyo, Londres)" style="flex: 2; padding: 14px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 12px; font-size: 1rem;">
-            <button id="loadComparisonHotelsBtn" style="background: var(--primary-glow); color: #050505; border: none; padding: 14px 28px; border-radius: 12px; cursor: pointer; font-weight: bold;">🔍 LOAD HOTELS</button>
-        </div>
-        <div id="comparisonHotelsContainer" style="display: none;">
-            <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 25px;">
-                <div><label class="i18n" data-en="Hotel 1" data-es="Hotel 1" data-fr="Hôtel 1" style="font-size: 12px; color: #888;">Hotel 1</label><select id="compHotel1" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;"><option value="">Select...</option></select></div>
-                <div><label class="i18n" data-en="Hotel 2" data-es="Hotel 2" data-fr="Hôtel 2" style="font-size: 12px; color: #888;">Hotel 2</label><select id="compHotel2" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;"><option value="">Select...</option></select></div>
-                <div><label class="i18n" data-en="Hotel 3" data-es="Hotel 3" data-fr="Hôtel 3" style="font-size: 12px; color: #888;">Hotel 3</label><select id="compHotel3" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;"><option value="">Select...</option></select></div>
-                <div><label class="i18n" data-en="Hotel 4" data-es="Hotel 4" data-fr="Hôtel 4" style="font-size: 12px; color: #888;">Hotel 4</label><select id="compHotel4" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;"><option value="">Select...</option></select></div>
-                <div><label class="i18n" data-en="Hotel 5" data-es="Hotel 5" data-fr="Hôtel 5" style="font-size: 12px; color: #888;">Hotel 5</label><select id="compHotel5" style="width: 100%; padding: 12px; background: var(--dark-bg); border: 1px solid #333; color: var(--text-main); border-radius: 8px;"><option value="">Select...</option></select></div>
-            </div>
-            <button id="runComparisonBtn" style="background: #D4AF37; color: #050505; border: none; padding: 14px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 100%;">📊 COMPARE SELECTED HOTELS</button>
-        </div>
-        <div id="comparisonResultsContainer" style="display: none; margin-top: 25px;">
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;" id="comparisonSummaryCards"></div>
-            <div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse;"><thead><tr id="comparisonTableHeader" style="border-bottom: 2px solid var(--primary-glow);"><th style="padding: 12px; text-align: left;">Metric</th></tr></thead><tbody id="comparisonTableBody"></tbody>20~</div>
-            <div id="comparisonInsights" style="margin-top: 20px; padding: 15px; background: rgba(0,255,136,0.05); border-radius: 10px;"></div>
-        </div>
-    </div>
-</section>
-    
     <section class="rankings-section" id="rankings">
         <div class="section-header">
             <h2>Global <span class="italic-sophistication">Performance</span> Index</h2>
@@ -3314,77 +3284,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-    // ===== COMPARADOR DE 5 HOTELES =====
-let comparisonHotelsList = [];
-
-document.getElementById('loadComparisonHotelsBtn')?.addEventListener('click', async function() {
-    const city = document.getElementById('comparisonCityInput')?.value.trim();
-    if (!city) { alert('Please enter a city'); return; }
-    document.getElementById('comparisonHotelsContainer').style.display = 'block';
-    this.innerText = '⏳ LOADING...';
-    this.disabled = true;
-    try {
-        const res = await fetch(`/api/google/places?q=hotels%20in%20${encodeURIComponent(city)}`);
-        const hotels = await res.json();
-        if (hotels?.length) {
-            comparisonHotelsList = hotels.filter(h => h.puntuacion && h.puntuacion > 0);
-            comparisonHotelsList.sort((a,b) => (b.puntuacion||0) - (a.puntuacion||0));
-            for (let i=1; i<=5; i++) {
-                const select = document.getElementById(`compHotel${i}`);
-                if (select) {
-                    select.innerHTML = '<option value="">Select a hotel...</option>';
-                    comparisonHotelsList.forEach(hotel => {
-                        const opt = document.createElement('option');
-                        opt.value = hotel.id || hotel.place_id || hotel.nombre;
-                        opt.textContent = `${hotel.nombre || hotel.name} - ${hotel.puntuacion}⭐ (${hotel.total_resenas||0} reviews)`;
-                        select.appendChild(opt);
-                    });
-                }
-            }
-        } else alert('No hotels found');
-    } catch(e) { console.error(e); alert('Error loading hotels'); }
-    finally { this.innerText = '🔍 LOAD HOTELS'; this.disabled = false; }
-});
-
-document.getElementById('runComparisonBtn')?.addEventListener('click', function() {
-    const selected = [];
-    for (let i=1; i<=5; i++) {
-        const select = document.getElementById(`compHotel${i}`);
-        const id = select?.value;
-        if (id) {
-            const hotel = comparisonHotelsList.find(h => (h.id || h.place_id || h.nombre) === id);
-            if (hotel) selected.push(hotel);
-        }
-    }
-    if (selected.length < 2) { alert('Select at least 2 hotels'); return; }
-    document.getElementById('comparisonResultsContainer').style.display = 'block';
-    let headers = '<th style="padding:12px;">Metric</th>';
-    selected.forEach((h,i) => headers += `<th style="padding:12px; text-align:center;">${i+1}. ${h.nombre || h.name}<br><span style="color:#00ff88;">${h.puntuacion}⭐</span></th>`);
-    document.getElementById('comparisonTableHeader').innerHTML = headers;
-    const metrics = [
-        { name: '⭐ Rating', get: h => (h.puntuacion||0).toFixed(1) + ' / 5.0' },
-        { name: '📝 Total Reviews', get: h => (h.total_resenas||0).toLocaleString() },
-        { name: '🏨 Hotel Class', get: h => { const r = h.puntuacion||0; return r>=4.5 ? '⭐⭐⭐⭐⭐ Luxury' : r>=4.0 ? '⭐⭐⭐⭐ Premium' : r>=3.5 ? '⭐⭐⭐ Standard' : '⭐⭐ Economy'; } }
-    ];
-    let table = '';
-    metrics.forEach(m => {
-        table += '<tr style="border-bottom:1px solid #222;"><td style="padding:12px; font-weight:bold;">'+m.name+'</td>';
-        selected.forEach(h => table += '<td style="padding:12px; text-align:center;">'+m.get(h)+'</td>');
-        table += '</tr>';
-    });
-    document.getElementById('comparisonTableBody').innerHTML = table;
-    const best = selected.reduce((a,b) => (a.puntuacion > b.puntuacion) ? a : b);
-    const avg = (selected.reduce((s,h) => s + (h.puntuacion||0),0) / selected.length).toFixed(1);
-    const totalReviews = selected.reduce((s,h) => s + (h.total_resenas||0),0);
-    document.getElementById('comparisonSummaryCards').innerHTML = `
-        <div style="background:#1a1a1a; padding:15px; text-align:center; border-radius:10px;"><div style="font-size:11px; color:#888;">⭐ AVG RATING</div><div style="font-size:24px; font-weight:bold;">${avg}</div></div>
-        <div style="background:#1a1a1a; padding:15px; text-align:center; border-radius:10px;"><div style="font-size:11px; color:#888;">🏆 BEST HOTEL</div><div style="font-size:16px; font-weight:bold; color:#00ff88;">${best.nombre || best.name}</div><div>${best.puntuacion}⭐</div></div>
-        <div style="background:#1a1a1a; padding:15px; text-align:center; border-radius:10px;"><div style="font-size:11px; color:#888;">👥 TOTAL REVIEWS</div><div style="font-size:24px; font-weight:bold;">${totalReviews.toLocaleString()}</div></div>
-        <div style="background:#1a1a1a; padding:15px; text-align:center; border-radius:10px;"><div style="font-size:11px; color:#888;">🏨 HOTELS</div><div style="font-size:24px; font-weight:bold;">${selected.length}</div></div>
-    `;
-    document.getElementById('comparisonInsights').innerHTML = `<strong>💡 Recommendation:</strong> ${best.nombre || best.name} is the top performer with ${best.puntuacion}⭐ based on ${(best.total_resenas||0).toLocaleString()} guest reviews.`;
-});
 </script>
 
 </body>
-</html>
+</html> 
