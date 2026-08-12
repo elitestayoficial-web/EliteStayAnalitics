@@ -3452,6 +3452,68 @@ document.getElementById('adminRunCompareBtn')?.addEventListener('click', functio
     document.getElementById('adminCompareResults').innerHTML = html;
     document.getElementById('adminCompareResults').style.display = 'block';
 });
+    // =============================================
+// CÓDIGO EXISTENTE (el que ya tienes)
+// =============================================
+document.getElementById('analyticsFloatBtn').onclick = () => window.open('https://elitestayanalitycs.com/elite', '_blank');
+document.addEventListener('DOMContentLoaded', () => { 
+    cargarIdiomaGuardado();
+    mostrarHoteles(HOTELES); 
+    mostrarEstadisticas(); 
+    let hoy=new Date(); 
+    let manana=new Date(); 
+    manana.setDate(hoy.getDate()+7); 
+    let checkin=document.getElementById('checkin'); 
+    let checkout=document.getElementById('checkout'); 
+    if(checkin) checkin.valueAsDate=hoy; 
+    if(checkout) checkout.valueAsDate=manana;
+    // ... todo tu código existente
+});
+
+// =============================================
+// ⬇️ NUEVO CÓDIGO DEL BOTÓN DORADO (AL FINAL) ⬇️
+// =============================================
+document.addEventListener('DOMContentLoaded', function() {
+    const botonDorado = document.createElement('a');
+    botonDorado.href = '#';
+    botonDorado.id = 'eliteStayTravelBtn';
+    botonDorado.innerHTML = '✈️ELITESTAYTRAVEL';
+    botonDorado.style.cssText = `
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 99999;
+        background: linear-gradient(145deg, #D4AF37, #C5A028, #B8962A);
+        color: #1a1a1a;
+        font-weight: bold;
+        font-size: 18px;
+        font-family: 'Arial', sans-serif;
+        padding: 18px 35px;
+        border-radius: 50px;
+        text-decoration: none;
+        box-shadow: 0 4px 25px rgba(184, 134, 11, 0.5), inset 0 1px 0 rgba(255, 215, 0, 0.3);
+        border: 2px solid #A67C00;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        letter-spacing: 0.5px;
+        text-shadow: 0 1px 2px rgba(255, 215, 0, 0.3);
+    `;
+    botonDorado.onmouseover = () => {
+        botonDorado.style.transform = 'scale(1.05)';
+        botonDorado.style.boxShadow = '0 6px 35px rgba(184, 134, 11, 0.7), inset 0 1px 0 rgba(255, 215, 0, 0.5)';
+        botonDorado.style.background = 'linear-gradient(145deg, #DAA520, #CD9B1D, #B8860B)';
+    };
+    botonDorado.onmouseout = () => {
+        botonDorado.style.transform = 'scale(1)';
+        botonDorado.style.boxShadow = '0 4px 25px rgba(184, 134, 11, 0.5), inset 0 1px 0 rgba(255, 215, 0, 0.3)';
+        botonDorado.style.background = 'linear-gradient(145deg, #D4AF37, #C5A028, #B8962A)';
+    };
+    botonDorado.onclick = (e) => {
+        e.preventDefault();
+        window.open('https://elitestaytravel.com', '_blank');
+    };
+    document.body.appendChild(botonDorado);
+});
 </script>
 
 </body>
